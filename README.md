@@ -1,5 +1,8 @@
 # External-Mines-Programmator
 
+[![Deploy to GitHub Pages](https://github.com/murasamadsp/External-Mines-Programmator/actions/workflows/deploy.yml/badge.svg)](https://github.com/murasamadsp/External-Mines-Programmator/actions/workflows/deploy.yml)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Click%20Here-blue)](https://murasamadsp.github.io/External-Mines-Programmator/)
+
 Веб-приложение для визуального программирования ботов в игре Mines - инструмент для создания программ автоматизации действий в игре.
 
 ## О проекте
