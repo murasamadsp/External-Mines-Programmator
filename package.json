@@ -1,0 +1,38 @@
+{
+  "name": "external-mines-programmator",
+  "version": "1.0.0",
+  "description": "фронтенд - хтмл сиесес бекенд - джаваскрипт",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "format": "prettier --config config/prettier.config.js --ignore-path config/prettierignore --write .",
+    "lint:css": "stylelint src/assets/styles/**/*.css --config config/stylelint-entry.config.js --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/murasamadsp/External-Mines-Programmator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/murasamadsp/External-Mines-Programmator/issues"
+  },
+  "homepage": "https://github.com/murasamadsp/External-Mines-Programmator#readme",
+  "devDependencies": {
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "sass": "^1.93.3",
+    "stylelint": "^16.25.0",
+    "stylelint-config-standard": "^39.0.1",
+    "stylelint-order": "^7.0.0",
+    "vite": "^7.2.2"
+  },
+  "dependencies": {
+    "glob": "^11.0.3",
+    "vite-plugin-full-reload": "^1.2.0",
+    "vite-plugin-html-inject": "^1.1.2"
+  }
+}
