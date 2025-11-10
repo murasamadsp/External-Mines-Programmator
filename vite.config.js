@@ -14,7 +14,7 @@ export default defineConfig(({ command, mode }) => ({
   build: {
     sourcemap: mode === 'development',
     rollupOptions: {
-      input: glob.sync('./src/pages/*.html'),
+      input: './src/index.html',
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
@@ -38,7 +38,7 @@ export default defineConfig(({ command, mode }) => ({
     outDir: '../dist',
     emptyOutDir: true,
   },
-  plugins: [injectHTML(), FullReload(['./src/**/**.html'])],
+  plugins: [injectHTML(), FullReload(['./src/**/*.html'])],
   server: {
     host: true,
     port: 5173,
