@@ -1,4 +1,4 @@
 // Main JavaScript entry point
-console.log('🚀 External Mines Programmator started!');
+console.log("EMP запущено успішно");
 
 // Add your JavaScript code here

@@ -1,7 +1,7 @@
 {
   "name": "external-mines-programmator",
   "version": "1.0.0",
-  "description": "фронтенд - хтмл сиесес бекенд - джаваскрипт",
+  "description": "Веб-приложение для визуального программирования ботов в игре Mines",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
