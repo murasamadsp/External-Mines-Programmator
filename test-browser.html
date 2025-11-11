@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Programmator</title>
+</head>
+<body>
+    <h1>Testing Programmator</h1>
+    <div id="test-output"></div>
+
+    <script type="module">
+        import { ProgAction, ProgramSerializer, Instruction } from './src/core/index.js';
+
+        const output = document.getElementById('test-output');
+
+        // Test ProgAction
+        output.innerHTML += '<h2>ProgAction Test</h2>';
+        output.innerHTML += `MoveUp: ${ProgAction.MoveUp}<br>`;
+        output.innerHTML += `ProgAction["MoveUp"]: ${ProgAction["MoveUp"]}<br>`;
+
+        // Test serialization
+        output.innerHTML += '<h2>Serialization Test</h2>';
+        const instructions = [
+            new Instruction(ProgAction.SetStart, null, null),
+            new Instruction(ProgAction.MoveForward, null, null),
+            new Instruction(ProgAction.Dig, null, null),
+        ];
+
+        output.innerHTML += `Original: ${instructions.map(i => i.action).join(', ')}<br>`;
+
+        ProgramSerializer.encode(instructions).then(encoded => {
+            output.innerHTML += `Encoded: ${encoded}<br>`;
+            return ProgramSerializer.decode(encoded);
+        }).then(decoded => {
+            output.innerHTML += `Decoded: ${decoded.map(i => i.action).join(', ')}<br>`;
+            output.innerHTML += `Round-trip success: ${instructions.length === decoded.length && instructions.every((inst, i) => inst.action === decoded[i].action)}<br>`;
+        }).catch(error => {
+            output.innerHTML += `Error: ${error.message}<br>`;
+        });
+    </script>
+</body>
+</html>

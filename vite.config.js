@@ -11,7 +11,7 @@ export default defineConfig(({ command, mode }) => ({
   base: mode === "production" ? "/External-Mines-Programmator/" : "/",
   root: "src",
   css: {
-    postcss: "./config/postcss.config.js",
+    postcss: "./config/postcss.config.cjs",
   },
   build: {
     sourcemap: mode === "development",
