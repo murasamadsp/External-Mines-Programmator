@@ -1,34 +1,31 @@
 // Mines Programmator Serializer
 // Handles Base64 v3 program format with LZMA compression as per specification
 
+import lzma from 'lzma';
 import { ProgramFormatVersion, Instruction, ProgAction } from "../index.js";
 
-// LZMA compressor for compatibility with Mines
+// LZMA compressor
 class LZMACompressor {
-  static async compress(data) {
-    // For Mines compatibility, just add LZMA header without actual compression
-    // (seems Mines doesn't actually compress data despite the header)
-    const input = new Uint8Array(data);
-    const output = new Uint8Array(input.length + 8);
-    output[0] = 0x5d; // LZMA properties
-    output[1] = 0x00;
-    output[2] = 0x00;
-    output[3] = input.length & 0xff;
-    output[4] = (input.length >> 8) & 0xff;
-    output[5] = (input.length >> 16) & 0xff;
-    output[6] = (input.length >> 24) & 0xff;
-    output[7] = 0x00;
-    output.set(input, 8);
-    return output;
+  static compress(data) {
+    return new Promise((resolve, reject) => {
+      lzma.compress(data, 1, (result, error) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(new Uint8Array(result));
+      });
+    });
   }
 
-  static async decompress(data) {
-    const input = new Uint8Array(data);
-    // If has LZMA header, skip it (Mines doesn't actually compress)
-    if (input.length >= 8 && input[0] === 0x5d) {
-      return input.slice(8);
-    }
-    return input;
+  static decompress(data) {
+    return new Promise((resolve, reject) => {
+      lzma.decompress(data, (result, error) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(new Uint8Array(result));
+      });
+    });
   }
 }
 
