@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { glob } from "glob";
 import injectHTML from "vite-plugin-html-inject";
 import FullReload from "vite-plugin-full-reload";
+import legacy from "@vitejs/plugin-legacy";
 
 export default defineConfig(({ command, mode }) => ({
   define: {
@@ -39,7 +40,13 @@ export default defineConfig(({ command, mode }) => ({
     outDir: "../dist",
     emptyOutDir: true,
   },
-  plugins: [injectHTML(), FullReload(["./src/**/*.html"])],
+  plugins: [
+    injectHTML(),
+    FullReload(["./src/**/*.html"]),
+    legacy({
+      targets: ["defaults", "not IE 11"],
+    }),
+  ],
   server: {
     host: true,
     port: 5173,
