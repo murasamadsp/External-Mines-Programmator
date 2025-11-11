@@ -9,5 +9,5 @@
   gap: 24px;
   background-color: var(--color-background-secondary);
   border-radius: 12px;
-  box-shadow: 0 4px 12px var(--color-container-shadow);
+  box-shadow: 0 0 12px 12px var(--color-background-secondary);
 }

@@ -8,7 +8,7 @@
   --color-text: #faf;
   --color-primary: #007bff;
   --color-secondary: #6c757d;
-  --color-container-shadow: rgb(255 255 255 / 10%);
+  /* --color-container-shadow: rgb(255 255 255 / 10%); */
   --color-text-glow: rgb(255 255 255 / 20%);
   --color-success: #28a745;
   --color-danger: #dc3545;
@@ -24,7 +24,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  font-family: "Google Sans Code", monospace;
+  font-family: "Google Sans Code", sans-serif;
   color: var(--color-text);
   background-color: var(--color-background);
 }
