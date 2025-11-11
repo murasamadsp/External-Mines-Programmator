@@ -1,0 +1,87 @@
+/* CSS Reset - Link styles and other resets */
+
+/* Links */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover,
+a:focus {
+  color: inherit;
+}
+
+a:visited {
+  color: inherit;
+}
+
+/* Button reset for links that look like buttons */
+a[role="button"],
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Focus styles */
+a:focus,
+button:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Lists */
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+li {
+  margin: 0;
+}
+
+/* Text elements reset */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+figure,
+figcaption {
+  margin: 0;
+  padding: 0;
+}
+
+/* Form elements reset */
+input,
+textarea,
+select {
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* Layout elements reset */
+div,
+section,
+article,
+aside,
+header,
+footer,
+nav,
+main {
+  margin: 0;
+  padding: 0;
+}

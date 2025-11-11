@@ -1,5 +1,49 @@
 :root {
+  --color-background: #6a5aaa;
+  --color-background-secondary: #564190;
+
+  --color-text: #fafafa;
+
+  --color-primary: #007bff;
+  --color-secondary: #6c757d;
+
+  --color-container-shadow: rgba(255, 255, 255, 0.1);
+
+  --color-text-glow: rgba(255, 255, 255, 0.2);
+
+  --color-success: #28a745;
+  --color-danger: #dc3545;
+}
+
+html {
+  height: 100%; /* зачем? мб vh??? */
 }
 
 body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: "Google Sans Code", monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+/* Utilities */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  white-space: nowrap;
+  clip-path: inset(50%);
+  clip: rect(0 0 0 0);
+  overflow: hidden;
 }
