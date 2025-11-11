@@ -10,6 +10,11 @@ export default defineConfig(({ command, mode }) => ({
   },
   base: mode === "production" ? "/External-Mines-Programmator/" : "/",
   root: "src",
+  resolve: {
+    alias: {
+      'lzma-js': 'lzma-js/src/lzma.js',
+    },
+  },
   css: {
     postcss: "./config/postcss.config.cjs",
   },

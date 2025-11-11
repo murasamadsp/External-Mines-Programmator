@@ -14,15 +14,17 @@ import { formatInstruction, indexToGridPosition } from "../../utils/index.js";
 
 export class ProgrammatorUI {
   constructor() {
+    console.log("🏗️ Initializing ProgrammatorUI...");
     this.program = new Program();
     this.selectedAction = null;
     this.container = document.querySelector(".programmer-container");
 
     if (!this.container) {
-      console.error("Programmer container not found!");
+      console.error("❌ Programmer container not found!");
       return;
     }
 
+    console.log("✅ Container found, proceeding with initialization");
     this.initializeUI();
   }
 
@@ -162,6 +164,10 @@ export class ProgrammatorUI {
     this.container.querySelectorAll("[data-action]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         this.selectedAction = e.target.dataset.action;
+        console.log(
+          `🎯 Selected action: ${this.selectedAction} (code: ${ProgAction[this.selectedAction]})`
+        );
+
         this.container
           .querySelectorAll("[data-action]")
           .forEach((b) => b.classList.remove("selected"));
@@ -181,7 +187,9 @@ export class ProgrammatorUI {
         const importText = this.container
           .querySelector("#import-program")
           .value.trim();
+
         if (!importText) {
+          console.log("❌ Import failed: empty input");
           this.showValidationMessage(
             "Please enter Base64 program code to import",
             "error"
@@ -189,8 +197,16 @@ export class ProgrammatorUI {
           return;
         }
 
+        console.log(
+          `📥 Importing program, Base64 length: ${importText.length}`
+        );
+
         try {
           this.program = await Program.fromString(importText);
+          console.log(
+            `✅ Program imported: ${this.program.instructions.length} instructions`
+          );
+
           this.updateGridFromProgram();
           this.showValidationMessage(
             "Program imported successfully",
@@ -198,6 +214,7 @@ export class ProgrammatorUI {
           );
           this.container.querySelector("#import-program").value = "";
         } catch (error) {
+          console.error("❌ Import failed:", error);
           this.showValidationMessage(
             `Import failed: ${error.message}`,
             "error"
@@ -257,13 +274,22 @@ export class ProgrammatorUI {
       .querySelector("#export-base64-btn")
       .addEventListener("click", async () => {
         try {
+          console.log("🔄 Starting Base64 export...");
+          console.log(
+            "📊 Current program instructions:",
+            this.program.instructions.length
+          );
+
           const output = await this.program.toBase64Format();
+          console.log("✅ Base64 export completed, length:", output.length);
+
           this.container.querySelector("#program-output").value = output;
           this.showValidationMessage(
-            "Program exported to Base64 format",
+            `Program exported to Base64 format (${output.length} chars)`,
             "success"
           );
         } catch (error) {
+          console.error("❌ Base64 export failed:", error);
           this.showValidationMessage(
             `Export failed: ${error.message}`,
             "error"
@@ -298,12 +324,41 @@ export class ProgrammatorUI {
    * @param {number} index - Cell index in grid
    */
   onCellClick(index) {
-    if (!this.selectedAction) return;
+    const { x, y } = indexToGridPosition(index);
+    const existingInstruction = this.program.getInstructionAt(x, y);
+
+    // If cell is not empty and no action is selected, remove the instruction
+    if (
+      existingInstruction.action !== ProgAction.None &&
+      !this.selectedAction
+    ) {
+      console.log(
+        `🗑️ Removing instruction at [${x}, ${y}] (index: ${index}): ${formatInstruction(existingInstruction)}`
+      );
+      this.program.setInstructionAt(
+        x,
+        y,
+        new Instruction(ProgAction.None, null, null)
+      );
+      this.updateCellDisplay(index);
+      console.log(`✅ Removed instruction at [${x}, ${y}]`);
+      return;
+    }
+
+    if (!this.selectedAction) {
+      console.log(`❌ No action selected, ignoring click on cell ${index}`);
+      return;
+    }
 
     const actionCode = ProgAction[this.selectedAction];
-    if (actionCode === undefined) return;
+    if (actionCode === undefined) {
+      console.log(`❌ Unknown action: ${this.selectedAction}`);
+      return;
+    }
 
-    const { x, y } = indexToGridPosition(index);
+    console.log(
+      `📍 Placing ${this.selectedAction} (code: ${actionCode}) at position [${x}, ${y}] (index: ${index})`
+    );
 
     // Create instruction with basic properties
     const instruction = new Instruction(actionCode, null, null);
@@ -322,6 +377,9 @@ export class ProgrammatorUI {
       const label = prompt("Enter label for this action:");
       if (label && label.trim()) {
         instruction.label = label.trim();
+        console.log(`🏷️ Added label: "${label.trim()}"`);
+      } else {
+        console.log(`🏷️ No label provided`);
       }
     }
 
@@ -333,11 +391,18 @@ export class ProgrammatorUI {
       const value = prompt("Enter value for variable comparison:");
       if (value !== null && !isNaN(parseInt(value))) {
         instruction.value = parseInt(value);
+        console.log(`🔢 Added value: ${instruction.value}`);
+      } else {
+        console.log(`🔢 No value provided or invalid`);
       }
     }
 
     this.program.setInstructionAt(x, y, instruction);
     this.updateCellDisplay(index);
+
+    console.log(
+      `✅ Placed instruction: ${this.selectedAction} at [${x}, ${y}]`
+    );
   }
 
   /**
@@ -353,8 +418,10 @@ export class ProgrammatorUI {
       cell.textContent = "";
       cell.className = "program-cell";
       cell.title = "";
+      console.log(`📭 Cell [${x}, ${y}] cleared`);
     } else {
       const formatted = formatInstruction(instruction);
+      console.log(`📬 Cell [${x}, ${y}] updated: ${formatted}`);
 
       cell.textContent = formatted.shortCode;
       cell.className = `program-cell action-${instruction.action}`;
@@ -366,9 +433,13 @@ export class ProgrammatorUI {
    * Update entire grid from program instructions
    */
   updateGridFromProgram() {
+    console.log(
+      `🔄 Updating grid display for ${GRID_WIDTH * GRID_HEIGHT} cells`
+    );
     for (let i = 0; i < GRID_WIDTH * GRID_HEIGHT; i++) {
       this.updateCellDisplay(i);
     }
+    console.log(`✅ Grid display updated`);
   }
 
   /**

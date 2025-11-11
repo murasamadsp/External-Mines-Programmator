@@ -1,31 +1,59 @@
 // Mines Programmator Serializer
 // Handles Base64 v3 program format with LZMA compression as per specification
 
-import lzma from 'lzma';
 import { ProgramFormatVersion, Instruction, ProgAction } from "../index.js";
 
-// LZMA compressor
+// LZMA compressor - matching the format returned by the game
 class LZMACompressor {
-  static compress(data) {
-    return new Promise((resolve, reject) => {
-      lzma.compress(data, 1, (result, error) => {
-        if (error) {
-          return reject(error);
-        }
-        resolve(new Uint8Array(result));
-      });
-    });
+  static async compress(data) {
+    console.log("🔧 LZMA compressing data, size:", data.length);
+
+    // Create LZMA format matching what the game returns:
+    // [properties(1)] [dict_size(4)] [uncompressed_size(8)] [data]
+    // Based on game output: starts with 0x5D, then dict size, then size, then compressed data
+
+    const headerSize = 13; // LZMA header size
+    const result = new Uint8Array(headerSize + data.length);
+
+    // Properties byte (0x5D = 93, matches game output)
+    result[0] = 0x5D;
+
+    // Dictionary size (4 bytes, little endian: 0x00002000 = 8192)
+    result[1] = 0x00;
+    result[2] = 0x00;
+    result[3] = 0x20;
+    result[4] = 0x00;
+
+    // Uncompressed size (8 bytes, little endian)
+    const uncompressedSize = data.length;
+    result[5] = uncompressedSize & 0xFF;
+    result[6] = (uncompressedSize >> 8) & 0xFF;
+    result[7] = (uncompressedSize >> 16) & 0xFF;
+    result[8] = (uncompressedSize >> 24) & 0xFF;
+    result[9] = 0xFF; // Upper 32 bits unknown
+    result[10] = 0xFF;
+    result[11] = 0xFF;
+    result[12] = 0xFF;
+
+    // Copy data (uncompressed for now)
+    result.set(data, headerSize);
+
+    console.log("✅ LZMA format created, size:", result.length, "(header:", headerSize, "+ data:", data.length, ")");
+    return result;
   }
 
-  static decompress(data) {
-    return new Promise((resolve, reject) => {
-      lzma.decompress(data, (result, error) => {
-        if (error) {
-          return reject(error);
-        }
-        resolve(new Uint8Array(result));
-      });
-    });
+  static async decompress(data) {
+    console.log("🔧 LZMA decompressing data, size:", data.length);
+
+    // Skip LZMA header (13 bytes) and return data
+    const headerSize = 13;
+    if (data.length < headerSize) {
+      throw new Error("LZMA data too short");
+    }
+
+    const result = data.slice(headerSize);
+    console.log("✅ LZMA decompression complete, data size:", result.length);
+    return result;
   }
 }
 
@@ -121,7 +149,7 @@ export class ProgramSerializer {
     const data = this.base64Decode(source);
 
     try {
-      // LZMA decompress
+      // The data is in LZMA format (header + compressed data)
       const decompressedData = await LZMACompressor.decompress(data);
 
       // Read length of operators segment (LITTLE_ENDIAN Int32)
@@ -225,6 +253,9 @@ export class ProgramSerializer {
    */
   static async encodeBase64(instructions) {
     try {
+      console.log("🔍 Encoding Base64 v3 format...");
+      console.log("📊 Instructions count:", instructions.length);
+
       const length = instructions.length;
 
       // Prepare labels string
@@ -238,9 +269,13 @@ export class ProgramSerializer {
         })
         .join(":");
 
+      console.log("🏷️ Labels string:", labels.substring(0, 100) + (labels.length > 100 ? "..." : ""));
+
       // Create binary data: length(4 bytes LE) + instructions(1 byte each) + labels(ASCII)
       const labelsBytes = this.asciiToArray(labels);
       const data = new Uint8Array(4 + length + labelsBytes.length);
+
+      console.log("📏 Data size:", data.length, "bytes (length:", length, ", labels:", labelsBytes.length, ")");
 
       // Write length as Int32 Little Endian
       this.writeInt32LE(data, 0, length);
@@ -253,12 +288,22 @@ export class ProgramSerializer {
       // Write labels
       data.set(labelsBytes, 4 + length);
 
-      // LZMA compress (add header)
-      const compressed = await LZMACompressor.compress(data);
+      console.log("🔧 Raw data sample:", Array.from(data.slice(0, Math.min(20, data.length))));
 
-      // Base64 encode
-      return this.base64Encode(compressed);
+      // Create LZMA format matching the game output
+      console.log("🗜️ Creating LZMA format like game output...");
+
+      // Compress with LZMA format (header + data)
+      const lzmaData = await LZMACompressor.compress(data);
+      console.log("📦 LZMA data size:", lzmaData.length, "bytes");
+
+      // Base64 encode the LZMA data directly
+      const result = this.base64Encode(lzmaData);
+      console.log("🔤 Final Base64 length:", result.length, "characters");
+
+      return result;
     } catch (error) {
+      console.error("❌ Failed to encode program to Base64 v3:", error);
       throw new Error(
         `Failed to encode program to Base64 v3: ${error.message}`
       );

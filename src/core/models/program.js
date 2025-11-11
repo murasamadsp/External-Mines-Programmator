@@ -73,12 +73,24 @@ export class Program {
    * @returns {Promise<string>} Base64 encoded program
    */
   async toBase64Format() {
-    // Export full grid for Mines compatibility (192 instructions)
-    const fullGrid = [...this.instructions];
-    while (fullGrid.length < GRID_SIZE) {
-      fullGrid.push(new Instruction(ProgAction.None, null, null));
+    // Export only non-empty instructions (like original Mines format)
+    // Filter out None actions and trailing empty instructions
+    const nonEmptyInstructions = [];
+    for (let i = this.instructions.length - 1; i >= 0; i--) {
+      const inst = this.instructions[i];
+      if (inst.action !== ProgAction.None || nonEmptyInstructions.length > 0) {
+        nonEmptyInstructions.unshift(inst);
+      }
     }
-    return await ProgramSerializer.encode(fullGrid);
+
+    console.log("📊 Exporting", nonEmptyInstructions.length, "non-empty instructions");
+
+    // If no instructions, return empty program
+    if (nonEmptyInstructions.length === 0) {
+      return await ProgramSerializer.encode([new Instruction(ProgAction.None, "0", null)]);
+    }
+
+    return await ProgramSerializer.encode(nonEmptyInstructions);
   }
 
   /**
