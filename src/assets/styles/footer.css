@@ -1,14 +1,14 @@
 /* Footer styles */
 footer {
   padding: 30px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--border-color);
   margin-top: auto;
 }
 
 .footer-container {
-  max-width: 1200px;
+  padding: 0 var(--spacing-horizontal);
   margin: 0 auto;
-  padding: 0 40px;
+  max-width: var(--max-width);
 }
 
 .footer-content {
@@ -21,8 +21,8 @@ footer {
 
 .footer-text {
   margin: 0;
-  color: var(--color-text);
   font-size: 14px;
+  color: var(--color-text);
   opacity: 0.8;
 }
 
@@ -32,19 +32,19 @@ footer {
 }
 
 .footer-link {
-  color: var(--color-text);
-  text-decoration: none;
+  padding: 6px 12px;
   font-size: 14px;
-  font-weight: 500;
+  color: var(--color-text);
+  border-radius: 4px;
   opacity: 0.8;
   transition: opacity 0.2s ease;
-  padding: 6px 12px;
-  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
 }
 
 .footer-link:hover,
 .footer-link:focus {
-  opacity: 1;
   color: var(--color-primary);
-  background-color: rgba(255, 255, 255, 0.05);
+  opacity: 1;
+  background-color: var(--hover-bg);
 }

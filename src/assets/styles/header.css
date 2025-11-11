@@ -1,18 +1,24 @@
-/* Header styles */
+/*
+ * Header Component Styles
+ * Defines the layout and appearance of the site header including navigation
+ */
+
 header {
   padding: 20px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border-color);
 }
 
+/* Header container with responsive flex layout */
 .header-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
+  padding: 0 var(--spacing-horizontal);
   margin: 0 auto;
-  padding: 0 40px;
+  max-width: var(--max-width);
 }
 
+/* Site title styling */
 .site-title {
   margin: 0;
   font-size: 24px;
@@ -29,15 +35,16 @@ header {
   color: var(--color-primary);
 }
 
+/* Navigation component */
 .main-nav {
   display: flex;
 }
 
 .nav-list {
   display: flex;
-  list-style: none;
-  margin: 0;
   padding: 0;
+  margin: 0;
+  list-style: none;
   gap: 30px;
 }
 
@@ -45,17 +52,18 @@ header {
   margin: 0;
 }
 
+/* Navigation links with hover and focus states */
 .nav-link {
+  padding: 8px 16px;
   color: var(--color-text);
+  border-radius: 6px;
+  transition: color 0.2s ease;
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s ease;
-  padding: 8px 16px;
-  border-radius: 6px;
 }
 
 .nav-link:hover,
 .nav-link:focus {
   color: var(--color-primary);
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--hover-bg);
 }

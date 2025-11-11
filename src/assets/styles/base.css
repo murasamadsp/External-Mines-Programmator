@@ -1,31 +1,32 @@
+/*
+ * CSS Custom Properties
+ * Define global design tokens for consistent theming across the application
+ */
 :root {
   --color-background: #6a5aaa;
   --color-background-secondary: #564190;
-
   --color-text: #fafafa;
-
   --color-primary: #007bff;
   --color-secondary: #6c757d;
-
-  --color-container-shadow: rgba(255, 255, 255, 0.1);
-
-  --color-text-glow: rgba(255, 255, 255, 0.2);
-
+  --color-container-shadow: rgb(255 255 255 / 10%);
+  --color-text-glow: rgb(255 255 255 / 20%);
   --color-success: #28a745;
   --color-danger: #dc3545;
-}
 
-html {
-  height: 100%; /* зачем? мб vh??? */
+  /* Layout constants */
+  --max-width: 1200px;
+  --spacing-horizontal: 40px;
+  --border-color: rgb(255 255 255 / 10%);
+  --hover-bg: rgb(255 255 255 / 5%);
 }
 
 body {
-  background-color: var(--color-background);
-  color: var(--color-text);
-  font-family: "Google Sans Code", monospace;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  font-family: "Google Sans Code", monospace;
+  color: var(--color-text);
+  background-color: var(--color-background);
 }
 
 main {
@@ -34,16 +35,20 @@ main {
   margin-bottom: 40px;
 }
 
-/* Utilities */
+/*
+ * Utility Classes
+ * Reusable classes for accessibility and common UI patterns
+ */
+
+/* Hide content visually while keeping it accessible to screen readers */
 .visually-hidden {
   position: absolute;
   width: 1px;
   height: 1px;
+  padding: 0;
   margin: -1px;
   border: 0;
-  padding: 0;
   white-space: nowrap;
   clip-path: inset(50%);
-  clip: rect(0 0 0 0);
   overflow: hidden;
 }
