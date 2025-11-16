@@ -35,8 +35,8 @@
   "dependencies": {
     "glob": "^11.0.3",
     "lzma-js": "^1.0.1",
-    "lzma-purejs": "^0.9.3",
-    "pako": "^2.1.0",
+    "lzma-native": "^8.0.6",
+    "lzma-web": "^3.0.1",
     "vite-plugin-full-reload": "^1.2.0",
     "vite-plugin-html-inject": "^1.1.2"
   }

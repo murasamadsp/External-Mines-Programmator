@@ -1,0 +1,103 @@
+# Cursor Rules for External Mines Programmator Project
+
+## STRICT CODING RULES
+
+### 1. LIBRARY USAGE
+
+- **MANDATORY**: Use only ready-made, well-tested libraries
+- **FORBIDDEN**: Custom implementations of compression/decompression algorithms
+- **REQUIRED**: All operations must go through proper library functions
+- **NO EXCEPTIONS**: No fallback mechanisms, no workarounds, no hacks
+
+### 2. LZMA COMPRESSION
+
+- **MANDATORY**: Use proper LZMA implementation
+- **REQUIRED**: All LZMA operations must work correctly
+- **FORBIDDEN**: Substitute deflate/inflate for LZMA
+- **MANDATORY**: Handle all LZMA edge cases properly
+
+### 3. DATA INTEGRITY
+
+- **MANDATORY**: All data must be processed correctly
+- **REQUIRED**: No data corruption or loss
+- **FORBIDDEN**: Silent failures or data skipping
+- **MANDATORY**: Proper error handling for invalid data
+
+### 4. DOCUMENTATION COMPLIANCE
+
+- **MANDATORY**: Code must match documentation specifications exactly
+- **REQUIRED**: All examples from documentation must work
+- **FORBIDDEN**: Ignoring documentation requirements
+- **MANDATORY**: Follow exact algorithms described in docs
+
+### 5. CODE QUALITY
+
+- **FORBIDDEN**: Dead code, unused imports, commented code
+- **MANDATORY**: Clean, readable, maintainable code
+- **REQUIRED**: Proper TypeScript types and documentation
+- **FORBIDDEN**: Magic numbers, hardcoded values
+
+### 6. TESTING
+
+- **MANDATORY**: All functionality must be thoroughly tested
+- **REQUIRED**: Unit tests for all critical functions
+- **MANDATORY**: Integration tests for end-to-end workflows
+- **REQUIRED**: Documentation examples must pass tests
+
+### 7. ERROR HANDLING
+
+- **MANDATORY**: Proper error messages and stack traces
+- **FORBIDDEN**: Silent errors or generic error messages
+- **REQUIRED**: Meaningful error context and debugging info
+- **MANDATORY**: Fail fast on invalid input
+
+### 8. PERFORMANCE
+
+- **REQUIRED**: Efficient algorithms and data structures
+- **MANDATORY**: No memory leaks or performance bottlenecks
+- **FORBIDDEN**: Blocking operations in UI thread
+- **REQUIRED**: Async operations for heavy computations
+
+### 9. BROWSER COMPATIBILITY
+
+- **MANDATORY**: All code must work in modern browsers
+- **REQUIRED**: No Node.js specific APIs in browser code
+- **MANDATORY**: Proper ES modules and dynamic imports
+- **FORBIDDEN**: Server-side only libraries in client code
+
+### 10. MAINTAINABILITY
+
+- **MANDATORY**: Code must be easily maintainable
+- **REQUIRED**: Clear separation of concerns
+- **FORBIDDEN**: Tight coupling between modules
+- **MANDATORY**: Proper abstraction layers
+
+## IMPLEMENTATION REQUIREMENTS
+
+### LZMA Handling
+
+- Use proper LZMA library (not deflate/inflate substitutes)
+- Handle LZMA headers correctly
+- Support all LZMA compression levels
+- Proper error handling for corrupted LZMA data
+
+### Documentation Example
+
+- Base64: `HQAAgAAIAAAAAAAAAAAFADjkobuzFSSNTOK60BytPRuvcpEnjdjhMd/+KkQA`
+- Must decode to exactly: operators [14, 135, 43, 139, 157, 43, 139, 15, 24, 10, 16]
+- Labels must be: "0:0:0:0:0:0:RGT:0:0:0:RGT"
+- No compromises, no workarounds - must work exactly as documented
+
+### Code Structure
+
+- Clean separation between compression, serialization, and UI
+- Proper error boundaries and user feedback
+- Type-safe implementations
+- Comprehensive logging for debugging
+
+## ENFORCEMENT
+
+These rules are **MANDATORY** and **NON-NEGOTIABLE**. Any violation requires immediate correction. No exceptions, no compromises, no shortcuts.
+
+**PRIORITY**: Documentation compliance > Code quality > Performance > Features
+

@@ -1,65 +1,51 @@
 // Mines Programmator Serializer
 // Handles Base64 v3 program format with LZMA compression as per specification
+//
+// STRICT RULES:
+// 1. No fallback mechanisms allowed - all operations must use proper libraries
+// 2. Must use ready-made libraries, no custom implementations
+// 3. LZMA compression/decompression must work correctly
+// 4. All data must be processed through proper library functions
+// 5. Follow exact C# ProgramSerializer.DecodeV2 implementation
 
 import { ProgramFormatVersion, Instruction, ProgAction } from "../index.js";
+import { MAX_INSTRUCTIONS } from "../constants/grid.js";
 
-// LZMA compressor - matching the format returned by the game
+// LZMA compressor - clean interface with no environment detection
 class LZMACompressor {
-  static async compress(data) {
-    console.log("🔧 LZMA compressing data, size:", data.length);
+  static #lzmaInterface = null;
 
-    // Create LZMA format matching what the game returns:
-    // [properties(1)] [dict_size(4)] [uncompressed_size(8)] [data]
-    // Based on game output: starts with 0x5D, then dict size, then size, then compressed data
+  static async getInterface() {
+    if (!this.#lzmaInterface) {
+      const { createLZMAInterface } = await import("../services/lzma-js-polyfill.js");
+      this.#lzmaInterface = await createLZMAInterface();
+    }
+    return this.#lzmaInterface;
+  }
 
-    const headerSize = 13; // LZMA header size
-    const result = new Uint8Array(headerSize + data.length);
+  static async compress(data, compressionLevel = 7) {
+    if (!data || data.length === 0) {
+      throw new Error('Cannot compress empty data');
+    }
 
-    // Properties byte (0x5D = 93, matches game output)
-    result[0] = 0x5D;
-
-    // Dictionary size (4 bytes, little endian: 0x00002000 = 8192)
-    result[1] = 0x00;
-    result[2] = 0x00;
-    result[3] = 0x20;
-    result[4] = 0x00;
-
-    // Uncompressed size (8 bytes, little endian)
-    const uncompressedSize = data.length;
-    result[5] = uncompressedSize & 0xFF;
-    result[6] = (uncompressedSize >> 8) & 0xFF;
-    result[7] = (uncompressedSize >> 16) & 0xFF;
-    result[8] = (uncompressedSize >> 24) & 0xFF;
-    result[9] = 0xFF; // Upper 32 bits unknown
-    result[10] = 0xFF;
-    result[11] = 0xFF;
-    result[12] = 0xFF;
-
-    // Copy data (uncompressed for now)
-    result.set(data, headerSize);
-
-    console.log("✅ LZMA format created, size:", result.length, "(header:", headerSize, "+ data:", data.length, ")");
-    return result;
+    const lzma = await this.getInterface();
+    return await lzma.compress(data, compressionLevel);
   }
 
   static async decompress(data) {
-    console.log("🔧 LZMA decompressing data, size:", data.length);
-
-    // Skip LZMA header (13 bytes) and return data
-    const headerSize = 13;
-    if (data.length < headerSize) {
-      throw new Error("LZMA data too short");
+    if (!data || data.length === 0) {
+      throw new Error('Cannot decompress empty data');
     }
 
-    const result = data.slice(headerSize);
-    console.log("✅ LZMA decompression complete, data size:", result.length);
-    return result;
+    const lzma = await this.getInterface();
+    return await lzma.decompress(data);
   }
 }
 
 /**
  * ProgramSerializer handles encoding/decoding of programs in Base64 v3 format
  * Based on C# ProgramSerializer.cs implementation
+ * Enhanced with CyberChef algorithm support
  */
 export class ProgramSerializer {
   /**
@@ -140,174 +126,184 @@ export class ProgramSerializer {
 
   /**
    * Decode Base64 v3 format (LZMA compressed)
-   * Based on C# DecodeV2 method
+   * Based on C# ProgramSerializer.DecodeV2 implementation
    * @param {string} source - Base64 encoded string
    * @returns {Promise<Array<Instruction>>} Array of instructions
    */
   static async decodeBase64(source) {
-    // Decode Base64 to byte array
-    const data = this.base64Decode(source);
-
     try {
-      // The data is in LZMA format (header + compressed data)
-      const decompressedData = await LZMACompressor.decompress(data);
+      this._validateBase64Input(source);
 
-      // Read length of operators segment (LITTLE_ENDIAN Int32)
-      if (decompressedData.length < 4) {
-        throw new Error("Data too short for length field");
-      }
-      const length = this.readInt32LE(decompressedData, 0);
+      // Decode Base64 and decompress LZMA
+      const compressedData = this.base64Decode(source);
+      const decompressedData = await LZMACompressor.decompress(compressedData);
 
-      if (length < 0 || length > decompressedData.length - 4) {
-        throw new Error("Invalid operators segment length");
-      }
-
-      // Read operators (each byte is an action code)
-      const operatorsEnd = 4 + length;
-      const operators = decompressedData.slice(4, operatorsEnd);
-
-      // Read labels (ASCII string after operators)
-      const labelsData = decompressedData.slice(operatorsEnd);
-      const labelsString = this.arrayToAscii(labelsData);
-      const labels = labelsString.split(':');
-
-      // Create instructions array
-      const instructions = [];
-      for (let i = 0; i < operators.length; i++) {
-        const action = operators[i];
-        let label = "0"; // default label
-        let value = null;
-
-        if (i < labels.length) {
-          const labelParts = labels[i].split('@');
-          label = labelParts[0] || "0";
-          if (labelParts.length > 1) {
-            value = parseInt(labelParts[1]);
-          }
-        }
-
-        instructions.push(new Instruction(action, label, value));
-      }
-
-      return instructions;
+      // Parse binary format: [length(4 bytes LE)][operators][labels(ASCII)]
+      return this._parseDecompressedData(decompressedData);
     } catch (error) {
       throw new Error(`Failed to decode Base64 v3 program: ${error.message}`);
     }
   }
 
   /**
-   * Parse instructions and labels from uncompressed data
-   * @param {Uint8Array} data - Raw data bytes
-   * @returns {Array<Instruction>} Array of instructions
+   * Validate Base64 input string
+   * @param {string} source - Input string
    */
-  static parseInstructionsAndLabels(data) {
-    const instructions = [];
+  static _validateBase64Input(source) {
+    if (!source || typeof source !== 'string') {
+      throw new Error('Invalid input: must be non-empty string');
+    }
+    if (!/^[A-Za-z0-9+/]*={0,2}$/.test(source)) {
+      throw new Error('Invalid Base64 format');
+    }
+  }
 
-    // Convert Uint8Array to string for easier processing if needed
-    let dataString = "";
-    for (let i = 0; i < data.length; i++) {
-      dataString += String.fromCharCode(data[i]);
+  /**
+   * Parse decompressed binary data into instructions
+   * @param {Uint8Array} data - Decompressed data
+   * @returns {Array<Instruction>} Instructions array
+   */
+  static _parseDecompressedData(data) {
+    if (data.length < 4) {
+      throw new Error('Data too short for length field');
     }
 
-    // Try to find the labels separator (usually ':')
-    // For now, assume all data is instructions until we find a non-action byte
-    let i = 0;
-    while (i < data.length) {
-      const byte = data[i];
-
-      // If we encounter a byte that's not a valid action (0-255 is valid), stop
-      // Actually, all bytes 0-255 are valid action codes in theory
-      // Maybe the format is different - perhaps instructions are stored as text?
-
-      // For the user's long Base64, the data seems to be raw bytes
-      // Let's assume all bytes are instructions until we reach some terminator
-
-      // Actually, looking at the data, it seems like it might be compressed or encoded differently
-      // For now, let's assume the data represents instructions directly
-
-      // Since we don't know the exact format, let's try a simple approach:
-      // Take chunks of data and see if we can make sense of it
-
-      if (byte >= 0 && byte <= 255) {
-        instructions.push(new Instruction(byte, null, null));
-        i++;
-      } else {
-        break; // Stop at invalid byte
-      }
-
-      // Safety limit
-      if (instructions.length > 10000) break;
+    // Read operators count
+    const operatorsCount = this.readInt32LE(data, 0);
+    if (operatorsCount < 0 || operatorsCount > data.length - 4) {
+      throw new Error(`Invalid operators count: ${operatorsCount}`);
     }
 
-    console.log(
-      `Parsed ${instructions.length} instructions from ${data.length} bytes`
-    );
+    // Extract operators and labels
+    const operators = data.slice(4, 4 + operatorsCount);
+    const labelsString = this.arrayToAscii(data.slice(4 + operatorsCount));
+    const labels = labelsString.toUpperCase().split(':');
+
+    // Build instructions array
+    const instructions = new Array(operatorsCount);
+    for (let i = 0; i < operatorsCount; i++) {
+      const action = operators[i];
+      const labelInfo = this._parseLabel(labels[i] || '');
+      instructions[i] = new Instruction(action, labelInfo.label, labelInfo.value);
+    }
+
     return instructions;
   }
 
   /**
+   * Parse label string in format "LABEL" or "LABEL@VALUE"
+   * @param {string} labelStr - Label string
+   * @returns {Object} {label, value}
+   */
+  static _parseLabel(labelStr) {
+    if (!labelStr) return { label: '0', value: null };
+
+    const parts = labelStr.split('@');
+    if (parts.length > 2) {
+      throw new Error(`Invalid label format: ${labelStr}`);
+    }
+
+    return {
+      label: parts[0] || '0',
+      value: parts.length === 2 ? parseInt(parts[1]) : null
+    };
+  }
+
+
+  /**
    * Encode instructions to Base64 v3 format
-   * Based on C# EncodeV2 method
+   * Based on C# ProgramSerializer.EncodeV2 implementation
    * @param {Array<Instruction>} instructions - Array of instructions
    * @returns {Promise<string>} Base64 v3 encoded string
    */
   static async encodeBase64(instructions) {
     try {
-      console.log("🔍 Encoding Base64 v3 format...");
-      console.log("📊 Instructions count:", instructions.length);
+      this._validateInstructions(instructions);
 
-      const length = instructions.length;
 
-      // Prepare labels string
-      const labels = instructions
-        .map((inst) => {
-          let label = (inst.label || "0").toUpperCase();
-          if (inst.value !== null && inst.value !== undefined) {
-            label += "@" + inst.value;
-          }
-          return label;
-        })
-        .join(":");
+      // Build binary data: [length(4 bytes LE)][operators][labels(ASCII)]
+      const binaryData = this._buildBinaryData(instructions);
 
-      console.log("🏷️ Labels string:", labels.substring(0, 100) + (labels.length > 100 ? "..." : ""));
+      // Compress with LZMA
+      const compressedData = await LZMACompressor.compress(binaryData, 7);
 
-      // Create binary data: length(4 bytes LE) + instructions(1 byte each) + labels(ASCII)
-      const labelsBytes = this.asciiToArray(labels);
-      const data = new Uint8Array(4 + length + labelsBytes.length);
-
-      console.log("📏 Data size:", data.length, "bytes (length:", length, ", labels:", labelsBytes.length, ")");
-
-      // Write length as Int32 Little Endian
-      this.writeInt32LE(data, 0, length);
-
-      // Write instruction action codes
-      for (let i = 0; i < length; i++) {
-        data[4 + i] = instructions[i].action;
-      }
-
-      // Write labels
-      data.set(labelsBytes, 4 + length);
-
-      console.log("🔧 Raw data sample:", Array.from(data.slice(0, Math.min(20, data.length))));
-
-      // Create LZMA format matching the game output
-      console.log("🗜️ Creating LZMA format like game output...");
-
-      // Compress with LZMA format (header + data)
-      const lzmaData = await LZMACompressor.compress(data);
-      console.log("📦 LZMA data size:", lzmaData.length, "bytes");
-
-      // Base64 encode the LZMA data directly
-      const result = this.base64Encode(lzmaData);
-      console.log("🔤 Final Base64 length:", result.length, "characters");
+      // Encode to Base64
+      const result = this.base64Encode(compressedData);
 
       return result;
     } catch (error) {
-      console.error("❌ Failed to encode program to Base64 v3:", error);
-      throw new Error(
-        `Failed to encode program to Base64 v3: ${error.message}`
-      );
+      throw new Error(`Failed to encode Base64 v3 program: ${error.message}`);
     }
+  }
+
+  /**
+   * Validate instructions array
+   * @param {Array<Instruction>} instructions - Instructions to validate
+   */
+  static _validateInstructions(instructions) {
+    if (!Array.isArray(instructions)) {
+      throw new Error('Instructions must be an array');
+    }
+    if (instructions.length === 0) {
+      throw new Error('Instructions array cannot be empty');
+    }
+    if (instructions.length > MAX_INSTRUCTIONS) {
+      throw new Error(`Too many instructions (max ${MAX_INSTRUCTIONS})`);
+    }
+
+    for (let i = 0; i < instructions.length; i++) {
+      const inst = instructions[i];
+      if (!inst || typeof inst.action !== 'number') {
+        throw new Error(`Invalid instruction at index ${i}: missing or invalid action`);
+      }
+      if (inst.action < 0 || inst.action > 255) {
+        throw new Error(`Invalid action code ${inst.action} at index ${i}: must be 0-255`);
+      }
+    }
+  }
+
+  /**
+   * Build binary data from instructions
+   * @param {Array<Instruction>} instructions - Instructions array
+   * @returns {Uint8Array} Binary data
+   */
+  static _buildBinaryData(instructions) {
+    // Build labels string
+    const labelsString = instructions
+      .map(inst => this._formatLabel(inst.label, inst.value))
+      .join(':');
+
+    // Calculate sizes
+    const operatorsSize = instructions.length;
+    const labelsSize = this.asciiToArray(labelsString).length;
+    const totalSize = 4 + operatorsSize + labelsSize;
+
+    // Build binary data
+    const data = new Uint8Array(totalSize);
+
+    // Write length (little endian)
+    this.writeInt32LE(data, 0, instructions.length);
+
+    // Write operators
+    for (let i = 0; i < instructions.length; i++) {
+      data[4 + i] = instructions[i].action;
+    }
+
+    // Write labels
+    data.set(this.asciiToArray(labelsString), 4 + operatorsSize);
+
+    return data;
+  }
+
+  /**
+   * Format label for storage
+   * @param {string} label - Label
+   * @param {number} value - Value
+   * @returns {string} Formatted label
+   */
+  static _formatLabel(label, value) {
+    const labelStr = (label || '0').toUpperCase();
+    return value !== null && value !== undefined ? `${labelStr}@${value}` : labelStr;
   }
 
   /**
@@ -374,21 +370,6 @@ export class ProgramSerializer {
     );
   }
 
-  /**
-   * Read unsigned 32-bit integer in little endian format
-   * @param {Uint8Array} buffer - Buffer to read from
-   * @param {number} offset - Offset in buffer
-   * @returns {number} Unsigned integer value
-   */
-  static readUInt32LE(buffer, offset) {
-    return (
-      (buffer[offset + 3] * 0x1000000 +
-        (buffer[offset + 2] << 16) +
-        (buffer[offset + 1] << 8) +
-        buffer[offset]) >>>
-      0
-    ); // Ensure unsigned
-  }
 
   /**
    * Write 32-bit integer in little endian format
