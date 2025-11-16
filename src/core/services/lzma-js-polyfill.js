@@ -1,3 +1,7 @@
+if (typeof globalThis !== "undefined" && typeof globalThis.process === "undefined") {
+  globalThis.process = { env: { NODE_ENV: "production" } };
+}
+
 const browserWorkerUrl =
   typeof window !== "undefined"
     ? `${(
