@@ -1,20 +1,9 @@
+import lzmaScriptUrl from "../../assets/lzma/lzma.js?url";
+import lzmaWorkerUrl from "../../assets/lzma/lzma_worker.js?url";
+
 if (typeof globalThis !== "undefined" && typeof globalThis.process === "undefined") {
   globalThis.process = { env: { NODE_ENV: "production" } };
 }
-
-const basePublicPath =
-  typeof window !== "undefined"
-    ? `${(
-        (typeof import.meta !== "undefined" &&
-          import.meta.env &&
-          import.meta.env.BASE_URL) ||
-        "/"
-      ).replace(/\/?$/, "/")}`
-    : null;
-
-const browserLzmaBasePath = basePublicPath ? `${basePublicPath}vendor/lzma/` : null;
-const browserScriptUrl = browserLzmaBasePath ? `${browserLzmaBasePath}lzma.js` : null;
-const browserWorkerUrl = browserLzmaBasePath ? `${browserLzmaBasePath}lzma_worker.js` : null;
 
 const browserScriptPromises = new Map();
 let browserLzmaInstancePromise = null;
@@ -64,14 +53,11 @@ async function getBrowserLzmaInstance() {
     return browserLzmaInstancePromise;
   }
   browserLzmaInstancePromise = (async () => {
-    if (!browserScriptUrl || !browserWorkerUrl) {
-      throw new Error("LZMA browser assets are not available");
-    }
-    await loadBrowserScript(browserScriptUrl);
+    await loadBrowserScript(lzmaScriptUrl);
     if (typeof window === "undefined" || typeof window.LZMA !== "function") {
       throw new Error("Global LZMA constructor is not available after loading script");
     }
-    return new window.LZMA(browserWorkerUrl);
+    return new window.LZMA(lzmaWorkerUrl);
   })();
   return browserLzmaInstancePromise;
 }
