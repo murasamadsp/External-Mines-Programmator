@@ -1,10 +1,15 @@
-// Ensure process exists for browser build (needed by lzma-web)
-if (typeof globalThis.process === "undefined") {
-  globalThis.process = { env: { NODE_ENV: "production" } };
-}
+const browserWorkerUrl =
+  typeof window !== "undefined"
+    ? `${(
+        (typeof import.meta !== "undefined" &&
+        import.meta.env &&
+        import.meta.env.BASE_URL) ||
+        "/"
+      ).replace(/\/?$/, "/")}lzma_worker.js`
+    : null;
 
 // LZMA interface - unified API for different environments
-// Uses CDN lzma-js for browser and lzma-native for Node.js
+// Uses lzma-web in browsers and lzma-native in Node.js
 
 class LZMAInterface {
   constructor(impl) {
@@ -70,19 +75,14 @@ class LZMAInterface {
   }
 }
 
-class LZMAJSInterface extends LZMAInterface {
+class LZMAWebInterface extends LZMAInterface {
   async _compressImpl(data, level) {
-    const inputStream = new this.impl.iStream(data);
-    const outputStream = new this.impl.oStream();
-    this.impl.compressFile(inputStream, outputStream, level);
-    return outputStream.toUint8Array();
+    return await this.impl.compress(data, level);
   }
 
   async _decompressImpl(data) {
-    const inputStream = new this.impl.iStream(data);
-    const outputStream = new this.impl.oStream();
-    this.impl.decompressFile(inputStream, outputStream);
-    return outputStream.toUint8Array();
+    const result = await this.impl.decompress(data);
+    return this._toUint8Array(result);
   }
 }
 
@@ -96,46 +96,18 @@ class LZMANativeInterface extends LZMAInterface {
   }
 }
 
-const LZMA_JS_BASE = 'https://cdn.jsdelivr.net/npm/lzma-js@1.0.1/src';
-let lzmaLoadPromise = null;
-
-function loadScriptOnce(src) {
-  if (document.querySelector(`script[src="${src}"]`)) {
-    return Promise.resolve();
-  }
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = src;
-    script.onload = () => resolve();
-    script.onerror = (err) => reject(new Error(`Failed to load ${src}: ${err.message}`));
-    document.head.appendChild(script);
-  });
-}
-
 // Factory function to create appropriate LZMA interface
 async function createLZMAInterface() {
   try {
     if (typeof window !== 'undefined') {
-      console.log('🔧 Initializing lzma-js for browser...');
-      if (!lzmaLoadPromise) {
-        lzmaLoadPromise = (async () => {
-          await loadScriptOnce(`${LZMA_JS_BASE}/lzma.js`);
-          await loadScriptOnce(`${LZMA_JS_BASE}/lzma.shim.js`);
-          if (!window.LZMA) {
-            throw new Error('window.LZMA is undefined after loading scripts');
-          }
-          return window.LZMA;
-        })();
+      console.log('🔧 Initializing lzma-web for browser...');
+      if (!browserWorkerUrl) {
+        throw new Error('Failed to create LZMA worker URL');
       }
-      const LZMA_CORE = await lzmaLoadPromise;
-
-      if (!LZMA_CORE || typeof LZMA_CORE.iStream !== 'function' || typeof LZMA_CORE.oStream !== 'function') {
-        console.error('LZMA object:', LZMA_CORE);
-        throw new Error('LZMA-JS module is not properly loaded');
-      }
-
-      console.log('✅ lzma-js initialized successfully');
-      return new LZMAJSInterface(LZMA_CORE);
+      const { default: LZMA } = await import('lzma-web');
+      const lzmaInstance = new LZMA(browserWorkerUrl);
+      console.log('✅ lzma-web initialized successfully');
+      return new LZMAWebInterface(lzmaInstance);
     }
 
     // Node.js environment
