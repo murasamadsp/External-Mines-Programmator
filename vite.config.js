@@ -10,6 +10,7 @@ export default defineConfig(({ command, mode }) => ({
   },
   base: mode === "production" ? "/External-Mines-Programmator/" : "/",
   root: "src",
+  publicDir: "../public",
   resolve: {
     alias: {
       'lzma-web': 'lzma-web/dist/index.js',
