@@ -13,8 +13,9 @@ const basePublicPath =
     : null;
 
 const browserLzmaBasePath = basePublicPath ? `${basePublicPath}vendor/lzma/` : null;
-const browserScriptUrl = browserLzmaBasePath ? `${browserLzmaBasePath}lzma.js` : null;
-const browserWorkerUrl = browserLzmaBasePath ? `${browserLzmaBasePath}lzma_worker.js` : null;
+const browserScriptUrl = browserLzmaBasePath
+  ? `${browserLzmaBasePath}lzma_worker.js`
+  : null;
 
 const browserScriptPromises = new Map();
 let browserLzmaInstancePromise = null;
@@ -116,14 +117,14 @@ async function getBrowserLzmaInstance() {
     return browserLzmaInstancePromise;
   }
   browserLzmaInstancePromise = (async () => {
-    if (!browserScriptUrl || !browserWorkerUrl) {
+    if (!browserScriptUrl) {
       throw new Error("LZMA browser assets are not available");
     }
     await loadBrowserScript(browserScriptUrl);
     if (typeof window === "undefined" || typeof window.LZMA !== "function") {
       throw new Error("Global LZMA constructor is not available after loading script");
     }
-    return new window.LZMA(browserWorkerUrl);
+    return new window.LZMA();
   })();
   return browserLzmaInstancePromise;
 }
@@ -245,9 +246,9 @@ class LZMANativeInterface extends LZMAInterface {
 async function createLZMAInterface() {
   try {
     if (typeof window !== 'undefined') {
-      console.log('🔧 Initializing LZMA for browser (worker assets)...');
+      console.log('🔧 Ініціалізація LZMA у браузері без Worker...');
       const lzmaInstance = await getBrowserLzmaInstance();
-      console.log('✅ Browser LZMA initialized successfully');
+      console.log('✅ LZMA в браузері готовий (main thread)');
       return new LZMAWebInterface(lzmaInstance);
     }
 
