@@ -2,15 +2,79 @@ if (typeof globalThis !== "undefined" && typeof globalThis.process === "undefine
   globalThis.process = { env: { NODE_ENV: "production" } };
 }
 
-const browserWorkerUrl =
+const basePublicPath =
   typeof window !== "undefined"
     ? `${(
         (typeof import.meta !== "undefined" &&
-        import.meta.env &&
-        import.meta.env.BASE_URL) ||
+          import.meta.env &&
+          import.meta.env.BASE_URL) ||
         "/"
-      ).replace(/\/?$/, "/")}lzma_worker.js`
+      ).replace(/\/?$/, "/")}`
     : null;
+
+const browserLzmaBasePath = basePublicPath ? `${basePublicPath}vendor/lzma/` : null;
+const browserScriptUrl = browserLzmaBasePath ? `${browserLzmaBasePath}lzma.js` : null;
+const browserWorkerUrl = browserLzmaBasePath ? `${browserLzmaBasePath}lzma_worker.js` : null;
+
+const browserScriptPromises = new Map();
+let browserLzmaInstancePromise = null;
+
+function loadBrowserScript(src) {
+  if (!src) {
+    return Promise.reject(new Error("Browser LZMA script path is not defined"));
+  }
+  if (!browserScriptPromises.has(src)) {
+    browserScriptPromises.set(
+      src,
+      new Promise((resolve, reject) => {
+        const existing = document.querySelector(`script[data-lzma-src="${src}"]`);
+        if (existing) {
+          if (existing.dataset.loaded === "true") {
+            resolve();
+            return;
+          }
+          existing.addEventListener("load", () => resolve(), { once: true });
+          existing.addEventListener(
+            "error",
+            () => reject(new Error(`Failed to load LZMA script at ${src}`)),
+            { once: true }
+          );
+          return;
+        }
+        const script = document.createElement("script");
+        script.src = src;
+        script.async = true;
+        script.dataset.lzmaSrc = src;
+        script.addEventListener("load", () => {
+          script.dataset.loaded = "true";
+          resolve();
+        });
+        script.addEventListener("error", () => {
+          reject(new Error(`Failed to load LZMA script at ${src}`));
+        });
+        document.head.appendChild(script);
+      })
+    );
+  }
+  return browserScriptPromises.get(src);
+}
+
+async function getBrowserLzmaInstance() {
+  if (browserLzmaInstancePromise) {
+    return browserLzmaInstancePromise;
+  }
+  browserLzmaInstancePromise = (async () => {
+    if (!browserScriptUrl || !browserWorkerUrl) {
+      throw new Error("LZMA browser assets are not available");
+    }
+    await loadBrowserScript(browserScriptUrl);
+    if (typeof window === "undefined" || typeof window.LZMA !== "function") {
+      throw new Error("Global LZMA constructor is not available after loading script");
+    }
+    return new window.LZMA(browserWorkerUrl);
+  })();
+  return browserLzmaInstancePromise;
+}
 
 // LZMA interface - unified API for different environments
 // Uses lzma-web in browsers and lzma-native in Node.js
@@ -81,12 +145,37 @@ class LZMAInterface {
 
 class LZMAWebInterface extends LZMAInterface {
   async _compressImpl(data, level) {
-    return await this.impl.compress(data, level);
+    return new Promise((resolve, reject) => {
+      const onFinish = (result, error) => {
+        if (error) {
+          reject(new Error(typeof error === "string" ? error : error?.message || "LZMA compression failed"));
+          return;
+        }
+        resolve(result);
+      };
+      try {
+        this.impl.compress(data, level, onFinish);
+      } catch (err) {
+        reject(err);
+      }
+    });
   }
 
   async _decompressImpl(data) {
-    const result = await this.impl.decompress(data);
-    return this._toUint8Array(result);
+    return new Promise((resolve, reject) => {
+      const onFinish = (result, error) => {
+        if (error) {
+          reject(new Error(typeof error === "string" ? error : error?.message || "LZMA decompression failed"));
+          return;
+        }
+        resolve(result);
+      };
+      try {
+        this.impl.decompress(data, onFinish);
+      } catch (err) {
+        reject(err);
+      }
+    });
   }
 }
 
@@ -104,13 +193,9 @@ class LZMANativeInterface extends LZMAInterface {
 async function createLZMAInterface() {
   try {
     if (typeof window !== 'undefined') {
-      console.log('🔧 Initializing lzma-web for browser...');
-      if (!browserWorkerUrl) {
-        throw new Error('Failed to create LZMA worker URL');
-      }
-      const { default: LZMA } = await import('lzma-web');
-      const lzmaInstance = new LZMA(browserWorkerUrl);
-      console.log('✅ lzma-web initialized successfully');
+      console.log('🔧 Initializing LZMA for browser (worker assets)...');
+      const lzmaInstance = await getBrowserLzmaInstance();
+      console.log('✅ Browser LZMA initialized successfully');
       return new LZMAWebInterface(lzmaInstance);
     }
 
