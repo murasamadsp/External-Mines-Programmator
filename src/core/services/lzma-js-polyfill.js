@@ -1,3 +1,8 @@
+// Ensure process exists for browser build (needed by lzma-web)
+if (typeof globalThis.process === "undefined") {
+  globalThis.process = { env: { NODE_ENV: "production" } };
+}
+
 // LZMA interface - unified API for different environments
 // Uses LZMA-Web for browser and lzma-native for Node.js
 
