@@ -94,6 +94,10 @@ async function createLZMAInterface() {
     if (typeof window !== 'undefined') {
       console.log('🔧 Initializing LZMA-Web for browser...');
 
+      if (typeof process === 'undefined') {
+        globalThis.process = { env: { NODE_ENV: 'production' } };
+      }
+
       // Import LZMA-Web
       const { default: LZMAWeb } = await import('lzma-web');
       const lzmaInstance = new LZMAWeb();
