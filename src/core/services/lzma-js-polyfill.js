@@ -1,9 +1,20 @@
-import lzmaScriptUrl from "../../assets/lzma/lzma.js?url";
-import lzmaWorkerUrl from "../../assets/lzma/lzma_worker.js?url";
-
 if (typeof globalThis !== "undefined" && typeof globalThis.process === "undefined") {
   globalThis.process = { env: { NODE_ENV: "production" } };
 }
+
+const basePublicPath =
+  typeof window !== "undefined"
+    ? `${(
+        (typeof import.meta !== "undefined" &&
+          import.meta.env &&
+          import.meta.env.BASE_URL) ||
+        "/"
+      ).replace(/\/?$/, "/")}`
+    : null;
+
+const browserLzmaBasePath = basePublicPath ? `${basePublicPath}vendor/lzma/` : null;
+const browserScriptUrl = browserLzmaBasePath ? `${browserLzmaBasePath}lzma.js` : null;
+const browserWorkerUrl = browserLzmaBasePath ? `${browserLzmaBasePath}lzma_worker.js` : null;
 
 const browserScriptPromises = new Map();
 let browserLzmaInstancePromise = null;
@@ -34,11 +45,63 @@ function loadBrowserScript(src) {
         script.src = src;
         script.async = true;
         script.dataset.lzmaSrc = src;
+        let previousExports;
+        let hadExports = false;
+        let previousModule;
+        let hadModule = false;
+        if (typeof window !== "undefined") {
+          if ("exports" in window) {
+            hadExports = true;
+            previousExports = window.exports;
+          }
+          if ("module" in window) {
+            hadModule = true;
+            previousModule = window.module;
+          }
+          window.exports = {};
+          window.module = { exports: window.exports };
+        }
         script.addEventListener("load", () => {
+          if (typeof window !== "undefined") {
+            const exportedModule =
+              window.LZMA ||
+              window.module?.exports?.default ||
+              window.module?.exports?.LZMA ||
+              window.module?.exports;
+            if (exportedModule && !window.LZMA) {
+              const ctor =
+                exportedModule.default ||
+                exportedModule.LZMA ||
+                exportedModule;
+              window.LZMA = ctor;
+            }
+            if (hadExports) {
+              window.exports = previousExports;
+            } else {
+              delete window.exports;
+            }
+            if (hadModule) {
+              window.module = previousModule;
+            } else {
+              delete window.module;
+            }
+          }
           script.dataset.loaded = "true";
           resolve();
         });
         script.addEventListener("error", () => {
+          if (typeof window !== "undefined") {
+            if (hadExports) {
+              window.exports = previousExports;
+            } else {
+              delete window.exports;
+            }
+            if (hadModule) {
+              window.module = previousModule;
+            } else {
+              delete window.module;
+            }
+          }
           reject(new Error(`Failed to load LZMA script at ${src}`));
         });
         document.head.appendChild(script);
@@ -53,11 +116,14 @@ async function getBrowserLzmaInstance() {
     return browserLzmaInstancePromise;
   }
   browserLzmaInstancePromise = (async () => {
-    await loadBrowserScript(lzmaScriptUrl);
+    if (!browserScriptUrl || !browserWorkerUrl) {
+      throw new Error("LZMA browser assets are not available");
+    }
+    await loadBrowserScript(browserScriptUrl);
     if (typeof window === "undefined" || typeof window.LZMA !== "function") {
       throw new Error("Global LZMA constructor is not available after loading script");
     }
-    return new window.LZMA(lzmaWorkerUrl);
+    return new window.LZMA(browserWorkerUrl);
   })();
   return browserLzmaInstancePromise;
 }
