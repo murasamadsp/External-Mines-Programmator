@@ -72,17 +72,13 @@ class LZMAInterface {
 
 class LZMAJSInterface extends LZMAInterface {
   async _compressImpl(data, level) {
-    const inputStream = new this.impl.iStream(data);
-    const outputStream = new this.impl.oStream();
-    this.impl.compressFile(inputStream, outputStream, level);
-    return outputStream.toUint8Array();
+    const result = await this.impl.compress(data, level);
+    return this._toUint8Array(result);
   }
 
   async _decompressImpl(data) {
-    const inputStream = new this.impl.iStream(data);
-    const outputStream = new this.impl.oStream();
-    this.impl.decompressFile(inputStream, outputStream);
-    return outputStream.toUint8Array();
+    const result = await this.impl.decompress(data);
+    return this._toUint8Array(result);
   }
 }
 
