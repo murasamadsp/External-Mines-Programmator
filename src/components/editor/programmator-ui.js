@@ -670,7 +670,7 @@ export class ProgrammatorUI {
       console.log(`📭 Cell [${x}, ${y}] page ${this.currentPage} cleared`);
     } else {
       const formatted = formatInstruction(instruction);
-      console.log(`📬 Cell [${x}, ${y}] updated: ${formatted}`);
+      console.log(`📬 Cell [${x}, ${y}] updated: ${formatted.shortCode}`);
 
       cell.textContent = formatted.shortCode;
       cell.className = `program-cell action-${instruction.action}`;

@@ -847,15 +847,16 @@ export class ProgramSerializer {
   }
 
   static validateInstructions(instructions) {
-    if (!Array.isArray(instructions) || !instructions.length) {
-      throw new Error("Instructions array cannot be empty");
+    if (!Array.isArray(instructions)) {
+      throw new Error("Instructions must be an array");
     }
     if (instructions.length > MAX_INSTRUCTIONS) {
       throw new Error("Instructions array is too long");
     }
     instructions.forEach((inst, index) => {
-      if (!inst || typeof inst.action !== "number") {
-        throw new Error(`Invalid instruction at index ${index}`);
+      // Allow empty instructions or instructions with valid action codes
+      if (inst && typeof inst.action !== "number" && inst.action !== null && inst.action !== undefined) {
+        throw new Error(`Invalid instruction action at index ${index}: ${inst.action}`);
       }
     });
   }

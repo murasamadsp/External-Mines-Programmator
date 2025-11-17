@@ -34,6 +34,11 @@ export function getActionShortCode(actionCode) {
     return "?";
   }
 
+  // Handle special cases
+  if (actionCode === ProgAction.None) {
+    return "";
+  }
+
   // Map action codes to short display codes based on ProgramSerializer.cs
   const shortCodes = {
     // Movement
