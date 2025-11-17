@@ -81,19 +81,22 @@
 - Support all LZMA compression levels
 - Proper error handling for corrupted LZMA data
 
-### Documentation Example
-
-- Base64: `HQAAgAAIAAAAAAAAAAAFADjkobuzFSSNTOK60BytPRuvcpEnjdjhMd/+KkQA`
-- Must decode to exactly: operators [14, 135, 43, 139, 157, 43, 139, 15, 24, 10, 16]
-- Labels must be: "0:0:0:0:0:0:RGT:0:0:0:RGT"
-- No compromises, no workarounds - must work exactly as documented
-
 ### Code Structure
 
 - Clean separation between compression, serialization, and UI
 - Proper error boundaries and user feedback
 - Type-safe implementations
 - Comprehensive logging for debugging
+
+## FILE SYSTEM RULES
+
+### docs-to-do Directory
+
+- **READ ONLY**: The `docs-to-do/` directory contains reference documentation and examples
+- **FORBIDDEN**: Any modifications, additions, or deletions in this directory
+- **PRESERVE ORIGINAL**: Keep all files in their original form, including original language and comments
+- **PURPOSE**: Reference materials for understanding original game mechanics and algorithms
+- **CONTEXT**: These files are from the original Mines game implementation and should remain unchanged
 
 ## ENFORCEMENT
 

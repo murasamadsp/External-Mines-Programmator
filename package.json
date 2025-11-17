@@ -1,7 +1,7 @@
 {
   "name": "external-mines-programmator",
   "version": "1.0.0",
-  "description": "Веб-приложение для визуального программирования ботов в игре Mines",
+  "description": "Web application for visual programming of bots in the Mines game",
   "type": "module",
   "main": "index.js",
   "scripts": {
@@ -33,11 +33,7 @@
     "vite": "^7.2.2"
   },
   "dependencies": {
-    "glob": "^11.0.3",
     "lzma-js": "^1.0.1",
-    "lzma-native": "^8.0.6",
-    "lzma-web": "^3.0.1",
-    "vite-plugin-full-reload": "^1.2.0",
-    "vite-plugin-html-inject": "^1.1.2"
+    "lzma-web": "^3.0.1"
   }
 }

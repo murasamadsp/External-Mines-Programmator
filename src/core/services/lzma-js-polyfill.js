@@ -246,9 +246,9 @@ class LZMANativeInterface extends LZMAInterface {
 async function createLZMAInterface() {
   try {
     if (typeof window !== 'undefined') {
-      console.log('🔧 Ініціалізація LZMA у браузері без Worker...');
+      console.log('🔧 Initializing LZMA in browser (main thread)...');
       const lzmaInstance = await getBrowserLzmaInstance();
-      console.log('✅ LZMA в браузері готовий (main thread)');
+      console.log('✅ LZMA browser ready (main thread)');
       return new LZMAWebInterface(lzmaInstance);
     }
 

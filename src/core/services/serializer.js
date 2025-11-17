@@ -304,7 +304,7 @@ export class ProgramSerializer {
       throw new Error("Malformed program");
     }
 
-    if (/^\$[][\w()=<>|+~,:#! ^;?{}\n-]+$/.test(source)) {
+    if (/^\$[\w()=<>|+~,:#! ^;?{}\n-.]+$/.test(source)) {
       return ProgramFormatVersion.Version3;
     }
 

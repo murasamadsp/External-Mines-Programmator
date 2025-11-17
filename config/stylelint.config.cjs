@@ -1,24 +1,24 @@
-// Упрощенная Stylelint конфигурация - фокус на качестве, не форматировании
-// Prettier обрабатывает форматирование, Stylelint - логику и стиль
+// Simplified Stylelint configuration - focus on quality, not formatting
+// Prettier handles formatting, Stylelint handles logic and style
 module.exports = {
   extends: ["stylelint-config-standard"],
   plugins: ["stylelint-order"],
   rules: {
-    // Code Guide правила
-    "color-function-notation": "modern", // rgb() вместо rgba()
-    "color-hex-length": "short", // #fff вместо #ffffff
-    "color-named": "never", // Запрет названий цветов
+    // Code Guide rules
+    "color-function-notation": "modern", // rgb() instead of rgba()
+    "color-hex-length": "short", // #fff instead of #ffffff
+    "color-named": "never", // Prohibit named colors
 
-    // BEM нейминг (без лишних проверок)
-    "selector-class-pattern": "^[a-z][a-zA-Z0-9_-]+$", // Разрешаем _
+    // BEM naming (without extra checks)
+    "selector-class-pattern": "^[a-z][a-zA-Z0-9_-]+$", // Allow _
 
-    // Ограничение глубины вложенности
+    // Limit nesting depth
     "max-nesting-depth": 3,
 
-    // Разрешаем пустые блоки для placeholder стилей
+    // Allow empty blocks for placeholder styles
     "block-no-empty": null,
 
-    // Простой порядок свойств (Code Guide inspired)
+    // Simple property order (Code Guide inspired)
     "order/properties-order": [
       "position",
       "top",

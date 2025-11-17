@@ -1,5 +1,4 @@
 import { defineConfig } from "vite";
-import { glob } from "glob";
 import injectHTML from "vite-plugin-html-inject";
 import FullReload from "vite-plugin-full-reload";
 import legacy from "@vitejs/plugin-legacy";
@@ -13,7 +12,7 @@ export default defineConfig(({ command, mode }) => ({
   publicDir: "../public",
   resolve: {
     alias: {
-      'lzma-web': 'lzma-web/dist/index.js',
+      "lzma-web": "lzma-web/dist/index.js",
     },
   },
   css: {
@@ -29,13 +28,13 @@ export default defineConfig(({ command, mode }) => ({
             return "vendor";
           }
         },
-        entryFileNames: chunkInfo => {
+        entryFileNames: (chunkInfo) => {
           if (chunkInfo.name === "commonHelpers") {
             return "commonHelpers.js";
           }
           return "[name].js";
         },
-        assetFileNames: assetInfo => {
+        assetFileNames: (assetInfo) => {
           if (assetInfo.name && assetInfo.name.endsWith(".html")) {
             return "[name].[ext]";
           }

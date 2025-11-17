@@ -1,9 +1,9 @@
-// PostCSS config - минимальный для современных браузеров
-// Autoprefixer удален - современные браузеры не требуют префиксов
+// PostCSS config - minimal for modern browsers
+// Autoprefixer removed - modern browsers don't need prefixes
 module.exports = {
   plugins: [
-    // Можно добавить другие плагины при необходимости:
-    // require('cssnano') - для минификации
-    // require('postcss-preset-env') - для современных функций
+    // Can add other plugins if needed:
+    // require('cssnano') - for minification
+    // require('postcss-preset-env') - for modern features
   ],
 };

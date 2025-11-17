@@ -17,14 +17,17 @@ export class ProgrammatorUI {
     console.log("🏗️ Initializing ProgrammatorUI...");
     this.program = new Program();
     this.selectedAction = null;
-    this.container = document.querySelector(".programmer-container");
 
-    if (!this.container) {
-      console.error("❌ Programmer container not found!");
+    // Check for new three-column layout first
+    const layoutContainer = document.querySelector('.programmer-layout');
+    const oldContainer = document.querySelector(".programmer-container");
+
+    if (!layoutContainer && !oldContainer) {
+      console.error("❌ No programmer container found (neither new layout nor old container)!");
       return;
     }
 
-    console.log("✅ Container found, proceeding with initialization");
+    console.log("✅ Programmer layout found, proceeding with initialization");
     this.initializeUI();
   }
 
@@ -32,6 +35,9 @@ export class ProgrammatorUI {
    * Initialize the user interface
    */
   initializeUI() {
+    console.log("Setting up layout containers...");
+    this.setupLayoutContainers();
+
     console.log("Creating action palette...");
     this.createActionPalette();
 
@@ -42,6 +48,26 @@ export class ProgrammatorUI {
     this.createControls();
 
     console.log("Programmator UI initialization completed!");
+  }
+
+  /**
+   * Set up layout containers for three-column layout
+   */
+  setupLayoutContainers() {
+    // Get the layout containers
+    this.leftSidebar = document.querySelector('.programmer-sidebar-left');
+    this.mainContent = document.querySelector('.programmer-main');
+    this.rightSidebar = document.querySelector('.programmer-sidebar-right');
+
+    if (!this.leftSidebar || !this.mainContent || !this.rightSidebar) {
+      console.error("❌ Layout containers not found!");
+      // Fallback to old single container
+      this.leftSidebar = this.mainContent = this.rightSidebar = document.querySelector(".programmer-container");
+      if (!this.leftSidebar) {
+        console.error("❌ Fallback container not found!");
+        return;
+      }
+    }
   }
 
   /**
@@ -61,6 +87,11 @@ export class ProgrammatorUI {
                         <button data-action="MoveDown">↓ Move Down</button>
                         <button data-action="MoveRight">→ Move Right</button>
                         <button data-action="MoveForward">↗ Move Forward</button>
+                        <button data-action="ShiftUp">[↑] Shift Up</button>
+                        <button data-action="ShiftLeft">[←] Shift Left</button>
+                        <button data-action="ShiftDown">[↓] Shift Down</button>
+                        <button data-action="ShiftRight">[→] Shift Right</button>
+                        <button data-action="ShiftForward">[↗] Shift Forward</button>
                     </div>
                     <div class="category">
                         <h4>Rotation</h4>
@@ -69,6 +100,8 @@ export class ProgrammatorUI {
                         <button data-action="RotateDown">↓ Rotate Down</button>
                         <button data-action="RotateRight">→ Rotate Right</button>
                         <button data-action="RotateRandom">🎲 Random</button>
+                        <button data-action="RotateLefthand">↺ Left Hand</button>
+                        <button data-action="RotateRighthand">↻ Right Hand</button>
                     </div>
                     <div class="category">
                         <h4>Building</h4>
@@ -76,17 +109,179 @@ export class ProgrammatorUI {
                         <button data-action="BuildBlock">🧱 Block</button>
                         <button data-action="BuildRoad">🛣️ Road</button>
                         <button data-action="BuildQuadro">🏗️ Quadro</button>
+                        <button data-action="BuildWar">⚔️ War</button>
+                        <button data-action="Heal">💚 Heal</button>
+                        <button data-action="UseGeo">💎 Geo</button>
+                        <button data-action="STDDig">⚒️ STD Dig</button>
+                        <button data-action="STDBlock">🏗️ STD Block</button>
+                        <button data-action="STDHeal">❤️ STD Heal</button>
+                        <button data-action="STDTunnel">⛏️ STD Tunnel</button>
                     </div>
                     <div class="category">
                         <h4>Logic</h4>
                         <button data-action="SetStart">🏁 Set Start</button>
                         <button data-action="Terminate">⏹️ Terminate</button>
                         <button data-action="NextLine">⏎ Next Line</button>
+                        <button data-action="RepeatLastAction">🔄 Repeat</button>
+                        <button data-action="Label">🏷️ Label</button>
+                        <button data-action="Goto">➡️ Goto</button>
+                        <button data-action="Call">📞 Call</button>
+                        <button data-action="CallArg">📞 Call Arg</button>
+                        <button data-action="Return">⬅️ Return</button>
+                        <button data-action="ReturnArg">⬅️ Return Arg</button>
+                        <button data-action="CallState">📞 Call State</button>
+                        <button data-action="ReturnState">⬅️ Return State</button>
+                        <button data-action="CallWhenDied">💀 Call When Died</button>
+                    </div>
+                    <div class="category">
+                        <h4>Conditions</h4>
+                        <button data-action="IsNotEmpty">🚫 Empty</button>
+                        <button data-action="IsEmpty">✅ Empty</button>
+                        <button data-action="IsFalling">📉 Falling</button>
+                        <button data-action="IsCrystal">💎 Crystal</button>
+                        <button data-action="IsAliveCrystal">🌟 Alive Crystal</button>
+                        <button data-action="IsFallingLikeBoulder">🪨 Boulder</button>
+                        <button data-action="IsFallingLikeLiquid">💧 Liquid</button>
+                        <button data-action="IsBreakable">🔨 Breakable</button>
+                        <button data-action="IsUnbreakable">🛡️ Unbreakable</button>
+                        <button data-action="IsRedRock">🪨 Red Rock</button>
+                        <button data-action="IsBlackRock">⚫ Black Rock</button>
+                        <button data-action="IsAcid">🧪 Acid</button>
+                        <button data-action="IsSand">🏖️ Sand</button>
+                        <button data-action="IsQuadro">🔲 Quadro</button>
+                        <button data-action="IsRoad">🛣️ Road</button>
+                        <button data-action="IsRedBlock">🔴 Red Block</button>
+                        <button data-action="IsYellowBlock">🟡 Yellow Block</button>
+                        <button data-action="IsGreenBlock">🟢 Green Block</button>
+                        <button data-action="IsAcidRock">🪨 Acid Rock</button>
+                        <button data-action="IsBoulder">🪨 Boulder</button>
+                        <button data-action="IsLava">🌋 Lava</button>
+                        <button data-action="IsCyanAlive">🔵 Cyan Alive</button>
+                        <button data-action="IsWhiteAlive">⚪ White Alive</button>
+                        <button data-action="IsRedAlive">🔴 Red Alive</button>
+                        <button data-action="IsVioletAlive">🟣 Violet Alive</button>
+                        <button data-action="IsBlackAlive">⚫ Black Alive</button>
+                        <button data-action="IsBlueAlive">🔵 Blue Alive</button>
+                        <button data-action="IsRainbowAlive">🌈 Rainbow Alive</button>
+                        <button data-action="IsBox">📦 Box</button>
+                        <button data-action="IsStructure">🏗️ Structure</button>
+                        <button data-action="IsBasketFull">🧺 Basket Full</button>
+                        <button data-action="IsGeoFull">💎 Geo Full</button>
+                        <button data-action="IsInsideGun">🔫 In Gun</button>
+                        <button data-action="IsHealthNotFull">💔 Health <100%</button>
+                        <button data-action="IsHealthLessThanHalf">💔 Health <50%</button>
+                    </div>
+                    <div class="category">
+                        <h4>Variables</h4>
+                        <button data-action="SetNumberToVar">🔢 Set Var</button>
+                        <button data-action="AddNumberToVar">➕ Add to Var</button>
+                        <button data-action="MultNumberToVar">✖️ Mult Var</button>
+                        <button data-action="DivNumberToVar">➗ Div Var</button>
+                        <button data-action="SubNumberToVar">➖ Sub Var</button>
+                        <button data-action="AddVarToVar">🔀 Add Vars</button>
+                        <button data-action="MultVarToVar">🔀 Mult Vars</button>
+                        <button data-action="DivVarToVar">🔀 Div Vars</button>
+                        <button data-action="SubVarToVar">🔀 Sub Vars</button>
+                        <button data-action="VarGreaterThanNumber">> Var > Num</button>
+                        <button data-action="VarLessThanNumber">< Var < Num</button>
+                        <button data-action="VarEqualsNumber">= Var = Num</button>
+                        <button data-action="VarGreaterThanOrEqualNumber">≥ Var ≥ Num</button>
+                        <button data-action="VarLessThanOrEqualNumber">≤ Var ≤ Num</button>
+                        <button data-action="VarNotEqualsNumber">≠ Var ≠ Num</button>
+                        <button data-action="VarGreaterThanState">> Var > State</button>
+                        <button data-action="VarLessThanState">< Var < State</button>
+                        <button data-action="VarEqualsState">= Var = State</button>
+                        <button data-action="VarGreaterThanOrEqualsState">≥ Var ≥ State</button>
+                        <button data-action="VarLessThanOrEqualState">≤ Var ≤ State</button>
+                        <button data-action="VarEqualsState">= Var = State</button>
+                        <button data-action="VarNotEqualsState">≠ Var ≠ State</button>
+                        <button data-action="VarRound">🔄 Round Var</button>
+                        <button data-action="VarCeil">⬆️ Ceil Var</button>
+                        <button data-action="VarFloor">⬇️ Floor Var</button>
+                        <button data-action="WriteStateToVar">📝 State→Var</button>
+                        <button data-action="ReadVarToState">📖 Var→State</button>
+                    </div>
+                    <div class="category">
+                        <h4>Sensing</h4>
+                        <button data-action="CellUpLeft">[↖] Up-Left</button>
+                        <button data-action="CellUp">[↑] Up</button>
+                        <button data-action="CellUpRight">[↗] Up-Right</button>
+                        <button data-action="CellLeft">[←] Left</button>
+                        <button data-action="Cell">[●] Current</button>
+                        <button data-action="CellRight">[→] Right</button>
+                        <button data-action="CellDownLeft">[↙] Down-Left</button>
+                        <button data-action="CellDown">[↓] Down</button>
+                        <button data-action="CellDownRight">[↘] Down-Right</button>
+                        <button data-action="CellForward">[↗] Forward</button>
+                        <button data-action="CellLefthand">[👈] Left Hand</button>
+                        <button data-action="CellRighthand">[👉] Right Hand</button>
+                    </div>
+                    <div class="category">
+                        <h4>Items</h4>
+                        <button data-action="UseBoom">💣 Boom</button>
+                        <button data-action="UseRaz">⚡ Raz</button>
+                        <button data-action="UseProt">🛡️ Prot</button>
+                        <button data-action="UseGeopack">🎒 Geopack</button>
+                        <button data-action="UseZZ">💊 ZZ</button>
+                        <button data-action="UseC190">💉 C190</button>
+                        <button data-action="UsePoly">🧪 Poly</button>
+                        <button data-action="Upgrade">⬆️ Upgrade</button>
+                        <button data-action="RefillCraft">🔧 Craft</button>
+                        <button data-action="UseNano">🤖 Nano</button>
+                        <button data-action="UseRem">🧹 Rem</button>
+                        <button data-action="ChargeGun">🔫 Charge Gun</button>
+                    </div>
+                    <div class="category">
+                        <h4>Inventory</h4>
+                        <button data-action="InventoryUp">↑ Inv Up</button>
+                        <button data-action="InventoryLeft">← Inv Left</button>
+                        <button data-action="InventoryDown">↓ Inv Down</button>
+                        <button data-action="InventoryRight">→ Inv Right</button>
+                        <button data-action="BoxAll">📦 Box All</button>
+                        <button data-action="BoxHalf">📦 Box Half</button>
+                        <button data-action="BoxWhite">⚪ Box White</button>
+                        <button data-action="BoxGreen">🟢 Box Green</button>
+                        <button data-action="BoxRed">🔴 Box Red</button>
+                        <button data-action="BoxBlue">🔵 Box Blue</button>
+                        <button data-action="BoxCyan">🔵 Box Cyan</button>
+                        <button data-action="BoxViolet">🟣 Box Violet</button>
+                    </div>
+                    <div class="category">
+                        <h4>Control</h4>
+                        <button data-action="BooleanOR">∨ OR</button>
+                        <button data-action="BooleanAND">∧ AND</button>
+                        <button data-action="YesNoGoto">❌→ Goto</button>
+                        <button data-action="NoYesGoto">✅→ Goto</button>
+                        <button data-action="YesNoNextRow">❌→ Next Row</button>
+                        <button data-action="NoYesNextRow">✅→ Next Row</button>
+                        <button data-action="YesNoGotoStart">❌→ Start</button>
+                        <button data-action="NoYesGotoStart">✅→ Start</button>
+                        <button data-action="YesNoTerminate">❌→ Terminate</button>
+                        <button data-action="NoYesTerminate">✅→ Terminate</button>
+                        <button data-action="Flip">🔄 Flip</button>
+                    </div>
+                    <div class="category">
+                        <h4>Settings</h4>
+                        <button data-action="EnableAutoDig">⚡ Auto Dig ON</button>
+                        <button data-action="DisableAutoDig">⏸️ Auto Dig OFF</button>
+                        <button data-action="EnableAggression">😡 Aggression ON</button>
+                        <button data-action="DisableAggression">😌 Aggression OFF</button>
+                        <button data-action="EnableHand">🤏 Hand ON</button>
+                        <button data-action="DisableHand">✋ Hand OFF</button>
+                        <button data-action="SetStartWhenDied">💀 Start When Died</button>
+                        <button data-action="SetStartWhenHurt">🤕 Start When Hurt</button>
+                        <button data-action="SetStartWhenBotNearby">👤 Start When Bot</button>
+                    </div>
+                    <div class="category">
+                        <h4>Debug</h4>
+                        <button data-action="PlaySound">🔊 Sound</button>
+                        <button data-action="DebugPause">⏸️ Debug Pause</button>
+                        <button data-action="DebugShow">👁️ Debug Show</button>
                     </div>
                 </div>
             `;
 
-      this.container.appendChild(palette);
+      this.leftSidebar.appendChild(palette);
       console.log("Action palette created, binding buttons...");
       this.bindActionButtons();
     } catch (error) {
@@ -111,7 +306,7 @@ export class ProgrammatorUI {
         grid.appendChild(cell);
       }
 
-      this.container.appendChild(grid);
+      this.mainContent.appendChild(grid);
       console.log("Program grid created successfully");
     } catch (error) {
       console.error("Error creating program grid:", error);
@@ -148,7 +343,7 @@ export class ProgrammatorUI {
                 <div id="validation-messages"></div>
             `;
 
-      this.container.appendChild(controls);
+      this.mainContent.appendChild(controls);
 
       console.log("Controls created, binding control buttons...");
       this.bindControlButtons();
@@ -161,14 +356,19 @@ export class ProgrammatorUI {
    * Bind action buttons to select actions
    */
   bindActionButtons() {
-    this.container.querySelectorAll("[data-action]").forEach((btn) => {
+    if (!this.leftSidebar) {
+      console.error("❌ Left sidebar container not initialized!");
+      return;
+    }
+
+    this.leftSidebar.querySelectorAll("[data-action]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         this.selectedAction = e.target.dataset.action;
         console.log(
           `🎯 Selected action: ${this.selectedAction} (code: ${ProgAction[this.selectedAction]})`
         );
 
-        this.container
+        this.leftSidebar
           .querySelectorAll("[data-action]")
           .forEach((b) => b.classList.remove("selected"));
         e.target.classList.add("selected");
@@ -180,11 +380,16 @@ export class ProgrammatorUI {
    * Bind control buttons for import/export/validate
    */
   bindControlButtons() {
+    if (!this.mainContent) {
+      console.error("❌ Main content container not initialized!");
+      return;
+    }
+
     // Import button
-    this.container
+    this.mainContent
       .querySelector("#import-btn")
       .addEventListener("click", async () => {
-        const importText = this.container
+        const importText = this.mainContent
           .querySelector("#import-program")
           .value.trim();
 
@@ -212,7 +417,7 @@ export class ProgrammatorUI {
             "Program imported successfully",
             "success"
           );
-          this.container.querySelector("#import-program").value = "";
+          this.mainContent.querySelector("#import-program").value = "";
         } catch (error) {
           console.error("❌ Import failed:", error);
           this.showValidationMessage(
@@ -223,7 +428,7 @@ export class ProgrammatorUI {
       });
 
     // Export button (Base64)
-    this.container
+    this.mainContent
       .querySelector("#export-btn")
       .addEventListener("click", async () => {
         try {
@@ -234,7 +439,7 @@ export class ProgrammatorUI {
           const codes = nonEmptyInstructions
             .map((inst) => inst.action)
             .join(" ");
-          this.container.querySelector("#program-output").value = codes;
+          this.mainContent.querySelector("#program-output").value = codes;
           this.showValidationMessage(
             "Program exported to Codes format (for Mines)",
             "success"
@@ -248,7 +453,7 @@ export class ProgrammatorUI {
       });
 
     // Export to text (v3) button
-    this.container
+    this.mainContent
       .querySelector("#export-text-btn")
       .addEventListener("click", async () => {
         try {
@@ -256,7 +461,7 @@ export class ProgrammatorUI {
             this.program.instructions,
             ProgramFormatVersion.Version3
           );
-          this.container.querySelector("#program-output").value = output;
+          this.mainContent.querySelector("#program-output").value = output;
           this.showValidationMessage(
             "Program exported to Text (v3) format",
             "success"
@@ -270,7 +475,7 @@ export class ProgrammatorUI {
       });
 
     // Export to Base64 button
-    this.container
+    this.mainContent
       .querySelector("#export-base64-btn")
       .addEventListener("click", async () => {
         try {
@@ -283,7 +488,7 @@ export class ProgrammatorUI {
           const output = await this.program.toBase64Format();
           console.log("✅ Base64 export completed, length:", output.length);
 
-          this.container.querySelector("#program-output").value = output;
+          this.mainContent.querySelector("#program-output").value = output;
           this.showValidationMessage(
             `Program exported to Base64 format (${output.length} chars)`,
             "success"
@@ -298,7 +503,7 @@ export class ProgrammatorUI {
       });
 
     // Validate button
-    this.container
+    this.mainContent
       .querySelector("#validate-program")
       .addEventListener("click", () => {
         const validation = this.program.validate();
@@ -306,15 +511,15 @@ export class ProgrammatorUI {
       });
 
     // Clear button
-    this.container
+    this.mainContent
       .querySelector("#clear-program")
       .addEventListener("click", () => {
         this.program.clear();
-        this.container.querySelectorAll(".program-cell").forEach((cell) => {
+        this.mainContent.querySelectorAll(".program-cell").forEach((cell) => {
           cell.textContent = "";
           cell.className = "program-cell";
         });
-        this.container.querySelector("#program-output").value = "";
+        this.mainContent.querySelector("#program-output").value = "";
         this.clearValidationMessages();
       });
   }
@@ -323,7 +528,7 @@ export class ProgrammatorUI {
    * Handle cell click to place/remove actions
    * @param {number} index - Cell index in grid
    */
-  onCellClick(index) {
+  async onCellClick(index) {
     const { x, y } = indexToGridPosition(index);
     const existingInstruction = this.program.getInstructionAt(x, y);
 
@@ -363,37 +568,52 @@ export class ProgrammatorUI {
     // Create instruction with basic properties
     const instruction = new Instruction(actionCode, null, null);
 
-    // For actions that need labels, prompt user
+    // For actions that need labels, create input dialog
     if (
       [
         ProgAction.Goto,
         ProgAction.Call,
         ProgAction.CallArg,
+        ProgAction.CallState,
         ProgAction.YesNoGoto,
         ProgAction.NoYesGoto,
+        ProgAction.YesNoNextRow,
+        ProgAction.NoYesNextRow,
+        ProgAction.YesNoGotoStart,
+        ProgAction.NoYesGotoStart,
+        ProgAction.YesNoTerminate,
+        ProgAction.NoYesTerminate,
         ProgAction.Label,
+        ProgAction.CallWhenDied,
+        ProgAction.DebugPause,
+        ProgAction.DebugShow,
       ].includes(actionCode)
     ) {
-      const label = prompt("Enter label for this action:");
+      const label = await this.promptForLabel("Enter label for this action:");
       if (label && label.trim()) {
         instruction.label = label.trim();
-        console.log(`🏷️ Added label: "${label.trim()}"`);
-      } else {
-        console.log(`🏷️ No label provided`);
       }
     }
 
-    // For variable operations, prompt for value
+    // For variable operations with numbers, prompt for value
     if (
       actionCode >= ProgAction.VarGreaterThanNumber &&
       actionCode <= ProgAction.VarNotEqualsNumber
     ) {
-      const value = prompt("Enter value for variable comparison:");
-      if (value !== null && !isNaN(parseInt(value))) {
-        instruction.value = parseInt(value);
-        console.log(`🔢 Added value: ${instruction.value}`);
-      } else {
-        console.log(`🔢 No value provided or invalid`);
+      const value = await this.promptForValue("Enter value for variable comparison:");
+      if (value !== null) {
+        instruction.value = value;
+      }
+    }
+
+    // For variable operations with state, prompt for value
+    if (
+      actionCode >= ProgAction.SetNumberToVar &&
+      actionCode <= ProgAction.SubNumberToVar
+    ) {
+      const value = await this.promptForValue("Enter value to set in variable:");
+      if (value !== null) {
+        instruction.value = value;
       }
     }
 
@@ -410,7 +630,7 @@ export class ProgrammatorUI {
    * @param {number} index - Cell index
    */
   updateCellDisplay(index) {
-    const cell = this.container.querySelector(`[data-index="${index}"]`);
+    const cell = this.mainContent.querySelector(`[data-index="${index}"]`);
     const { x, y } = indexToGridPosition(index);
     const instruction = this.program.getInstructionAt(x, y);
 
@@ -448,7 +668,7 @@ export class ProgrammatorUI {
    * @param {string} type - Message type (success/error)
    */
   showValidationMessage(message, type) {
-    const messagesContainer = this.container.querySelector(
+    const messagesContainer = this.mainContent.querySelector(
       "#validation-messages"
     );
     messagesContainer.innerHTML = `<div class="validation-message ${type}">${message}</div>`;
@@ -466,7 +686,7 @@ export class ProgrammatorUI {
    * @param {Object} validation - Validation result object
    */
   displayValidationResults(validation) {
-    const messagesContainer = this.container.querySelector(
+    const messagesContainer = this.mainContent.querySelector(
       "#validation-messages"
     );
     let html = "";
@@ -504,9 +724,72 @@ export class ProgrammatorUI {
    * Clear validation messages
    */
   clearValidationMessages() {
-    const messagesContainer = this.container.querySelector(
+    const messagesContainer = this.mainContent.querySelector(
       "#validation-messages"
     );
     messagesContainer.innerHTML = "";
+  }
+
+  /**
+   * Create a modal dialog for input
+   * @param {string} title - Dialog title
+   * @param {string} placeholder - Input placeholder
+   * @param {string} defaultValue - Default input value
+   * @returns {Promise<string|null>} User input or null if cancelled
+   */
+  createInputDialog(title, placeholder, defaultValue = "") {
+    return new Promise((resolve) => {
+      const dialog = document.createElement("div");
+      dialog.className = "input-dialog-overlay";
+      dialog.innerHTML = `
+        <div class="input-dialog">
+          <h3>${title}</h3>
+          <input type="text" placeholder="${placeholder}" value="${defaultValue}" />
+          <div class="dialog-buttons">
+            <button class="cancel-btn">Cancel</button>
+            <button class="ok-btn">OK</button>
+          </div>
+        </div>
+      `;
+
+      const input = dialog.querySelector("input");
+      const okBtn = dialog.querySelector(".ok-btn");
+      const cancelBtn = dialog.querySelector(".cancel-btn");
+
+      const closeDialog = (result) => {
+        dialog.remove();
+        resolve(result);
+      };
+
+      okBtn.addEventListener("click", () => closeDialog(input.value));
+      cancelBtn.addEventListener("click", () => closeDialog(null));
+      input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") closeDialog(input.value);
+        if (e.key === "Escape") closeDialog(null);
+      });
+
+      // Focus input after dialog is added to DOM
+      setTimeout(() => input.focus(), 0);
+      document.body.appendChild(dialog);
+    });
+  }
+
+  /**
+   * Prompt for label input
+   * @param {string} message - Prompt message
+   * @returns {Promise<string|null>} Label or null
+   */
+  async promptForLabel(message) {
+    return await this.createInputDialog(message, "Enter label...");
+  }
+
+  /**
+   * Prompt for numeric value input
+   * @param {string} message - Prompt message
+   * @returns {Promise<number|null>} Value or null
+   */
+  async promptForValue(message) {
+    const result = await this.createInputDialog(message, "Enter number...", "0");
+    return result !== null ? parseInt(result) || null : null;
   }
 }

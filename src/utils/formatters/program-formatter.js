@@ -29,9 +29,118 @@ export function getActionDisplayName(actionCode) {
  * @returns {string} Short code for display
  */
 export function getActionShortCode(actionCode) {
-  // For now, return action code as string since we removed shortCode from ProgAction
-  // TODO: Implement proper short code mapping based on C# implementation
-  return actionCode.toString();
+  // Map action codes to short display codes based on ProgramSerializer.cs
+  const shortCodes = {
+    // Movement
+    [ProgAction.MoveUp]: "↑",
+    [ProgAction.MoveLeft]: "←",
+    [ProgAction.MoveDown]: "↓",
+    [ProgAction.MoveRight]: "→",
+    [ProgAction.MoveForward]: "↗",
+    [ProgAction.ShiftUp]: "[↑]",
+    [ProgAction.ShiftLeft]: "[←]",
+    [ProgAction.ShiftDown]: "[↓]",
+    [ProgAction.ShiftRight]: "[→]",
+    [ProgAction.ShiftForward]: "[↗]",
+
+    // Rotation
+    [ProgAction.RotateUp]: "↻↑",
+    [ProgAction.RotateLeft]: "↻←",
+    [ProgAction.RotateDown]: "↻↓",
+    [ProgAction.RotateRight]: "↻→",
+    [ProgAction.RotateRandom]: "🎲",
+    [ProgAction.RotateLefthand]: "↺",
+    [ProgAction.RotateRighthand]: "↻",
+
+    // Building
+    [ProgAction.Dig]: "⛏️",
+    [ProgAction.BuildBlock]: "🧱",
+    [ProgAction.BuildRoad]: "🛣️",
+    [ProgAction.BuildQuadro]: "🏗️",
+    [ProgAction.BuildWar]: "⚔️",
+    [ProgAction.Heal]: "💚",
+    [ProgAction.UseGeo]: "💎",
+    [ProgAction.STDDig]: "⚒️",
+    [ProgAction.STDBlock]: "🏗️",
+    [ProgAction.STDHeal]: "❤️",
+    [ProgAction.STDTunnel]: "⛏️",
+
+    // Logic
+    [ProgAction.SetStart]: "🏁",
+    [ProgAction.Terminate]: "⏹️",
+    [ProgAction.NextLine]: ",",
+    [ProgAction.RepeatLastAction]: "🔄",
+    [ProgAction.Label]: "🏷️",
+    [ProgAction.Goto]: "➡️",
+    [ProgAction.Call]: "📞",
+    [ProgAction.CallArg]: "📞*",
+    [ProgAction.Return]: "⬅️",
+    [ProgAction.ReturnArg]: "⬅️*",
+    [ProgAction.CallState]: "📞=",
+    [ProgAction.ReturnState]: "⬅️=",
+    [ProgAction.CallWhenDied]: "💀",
+
+    // Conditions (showing first few)
+    [ProgAction.IsNotEmpty]: "🚫∅",
+    [ProgAction.IsEmpty]: "✅∅",
+    [ProgAction.IsFalling]: "📉",
+    [ProgAction.IsCrystal]: "💎",
+    [ProgAction.IsAliveCrystal]: "🌟",
+    [ProgAction.IsFallingLikeBoulder]: "🪨",
+    [ProgAction.IsFallingLikeLiquid]: "💧",
+    [ProgAction.IsBreakable]: "🔨",
+    [ProgAction.IsUnbreakable]: "🛡️",
+
+    // Variables (showing some)
+    [ProgAction.SetNumberToVar]: "🔢=",
+    [ProgAction.AddNumberToVar]: "➕",
+    [ProgAction.MultNumberToVar]: "✖️",
+    [ProgAction.VarGreaterThanNumber]: ">",
+    [ProgAction.VarLessThanNumber]: "<",
+    [ProgAction.VarEqualsNumber]: "=",
+
+    // Sensing
+    [ProgAction.CellUpLeft]: "[↖]",
+    [ProgAction.CellUp]: "[↑]",
+    [ProgAction.CellUpRight]: "[↗]",
+    [ProgAction.CellLeft]: "[←]",
+    [ProgAction.Cell]: "[●]",
+    [ProgAction.CellRight]: "[→]",
+    [ProgAction.CellDownLeft]: "[↙]",
+    [ProgAction.CellDown]: "[↓]",
+    [ProgAction.CellDownRight]: "[↘]",
+    [ProgAction.CellForward]: "[↗]",
+    [ProgAction.CellLefthand]: "[👈]",
+    [ProgAction.CellRighthand]: "[👉]",
+
+    // Items
+    [ProgAction.UseBoom]: "💣",
+    [ProgAction.UseRaz]: "⚡",
+    [ProgAction.UseProt]: "🛡️",
+    [ProgAction.UseGeopack]: "🎒",
+    [ProgAction.UseZZ]: "💊",
+    [ProgAction.UseC190]: "💉",
+    [ProgAction.UsePoly]: "🧪",
+    [ProgAction.Upgrade]: "⬆️",
+    [ProgAction.RefillCraft]: "🔧",
+    [ProgAction.UseNano]: "🤖",
+    [ProgAction.UseRem]: "🧹",
+    [ProgAction.ChargeGun]: "🔫",
+
+    // Control
+    [ProgAction.BooleanOR]: "∨",
+    [ProgAction.BooleanAND]: "∧",
+    [ProgAction.YesNoGoto]: "❌→",
+    [ProgAction.NoYesGoto]: "✅→",
+    [ProgAction.Flip]: "🔄",
+
+    // Debug
+    [ProgAction.PlaySound]: "🔊",
+    [ProgAction.DebugPause]: "⏸️",
+    [ProgAction.DebugShow]: "👁️",
+  };
+
+  return shortCodes[actionCode] || actionCode.toString();
 }
 
 /**

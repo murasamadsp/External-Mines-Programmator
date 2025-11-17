@@ -32,12 +32,12 @@ function createFallbackUI(error) {
   if (container) {
     container.innerHTML = `
       <div style="color: red; padding: 20px; border: 2px solid red; border-radius: 5px; background: #ffe6e6;">
-        <h2>❌ Помилка ініціалізації</h2>
-        <p><strong>EMP не зміг завантажитися:</strong></p>
+        <h2>❌ Initialization Error</h2>
+        <p><strong>EMP failed to load:</strong></p>
         <pre style="background: #f5f5f5; padding: 10px; border-radius: 3px; overflow: auto;">${error.message}</pre>
-        <p><strong>Перевірте консоль браузера для деталей</strong></p>
+        <p><strong>Check browser console for details</strong></p>
         <button onclick="location.reload()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
-          Перезавантажити сторінку
+          Reload Page
         </button>
       </div>
     `;

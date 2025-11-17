@@ -72,100 +72,170 @@
  * Visual programming interface for Mines bot programs
  */
 
-/* Programmer info section */
-.programmer-info {
-    background-color: #e8f4fd;
-    border: 1px solid #b3d9ff;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 20px;
+/* Programmer placeholder */
+.programmer-placeholder {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border: 2px solid #dee2e6;
+    border-radius: 12px;
+    padding: 30px 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
-.programmer-info p {
-    margin: 0 0 10px 0;
-    color: #2c3e50;
-    font-weight: bold;
-}
-
-.programmer-info ul {
+.programmer-placeholder p {
     margin: 0;
-    padding-left: 20px;
-    color: #34495e;
-}
-
-.programmer-info li {
-    margin-bottom: 5px;
-}
-
-/* Main programmer container */
-.programmer-container {
+    color: #6c757d;
+    font-size: 16px;
+    font-weight: 500;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Programmer title */
+.programmer-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fafafa;
+    margin-bottom: 30px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Three-column layout */
+.programmer-layout {
+    display: flex;
     gap: 20px;
-    padding: 20px;
+    min-height: 600px;
+}
+
+/* Sidebar panels (left and right) */
+.programmer-sidebar {
+    width: 280px;
+    flex-shrink: 0;
     background-color: #564190;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    overflow-y: auto;
+    max-height: 600px;
+}
+
+.programmer-sidebar-left {
+    /* Left sidebar for action palette */
+}
+
+.programmer-sidebar-right {
+    /* Right sidebar for snippets */
+}
+
+/* Main content area */
+.programmer-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    min-width: 0; /* Allow flex item to shrink */
+}
+
+/* Legacy container styles (kept for compatibility) */
+.programmer-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 25px;
+    background-color: #564190;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Action Palette */
 #action-palette {
-    background-color: #6a5aaa;
-    border-radius: 8px;
-    padding: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 0;
+    padding: 0;
 }
 
 #action-palette h3 {
     margin-top: 0;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     color: #fafafa;
     font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
 }
 
 .action-categories {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 15px;
 }
 
 .category {
     background-color: #564190;
-    border-radius: 6px;
-    padding: 10px;
+    border-radius: 8px;
+    padding: 15px;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.category:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .category h4 {
-    margin: 0 0 10px 0;
+    margin: 0 0 12px 0;
     color: #fafafa;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
 }
 
 .category button {
     display: block;
     width: 100%;
-    margin-bottom: 5px;
-    padding: 8px 12px;
+    margin-bottom: 6px;
+    padding: 10px 14px;
     background-color: #6a5aaa;
     color: #fafafa;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 500;
     transition: all 0.2s ease;
+    text-align: left;
+    position: relative;
 }
 
 .category button:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.08);
     border-color: #007bff;
+    transform: translateX(2px);
 }
 
 .category button.selected {
     background-color: #007bff;
     color: white;
     border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+}
+
+.category button.selected::after {
+    content: "✓";
+    position: absolute;
+    right: 10px;
+    color: white;
+    font-weight: bold;
 }
 
 /* Program Grid */
@@ -173,129 +243,303 @@
     display: grid;
     grid-template-columns: repeat(16, 1fr);
     grid-template-rows: repeat(12, 1fr);
-    gap: 1px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    gap: 2px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
     overflow: hidden;
-    aspect-ratio: 16/12;
+    width: 100%;
     max-width: 800px;
+    aspect-ratio: 16/12;
+    padding: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 0 auto;
 }
 
 .program-cell {
     background-color: #6a5aaa;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
-    min-height: 30px;
+    transition: all 0.15s ease;
+    min-height: 32px;
+    border-radius: 4px;
+    position: relative;
+    font-family: 'Google Sans Code', monospace;
 }
 
 .program-cell:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    transform: scale(1.05);
+    background-color: rgba(255, 255, 255, 0.08);
+    transform: scale(1.02);
+    border-color: rgba(0, 123, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
 }
 
 .program-cell:not(:empty) {
     background-color: #007bff;
     color: white;
     font-weight: 600;
+    border-color: #0056b3;
+    box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
 }
 
-/* Different action types styling */
-.action-moveup { background-color: #28a745; }
-.action-moveleft { background-color: #007bff; }
-.action-movedown { background-color: #dc3545; }
-.action-moveright { background-color: #ffc107; color: black; }
-.action-dig { background-color: #6f42c1; }
-.action-setstart { background-color: #fd7e14; }
-
-/* Program Controls */
-#program-controls {
-    background-color: #6a5aaa;
-    border-radius: 8px;
-    padding: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+.program-cell:not(:empty):hover {
+    background-color: #0056b3;
+    transform: scale(1.02);
 }
 
-#program-controls h3 {
+/* Snippets Panel */
+.snippets-placeholder {
+    color: #fafafa;
+}
+
+.snippets-placeholder h3 {
     margin-top: 0;
     margin-bottom: 15px;
     color: #fafafa;
     font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
 }
 
-#program-controls button {
-    margin-right: 10px;
-    padding: 8px 16px;
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.snippets-placeholder > p {
+    color: #ccc;
     font-size: 14px;
-    transition: background-color 0.2s ease;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-#program-controls button:hover {
-    background-color: #5a6268;
+.snippets-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-/* Import/Export Controls */
-.control-group {
-    margin-bottom: 15px;
+.snippet-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
 }
 
-.control-group label {
-    display: block;
-    margin-bottom: 5px;
+.snippet-item:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.snippet-item h4 {
+    margin: 0 0 5px 0;
     color: #fafafa;
     font-size: 14px;
     font-weight: 600;
 }
 
+.snippet-item p {
+    margin: 0;
+    color: #ccc;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* Different action types styling with improved colors */
+.action-moveup {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border-color: #1e7e34;
+}
+.action-moveleft {
+    background: linear-gradient(135deg, #007bff, #6610f2);
+    color: white;
+    border-color: #0056b3;
+}
+.action-movedown {
+    background: linear-gradient(135deg, #dc3545, #e83e8c);
+    color: white;
+    border-color: #bd2130;
+}
+.action-moveright {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    color: #212529;
+    border-color: #d39e00;
+    font-weight: 700;
+}
+.action-dig {
+    background: linear-gradient(135deg, #6f42c1, #e91e63);
+    color: white;
+    border-color: #5a359a;
+}
+.action-setstart {
+    background: linear-gradient(135deg, #fd7e14, #ff6b35);
+    color: white;
+    border-color: #d25c0e;
+}
+
+/* Additional action types */
+.action-rotateright, .action-rotateleft, .action-rotateup, .action-rotatedown {
+    background: linear-gradient(135deg, #17a2b8, #20c997);
+    color: white;
+    border-color: #138496;
+}
+
+.action-rotaterandom {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+    border-color: #545b62;
+}
+
+.action-buildblock, .action-buildroad, .action-buildquadro {
+    background: linear-gradient(135deg, #fd7e14, #ff5722);
+    color: white;
+    border-color: #d25c0e;
+}
+
+.action-terminate {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border-color: #bd2130;
+}
+
+.action-nextline {
+    background: linear-gradient(135deg, #28a745, #17a2b8);
+    color: white;
+    border-color: #1e7e34;
+}
+
+/* Program Controls */
+#program-controls {
+    background-color: #6a5aaa;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#program-controls h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #fafafa;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+}
+
+#program-controls button {
+    margin-right: 10px;
+    margin-bottom: 8px;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#program-controls button:hover {
+    background: linear-gradient(135deg, #5a6268, #343a40);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Import/Export Controls */
+.control-group {
+    margin-bottom: 20px;
+    background-color: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.control-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #fafafa;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.control-group label::before {
+    content: "📝";
+    font-size: 16px;
+}
+
 .control-group textarea {
     width: 100%;
-    min-height: 100px;
-    padding: 8px;
+    min-height: 120px;
+    padding: 12px;
     background-color: #564190;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
     color: #fafafa;
     font-family: 'Google Sans Code', monospace;
-    font-size: 12px;
+    font-size: 13px;
     resize: vertical;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s ease;
+    line-height: 1.4;
+}
+
+.control-group textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
 
 .control-group select {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     background-color: #6a5aaa;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
     color: #fafafa;
     font-size: 14px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s ease;
+}
+
+.control-group select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
 
 .control-group button {
-    margin-right: 10px;
-    padding: 8px 16px;
-    background-color: #6a5aaa;
+    margin-right: 8px;
+    margin-bottom: 6px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
-    transition: background-color 0.2s ease;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .control-group button:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 #program-output {
@@ -361,34 +605,329 @@
     margin-bottom: 5px;
 }
 
+/* Input Dialog Styles */
+.input-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.input-dialog {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    min-width: 300px;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.input-dialog h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.input-dialog input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+.input-dialog input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.dialog-buttons button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.dialog-buttons .cancel-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.dialog-buttons .cancel-btn:hover {
+    background-color: #5a6268;
+}
+
+.dialog-buttons .ok-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.dialog-buttons .ok-btn:hover {
+    background-color: #0056b3;
+}
+
 /* Responsive design */
 @media (max-width: 1200px) {
+    .programmer-container {
+        padding: 15px;
+        gap: 15px;
+    }
+
     .action-categories {
         grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
     }
 
     #program-grid {
         grid-template-columns: repeat(16, minmax(20px, 1fr));
+        gap: 1px;
     }
 
     .program-cell {
-        font-size: 8px;
-        min-height: 25px;
+        font-size: 9px;
+        min-height: 28px;
+        padding: 2px;
+    }
+
+    .programmer-placeholder {
+        padding: 20px 15px;
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 992px) {
+    .container {
+        padding: 15px;
+        margin: 10px;
+    }
+
+    .programmer-container {
+        padding: 15px;
+    }
+
+    #action-palette, #program-controls {
+        padding: 12px;
+    }
+
+    .control-group {
+        margin-bottom: 12px;
     }
 }
 
 @media (max-width: 768px) {
     .programmer-container {
-        padding: 10px;
+        padding: 12px;
+        gap: 12px;
     }
 
     .action-categories {
         grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .category {
+        padding: 8px;
+    }
+
+    .category h4 {
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    .category button {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+
+    #program-grid {
+        grid-template-columns: repeat(12, 1fr);
+        grid-template-rows: repeat(16, 1fr);
+        gap: 1px;
+        width: 100%;
+        aspect-ratio: 12/16;
+    }
+
+    .program-cell {
+        font-size: 8px;
+        min-height: 24px;
+        padding: 1px;
+    }
+
+    .programmer-placeholder {
+        padding: 15px 10px;
+        margin-bottom: 12px;
+    }
+
+    .programmer-placeholder p {
+        font-size: 14px;
+    }
+
+    #program-controls h3, #action-palette h3 {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+    .control-group label {
+        font-size: 13px;
+    }
+
+    .control-group textarea, .control-group select {
+        font-size: 12px;
+    }
+
+    .control-group button {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+}
+
+/* Responsive layout adjustments */
+@media (max-width: 1200px) {
+    .programmer-layout {
+        gap: 15px;
+    }
+
+    .programmer-sidebar {
+        width: 250px;
+    }
+}
+
+@media (max-width: 992px) {
+    .programmer-layout {
+        gap: 12px;
+    }
+
+    .programmer-sidebar {
+        width: 220px;
+    }
+
+    #program-grid, #program-controls {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Switch to single column layout on tablets */
+    .programmer-layout {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .programmer-sidebar {
+        width: 100%;
+        order: -1; /* Move sidebars to top on mobile */
+    }
+
+    .programmer-sidebar-left {
+        order: 1;
+    }
+
+    .programmer-sidebar-right {
+        order: 3;
+    }
+
+    .programmer-main {
+        order: 2;
+    }
+
+    #program-grid {
+        max-width: 100%;
+        aspect-ratio: 16/12;
+    }
+
+    .action-categories {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+        margin: 5px;
+        gap: 15px;
+    }
+
+    .programmer-container {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .programmer-title {
+        font-size: 20px;
+        margin-bottom: 15px;
     }
 
     #program-grid {
         grid-template-columns: repeat(8, 1fr);
         grid-template-rows: repeat(24, 1fr);
-        max-width: none;
+        aspect-ratio: 8/24;
+        gap: 1px;
+        width: 100%;
+    }
+
+    .program-cell {
+        font-size: 7px;
+        min-height: 20px;
+        padding: 1px;
+    }
+
+    .programmer-placeholder {
+        padding: 12px 8px;
+        margin-bottom: 10px;
+    }
+
+    .programmer-placeholder p {
+        font-size: 13px;
+    }
+
+    #action-palette, #program-controls {
+        padding: 10px;
+    }
+
+    .action-categories {
+        gap: 8px;
+    }
+
+    .category {
+        padding: 6px;
+    }
+
+    .category h4 {
+        font-size: 12px;
+        margin-bottom: 6px;
+    }
+
+    .category button {
+        padding: 5px 8px;
+        font-size: 10px;
+        margin-bottom: 3px;
+    }
+
+    .control-group textarea {
+        min-height: 80px;
+        font-size: 11px;
+    }
+
+    #program-output {
+        min-height: 120px;
+        font-size: 11px;
     }
 }
