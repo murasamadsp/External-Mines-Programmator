@@ -1,34 +1,40 @@
 // Mines Programmator Main Entry Point
 // Initializes the application when DOM is ready
 
-// Initialize application
-console.log("🚀 EMP (External Mines Programmator) starting...");
-console.log("🔧 LZMA compression ready with lzma-purejs (mode 7)");
+// Initialize application when DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("🚀 EMP (External Mines Programmator) starting...");
+  console.log("🔧 LZMA compression ready with lzma-purejs (mode 7)");
 
-// Now initialize the app
-import("./components/editor/programmator-ui.js").then(({ ProgrammatorUI }) => {
-  console.log("📱 Loading ProgrammatorUI...");
+  // Now initialize the app
+  import("./components/editor/programmator-ui.js")
+    .then(({ ProgrammatorUI }) => {
+      console.log("📱 Loading ProgrammatorUI...");
 
-  let programmatorUI;
+      let programmatorUI;
 
-  try {
-    programmatorUI = new ProgrammatorUI();
-    console.log("✅ Programmator initialized successfully");
-  } catch (error) {
-    console.error("❌ Failed to initialize Programmator:", error);
-    // Create fallback UI
-    createFallbackUI(error);
-  }
-}).catch(error => {
-  console.error("❌ Failed to load ProgrammatorUI:", error);
-  createFallbackUI(error);
+      try {
+        programmatorUI = new ProgrammatorUI();
+        console.log("✅ Programmator initialized successfully");
+      } catch (error) {
+        console.error("❌ Failed to initialize Programmator:", error);
+        // Create fallback UI
+        createFallbackUI(error);
+      }
+    })
+    .catch((error) => {
+      console.error("❌ Failed to load ProgrammatorUI:", error);
+      createFallbackUI(error);
+    });
 });
 
 /**
  * Create fallback UI if main app fails
  */
 function createFallbackUI(error) {
-  const container = document.querySelector(".programmer-container");
+  const container =
+    document.querySelector(".programmer-layout") ||
+    document.querySelector(".programmer-container");
   if (container) {
     container.innerHTML = `
       <div style="color: red; padding: 20px; border: 2px solid red; border-radius: 5px; background: #ffe6e6;">
@@ -45,4 +51,4 @@ function createFallbackUI(error) {
 }
 
 // Export for potential external use
-export { };
+export {};
