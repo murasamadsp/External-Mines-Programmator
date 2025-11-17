@@ -663,22 +663,12 @@ export class ProgrammatorUI {
     const cell = this.mainContent.querySelector(`[data-x="${x}"][data-y="${y}"]`);
     const instruction = this.program.getInstructionAt(x, y, this.currentPage);
 
-    console.log(`🔍 Cell [${x}, ${y}] page ${this.currentPage}:`, {
-      instruction,
-      action: instruction?.action,
-      type: typeof instruction?.action,
-      isNone: instruction?.action === ProgAction.None
-    });
-
     if (instruction.action === ProgAction.None) {
       cell.textContent = "";
       cell.className = "program-cell";
       cell.title = "";
-      console.log(`📭 Cell [${x}, ${y}] page ${this.currentPage} cleared`);
     } else {
       const formatted = formatInstruction(instruction);
-      console.log(`📬 Cell [${x}, ${y}] updated: ${formatted.shortCode} (action: ${instruction.action})`);
-
       cell.textContent = formatted.shortCode;
       cell.className = `program-cell action-${instruction.action}`;
       cell.title = formatted.description;

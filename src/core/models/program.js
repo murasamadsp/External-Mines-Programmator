@@ -97,17 +97,9 @@ export class Program {
   getInstructionAt(x, y, page = 0) {
     const pageOffset = page * PAGE_SIZE;
     const index = pageOffset + y * this.pageWidth + x;
-    const stored = this.instructions[index];
-
-    if (stored && typeof stored === 'object' && stored.constructor.name === 'Instruction') {
-      return stored;
-    } else if (stored) {
-      // Debug: stored value is not an Instruction object
-      console.error('Invalid instruction stored at', index, ':', stored, 'type:', typeof stored);
-      return new Instruction(ProgAction.None, null, null);
-    }
-
-    return new Instruction(ProgAction.None, null, null);
+    return (
+      this.instructions[index] || new Instruction(ProgAction.None, null, null)
+    );
   }
 
   /**
@@ -128,17 +120,7 @@ export class Program {
       this.instructions.push(new Instruction(ProgAction.None, null, null));
     }
 
-    const newInstruction = new Instruction(action, label, value);
-    this.instructions[index] = newInstruction;
-
-    // Debug: ensure it's stored correctly
-    if (this.instructions[index] !== newInstruction) {
-      console.error('Instruction storage failed!', {
-        index,
-        expected: newInstruction,
-        actual: this.instructions[index]
-      });
-    }
+    this.instructions[index] = new Instruction(action, label, value);
   }
 
   /**
