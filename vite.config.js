@@ -13,6 +13,7 @@ export default defineConfig(({ command, mode }) => ({
   resolve: {
     alias: {
       "lzma-web": "lzma-web/dist/index.js",
+      "@": "src",
     },
   },
   css: {

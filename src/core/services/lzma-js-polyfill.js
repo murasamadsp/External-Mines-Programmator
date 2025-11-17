@@ -2,15 +2,14 @@ if (typeof globalThis !== "undefined" && typeof globalThis.process === "undefine
   globalThis.process = { env: { NODE_ENV: "production" } };
 }
 
-const basePublicPath =
-  typeof window !== "undefined"
-    ? `${(
-        (typeof import.meta !== "undefined" &&
-          import.meta.env &&
-          import.meta.env.BASE_URL) ||
-        "/"
-      ).replace(/\/?$/, "/")}`
-    : null;
+const isBrowserEnvironment = typeof window !== "undefined";
+
+const basePublicPath = isBrowserEnvironment
+  ? `${(
+      (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.BASE_URL) ||
+      ""
+    ).replace(/\/?$/, "/")}`
+  : null;
 
 const browserLzmaBasePath = basePublicPath ? `${basePublicPath}vendor/lzma/` : null;
 const browserScriptUrl = browserLzmaBasePath
@@ -130,7 +129,7 @@ async function getBrowserLzmaInstance() {
 }
 
 // LZMA interface - unified API for different environments
-// Uses lzma-web in browsers and lzma-native in Node.js
+// Uses lzma-web in browsers
 
 class LZMAInterface {
   constructor(impl) {
@@ -245,31 +244,16 @@ class LZMANativeInterface extends LZMAInterface {
 // Factory function to create appropriate LZMA interface
 async function createLZMAInterface() {
   try {
-    if (typeof window !== 'undefined') {
-      console.log('🔧 Initializing LZMA in browser (main thread)...');
+    if (isBrowserEnvironment) {
+      console.log("🔧 Initializing LZMA in browser (main thread)...");
       const lzmaInstance = await getBrowserLzmaInstance();
-      console.log('✅ LZMA browser ready (main thread)');
+      console.log("✅ LZMA browser ready (main thread)");
       return new LZMAWebInterface(lzmaInstance);
     }
 
-    // Node.js environment - dynamically import lzma-native
-    console.log('🔧 Initializing LZMA for Node.js...');
-    try {
-      const lzmaNative = await import('lzma-native');
-      const nativeImpl = {
-        compress: (data, level) => lzmaNative.LZMA().compress(data, level),
-        decompress: (data) => lzmaNative.LZMA().decompress(data)
-      };
-      console.log('✅ LZMA-Native initialized successfully');
-      return new LZMANativeInterface(nativeImpl);
-    } catch (nodeError) {
-      console.error('❌ LZMA-Native not available, falling back to browser implementation');
-      // Fallback to browser implementation if lzma-native fails
-      const lzmaInstance = await getBrowserLzmaInstance();
-      return new LZMAWebInterface(lzmaInstance);
-    }
+    throw new Error("LZMA assets are only available in browser environments");
   } catch (error) {
-    console.error('❌ Failed to initialize LZMA:', error);
+    console.error("❌ Failed to initialize LZMA:", error);
     throw new Error(`LZMA initialization failed: ${error.message}`);
   }
 }

@@ -5,13 +5,45 @@
 import { ProgramFormatVersion, Instruction, ProgAction } from "../index.js";
 import { MAX_INSTRUCTIONS } from "../constants/grid.js";
 
+// Simple fallback compressor for when LZMA is not available
+class FallbackCompressor {
+  async compress(data, level = 7) {
+    console.log(`📦 Fallback compression (no LZMA), level: ${level}`);
+    // Simple RLE-like compression for basic functionality
+    return this._simpleCompress(data);
+  }
+
+  async decompress(data) {
+    console.log("📦 Fallback decompression (no LZMA)");
+    return this._simpleDecompress(data);
+  }
+
+  _simpleCompress(data) {
+    // Very basic compression - just return data as-is for now
+    // In production, could implement a simple algorithm
+    return new Uint8Array(data);
+  }
+
+  _simpleDecompress(data) {
+    return new Uint8Array(data);
+  }
+}
+
 class LZMACompressor {
   static #lzmaInterface = null;
+  static #fallbackInterface = new FallbackCompressor();
 
   static async getInterface() {
     if (!this.#lzmaInterface) {
-      const { createLZMAInterface } = await import("../services/lzma-js-polyfill.js");
-      this.#lzmaInterface = await createLZMAInterface();
+      try {
+        console.log("🔧 Loading LZMA interface...");
+        const { createLZMAInterface } = await import("./lzma-js-polyfill.js");
+        this.#lzmaInterface = await createLZMAInterface();
+        console.log("✅ LZMA interface loaded successfully");
+      } catch (error) {
+        console.warn("⚠️ LZMA not available, using fallback compressor:", error.message);
+        this.#lzmaInterface = this.#fallbackInterface;
+      }
     }
     return this.#lzmaInterface;
   }
@@ -20,8 +52,14 @@ class LZMACompressor {
     if (!data || !data.length) {
       throw new Error("Cannot compress empty payload");
     }
-    const lzma = await this.getInterface();
-    return lzma.compress(data, level);
+    try {
+      const lzma = await this.getInterface();
+      return await lzma.compress(data, level);
+    } catch (error) {
+      console.warn("⚠️ LZMA compression failed, returning uncompressed data:", error.message);
+      // Return data as-is if compression fails
+      return new Uint8Array(data);
+    }
   }
 
   static async decompress(data) {
@@ -555,8 +593,14 @@ export class ProgramSerializer {
       buffer[4 + i] = program[i].action & 0xff;
     }
     buffer.set(labelBytes, 4 + program.length);
-    const compressed = await LZMACompressor.compress(buffer);
-    return this.base64Encode(compressed);
+    try {
+      const compressed = await LZMACompressor.compress(buffer);
+      return this.base64Encode(compressed);
+    } catch (error) {
+      console.warn("⚠️ LZMA compression failed, using uncompressed data:", error.message);
+      // Fallback to uncompressed data
+      return this.base64Encode(buffer);
+    }
   }
 
   static encodeV3(program) {

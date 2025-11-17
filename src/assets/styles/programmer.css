@@ -968,3 +968,217 @@
         font-size: 11px;
     }
 }
+
+/* Expert Settings Dialog Styles */
+.expert-settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.expert-settings-dialog {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    width: 90%;
+    margin: 20px;
+}
+
+.expert-settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 30px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin: -12px -12px 0 -12px;
+    border-radius: 12px 12px 0 0;
+}
+
+.expert-settings-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.expert-settings-close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.expert-settings-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.expert-settings-content {
+    padding: 30px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.expert-section {
+    margin-bottom: 32px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 24px;
+}
+
+.expert-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.expert-section h3 {
+    margin: 0 0 16px 0;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.expert-setting {
+    margin-bottom: 16px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.expert-setting:last-child {
+    margin-bottom: 0;
+}
+
+.expert-setting label {
+    display: block;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+    cursor: pointer;
+}
+
+.expert-setting input[type="checkbox"] {
+    margin-right: 8px;
+    transform: scale(1.1);
+}
+
+.expert-setting input[type="number"],
+.expert-setting select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.expert-setting input[type="number"]:focus,
+.expert-setting select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.expert-btn-primary,
+.expert-btn-secondary {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-right: 12px;
+}
+
+.expert-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.expert-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.expert-btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.expert-btn-secondary:hover {
+    background: #5a6268;
+}
+
+.setting-description {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+.expert-settings-footer {
+    padding: 24px 30px;
+    border-top: 1px solid #e0e0e0;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin: 0 -12px -12px -12px;
+    border-radius: 0 0 12px 12px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .expert-settings-dialog {
+        width: 95%;
+        margin: 10px;
+    }
+
+    .expert-settings-header,
+    .expert-settings-content,
+    .expert-settings-footer {
+        padding: 20px;
+    }
+
+    .expert-settings-content {
+        max-height: 70vh;
+    }
+
+    .expert-section h3 {
+        font-size: 16px;
+    }
+
+    .expert-setting {
+        padding: 12px;
+    }
+
+    .expert-settings-footer {
+        flex-direction: column;
+    }
+
+    .expert-btn-primary,
+    .expert-btn-secondary {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
+}
