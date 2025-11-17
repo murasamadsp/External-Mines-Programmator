@@ -380,7 +380,7 @@ export class ProgrammatorUI {
 
     this.leftSidebar.querySelectorAll("[data-action]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
-        this.selectedAction = e.target.dataset.action;
+        this.selectedAction = btn.dataset.action;
         console.log(
           `🎯 Selected action: ${this.selectedAction} (code: ${ProgAction[this.selectedAction]})`
         );
