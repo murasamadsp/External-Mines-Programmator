@@ -29,6 +29,11 @@ export function getActionDisplayName(actionCode) {
  * @returns {string} Short code for display
  */
 export function getActionShortCode(actionCode) {
+  // Handle undefined/null action codes
+  if (actionCode === null || actionCode === undefined) {
+    return "?";
+  }
+
   // Map action codes to short display codes based on ProgramSerializer.cs
   const shortCodes = {
     // Movement
@@ -138,9 +143,41 @@ export function getActionShortCode(actionCode) {
     [ProgAction.PlaySound]: "🔊",
     [ProgAction.DebugPause]: "⏸️",
     [ProgAction.DebugShow]: "👁️",
+
+    // Variable operations
+    [ProgAction.WriteStateToVar]: "→V",
+    [ProgAction.ReadVarToState]: "V→",
+    [ProgAction.SetNumberToVar]: "#→V",
+    [ProgAction.AddNumberToVar]: "#+V",
+    [ProgAction.MultNumberToVar]: "#×V",
+    [ProgAction.DivNumberToVar]: "#/V",
+    [ProgAction.SubNumberToVar]: "#-V",
+    [ProgAction.AddStateToVar]: "+V",
+    [ProgAction.MultStateToVar]: "×V",
+    [ProgAction.DivStateToVar]: "/V",
+    [ProgAction.SubStateToVar]: "-V",
+    [ProgAction.AddVarToVar]: "V+V",
+    [ProgAction.MultVarToVar]: "V×V",
+    [ProgAction.DivVarToVar]: "V/V",
+    [ProgAction.SubVarToVar]: "V-V",
+    [ProgAction.VarLessThanState]: "V<S",
+    [ProgAction.VarGreaterThanState]: "V>S",
+    [ProgAction.VarGreaterThanOrEqualsState]: "V≥S",
+    [ProgAction.VarLessThanOrEqualState]: "V≤S",
+    [ProgAction.VarEqualsState]: "V=S",
+    [ProgAction.VarNotEqualsState]: "V≠S",
+    [ProgAction.VarGreaterThanNumber]: "V>#",
+    [ProgAction.VarLessThanNumber]: "V<#",
+    [ProgAction.VarGreaterThanOrEqualNumber]: "V≥#",
+    [ProgAction.VarLessThanOrEqualNumber]: "V≤#",
+    [ProgAction.VarEqualsNumber]: "V=#",
+    [ProgAction.VarNotEqualsNumber]: "V≠#",
+    [ProgAction.VarRound]: "V🔄",
+    [ProgAction.VarCeil]: "V⌈⌉",
+    [ProgAction.VarFloor]: "V⌊⌋",
   };
 
-  return shortCodes[actionCode] || actionCode.toString();
+  return shortCodes[actionCode] || `${actionCode}`;
 }
 
 /**
@@ -149,6 +186,14 @@ export function getActionShortCode(actionCode) {
  * @returns {Object} Formatted instruction data
  */
 export function formatInstruction(instruction) {
+  // Handle invalid instructions
+  if (!instruction || instruction.action === null || instruction.action === undefined) {
+    return {
+      shortCode: "?",
+      description: "Invalid instruction"
+    };
+  }
+
   const actionName = getActionDisplayName(instruction.action);
   const shortCode = getActionShortCode(instruction.action);
 
