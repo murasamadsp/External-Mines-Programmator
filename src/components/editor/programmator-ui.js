@@ -5,6 +5,7 @@ import {
   ProgAction,
   GRID_WIDTH,
   GRID_HEIGHT,
+  MAX_PAGES,
   Program,
   Instruction,
   ProgramSerializer,
@@ -17,6 +18,7 @@ export class ProgrammatorUI {
     console.log("🏗️ Initializing ProgrammatorUI...");
     this.program = new Program();
     this.selectedAction = null;
+    this.currentPage = 0; // Current page number (0-15)
 
     // Check for new three-column layout first
     const layoutContainer = document.querySelector('.programmer-layout');
@@ -46,6 +48,9 @@ export class ProgrammatorUI {
 
     console.log("Creating controls...");
     this.createControls();
+
+    console.log("Updating page display...");
+    this.updatePageDisplay();
 
     console.log("Programmator UI initialization completed!");
   }
@@ -297,16 +302,20 @@ export class ProgrammatorUI {
       const grid = document.createElement("div");
       grid.id = "program-grid";
 
-      console.log(`Creating grid with ${GRID_WIDTH}x${GRID_HEIGHT} cells...`);
-      for (let i = 0; i < GRID_WIDTH * GRID_HEIGHT; i++) {
-        const cell = document.createElement("div");
-        cell.className = "program-cell";
-        cell.dataset.index = i;
-        cell.addEventListener("click", () => this.onCellClick(i));
-        grid.appendChild(cell);
+      console.log(`Creating grid with ${GRID_WIDTH}x${GRID_HEIGHT} cells for page ${this.currentPage}...`);
+      for (let y = 0; y < GRID_HEIGHT; y++) {
+        for (let x = 0; x < GRID_WIDTH; x++) {
+          const cell = document.createElement("div");
+          cell.className = "program-cell";
+          cell.dataset.x = x;
+          cell.dataset.y = y;
+          cell.addEventListener("click", () => this.onCellClick(x, y));
+          grid.appendChild(cell);
+        }
       }
 
       this.mainContent.appendChild(grid);
+      this.updateGridDisplay();
       console.log("Program grid created successfully");
     } catch (error) {
       console.error("Error creating program grid:", error);
@@ -335,6 +344,14 @@ export class ProgrammatorUI {
                 <div class="control-group">
                     <button id="validate-program">Validate Program</button>
                     <button id="clear-program">Clear Program</button>
+                </div>
+                <div class="control-group">
+                    <label>Page:</label>
+                    <div class="page-controls">
+                        <button id="prev-page" disabled>⬅️ Prev</button>
+                        <span id="page-indicator">00</span>
+                        <button id="next-page">Next ➡️</button>
+                    </div>
                 </div>
                 <div class="control-group">
                     <label for="program-output">Program Output:</label>
@@ -412,7 +429,7 @@ export class ProgrammatorUI {
             `✅ Program imported: ${this.program.instructions.length} instructions`
           );
 
-          this.updateGridFromProgram();
+          this.updateGridDisplay();
           this.showValidationMessage(
             "Program imported successfully",
             "success"
@@ -515,12 +532,22 @@ export class ProgrammatorUI {
       .querySelector("#clear-program")
       .addEventListener("click", () => {
         this.program.clear();
-        this.mainContent.querySelectorAll(".program-cell").forEach((cell) => {
-          cell.textContent = "";
-          cell.className = "program-cell";
-        });
+        this.updateGridDisplay();
         this.mainContent.querySelector("#program-output").value = "";
         this.clearValidationMessages();
+      });
+
+    // Page navigation buttons
+    this.mainContent
+      .querySelector("#prev-page")
+      .addEventListener("click", () => {
+        this.switchToPrevPage();
+      });
+
+    this.mainContent
+      .querySelector("#next-page")
+      .addEventListener("click", () => {
+        this.switchToNextPage();
       });
   }
 
@@ -528,9 +555,8 @@ export class ProgrammatorUI {
    * Handle cell click to place/remove actions
    * @param {number} index - Cell index in grid
    */
-  async onCellClick(index) {
-    const { x, y } = indexToGridPosition(index);
-    const existingInstruction = this.program.getInstructionAt(x, y);
+  async onCellClick(x, y) {
+    const existingInstruction = this.program.getInstructionAt(x, y, this.currentPage);
 
     // If cell is not empty and no action is selected, remove the instruction
     if (
@@ -538,20 +564,23 @@ export class ProgrammatorUI {
       !this.selectedAction
     ) {
       console.log(
-        `🗑️ Removing instruction at [${x}, ${y}] (index: ${index}): ${formatInstruction(existingInstruction)}`
+        `🗑️ Removing instruction at [${x}, ${y}] page ${this.currentPage}: ${formatInstruction(existingInstruction)}`
       );
       this.program.setInstructionAt(
         x,
         y,
-        new Instruction(ProgAction.None, null, null)
+        ProgAction.None,
+        null,
+        null,
+        this.currentPage
       );
-      this.updateCellDisplay(index);
-      console.log(`✅ Removed instruction at [${x}, ${y}]`);
+      this.updateCellDisplay(x, y);
+      console.log(`✅ Removed instruction at [${x}, ${y}] page ${this.currentPage}`);
       return;
     }
 
     if (!this.selectedAction) {
-      console.log(`❌ No action selected, ignoring click on cell ${index}`);
+      console.log(`❌ No action selected, ignoring click on cell [${x}, ${y}]`);
       return;
     }
 
@@ -562,7 +591,7 @@ export class ProgrammatorUI {
     }
 
     console.log(
-      `📍 Placing ${this.selectedAction} (code: ${actionCode}) at position [${x}, ${y}] (index: ${index})`
+      `📍 Placing ${this.selectedAction} (code: ${actionCode}) at position [${x}, ${y}] page ${this.currentPage}`
     );
 
     // Create instruction with basic properties
@@ -617,28 +646,28 @@ export class ProgrammatorUI {
       }
     }
 
-    this.program.setInstructionAt(x, y, instruction);
-    this.updateCellDisplay(index);
+    this.program.setInstructionAt(x, y, instruction.action, instruction.label, instruction.value, this.currentPage);
+    this.updateCellDisplay(x, y);
 
     console.log(
-      `✅ Placed instruction: ${this.selectedAction} at [${x}, ${y}]`
+      `✅ Placed instruction: ${this.selectedAction} at [${x}, ${y}] page ${this.currentPage}`
     );
   }
 
   /**
    * Update display of specific cell
-   * @param {number} index - Cell index
+   * @param {number} x - X coordinate
+   * @param {number} y - Y coordinate
    */
-  updateCellDisplay(index) {
-    const cell = this.mainContent.querySelector(`[data-index="${index}"]`);
-    const { x, y } = indexToGridPosition(index);
-    const instruction = this.program.getInstructionAt(x, y);
+  updateCellDisplay(x, y) {
+    const cell = this.mainContent.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+    const instruction = this.program.getInstructionAt(x, y, this.currentPage);
 
     if (instruction.action === ProgAction.None) {
       cell.textContent = "";
       cell.className = "program-cell";
       cell.title = "";
-      console.log(`📭 Cell [${x}, ${y}] cleared`);
+      console.log(`📭 Cell [${x}, ${y}] page ${this.currentPage} cleared`);
     } else {
       const formatted = formatInstruction(instruction);
       console.log(`📬 Cell [${x}, ${y}] updated: ${formatted}`);
@@ -650,16 +679,63 @@ export class ProgrammatorUI {
   }
 
   /**
-   * Update entire grid from program instructions
+   * Update entire grid display for current page
    */
-  updateGridFromProgram() {
+  updateGridDisplay() {
     console.log(
-      `🔄 Updating grid display for ${GRID_WIDTH * GRID_HEIGHT} cells`
+      `🔄 Updating grid display for page ${this.currentPage} (${GRID_WIDTH * GRID_HEIGHT} cells)`
     );
-    for (let i = 0; i < GRID_WIDTH * GRID_HEIGHT; i++) {
-      this.updateCellDisplay(i);
+    for (let y = 0; y < GRID_HEIGHT; y++) {
+      for (let x = 0; x < GRID_WIDTH; x++) {
+        this.updateCellDisplay(x, y);
+      }
     }
-    console.log(`✅ Grid display updated`);
+    console.log(`✅ Grid display updated for page ${this.currentPage}`);
+  }
+
+  /**
+   * Switch to previous page
+   */
+  switchToPrevPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.updatePageDisplay();
+      this.updateGridDisplay();
+      console.log(`📄 Switched to page ${this.currentPage}`);
+    }
+  }
+
+  /**
+   * Switch to next page
+   */
+  switchToNextPage() {
+    if (this.currentPage < MAX_PAGES - 1) {
+      this.currentPage++;
+      this.updatePageDisplay();
+      this.updateGridDisplay();
+      console.log(`📄 Switched to page ${this.currentPage}`);
+    }
+  }
+
+  /**
+   * Update page indicator and button states
+   */
+  updatePageDisplay() {
+    const pageIndicator = document.getElementById('page-indicator');
+    const prevButton = document.getElementById('prev-page');
+    const nextButton = document.getElementById('next-page');
+
+    if (pageIndicator) {
+      pageIndicator.textContent = this.currentPage.toString().padStart(2, '0');
+    }
+
+    if (prevButton) {
+      prevButton.disabled = this.currentPage === 0;
+    }
+
+    if (nextButton) {
+      nextButton.disabled = this.currentPage === MAX_PAGES - 1;
+    }
   }
 
   /**

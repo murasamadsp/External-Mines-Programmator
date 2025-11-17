@@ -21,6 +21,7 @@ export default defineConfig(({ command, mode }) => ({
   build: {
     sourcemap: mode === "development",
     rollupOptions: {
+      external: ['lzma-native'],
       input: "./src/index.html",
       output: {
         manualChunks(id) {

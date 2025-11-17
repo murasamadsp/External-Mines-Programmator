@@ -542,6 +542,43 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
+.control-group button:disabled {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Page Controls */
+.page-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.page-controls button {
+    padding: 8px 12px;
+    font-size: 16px;
+    font-weight: bold;
+    min-width: 50px;
+}
+
+#page-indicator {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #fafafa;
+    font-family: 'Google Sans Code', monospace;
+    font-size: 18px;
+    font-weight: bold;
+    min-width: 40px;
+    text-align: center;
+}
+
 #program-output {
     width: 100%;
     min-height: 150px;

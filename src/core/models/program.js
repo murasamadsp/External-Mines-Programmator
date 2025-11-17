@@ -7,6 +7,8 @@ import {
   GRID_WIDTH,
   GRID_HEIGHT,
   GRID_SIZE,
+  PAGE_SIZE,
+  MAX_PAGES,
   ProgramSerializer,
 } from "../index.js";
 import {
@@ -60,8 +62,8 @@ export class Program {
     // Use the decoded instructions directly (should be full grid)
     program.instructions = instructions;
 
-    // Ensure we have full grid size
-    while (program.instructions.length < GRID_SIZE) {
+    // Ensure we have at least one page of instructions
+    while (program.instructions.length < PAGE_SIZE) {
       program.instructions.push(new Instruction(ProgAction.None, null, null));
     }
 
@@ -89,13 +91,57 @@ export class Program {
    * Get instruction at specific grid position
    * @param {number} x - X coordinate (0-15)
    * @param {number} y - Y coordinate (0-11)
+   * @param {number} page - Page number (0-15, default: 0)
    * @returns {Instruction} Instruction object
    */
-  getInstructionAt(x, y) {
-    const index = y * this.pageWidth + x;
+  getInstructionAt(x, y, page = 0) {
+    const pageOffset = page * PAGE_SIZE;
+    const index = pageOffset + y * this.pageWidth + x;
     return (
       this.instructions[index] || new Instruction(ProgAction.None, null, null)
     );
+  }
+
+  /**
+   * Set instruction at specific grid position
+   * @param {number} x - X coordinate (0-15)
+   * @param {number} y - Y coordinate (0-11)
+   * @param {number} action - Action code
+   * @param {string|null} label - Label
+   * @param {number|null} value - Value
+   * @param {number} page - Page number (0-15, default: 0)
+   */
+  setInstructionAt(x, y, action, label = null, value = null, page = 0) {
+    const pageOffset = page * PAGE_SIZE;
+    const index = pageOffset + y * this.pageWidth + x;
+
+    // Ensure array has enough space
+    while (this.instructions.length <= index) {
+      this.instructions.push(new Instruction(ProgAction.None, null, null));
+    }
+
+    this.instructions[index] = new Instruction(action, label, value);
+  }
+
+  /**
+   * Get all instructions for a specific page
+   * @param {number} page - Page number (0-15)
+   * @returns {Instruction[]} Array of instructions for the page
+   */
+  getPageInstructions(page) {
+    const pageOffset = page * PAGE_SIZE;
+    const pageInstructions = [];
+
+    for (let y = 0; y < this.pageHeight; y++) {
+      for (let x = 0; x < this.pageWidth; x++) {
+        const index = pageOffset + y * this.pageWidth + x;
+        pageInstructions.push(
+          this.instructions[index] || new Instruction(ProgAction.None, null, null)
+        );
+      }
+    }
+
+    return pageInstructions;
   }
 
   /**

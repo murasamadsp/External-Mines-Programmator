@@ -252,15 +252,22 @@ async function createLZMAInterface() {
       return new LZMAWebInterface(lzmaInstance);
     }
 
-    // Node.js environment
+    // Node.js environment - dynamically import lzma-native
     console.log('🔧 Initializing LZMA for Node.js...');
-    const lzmaNative = await import('lzma-native');
-    const nativeImpl = {
-      compress: (data, level) => lzmaNative.LZMA().compress(data, level),
-      decompress: (data) => lzmaNative.LZMA().decompress(data)
-    };
-    console.log('✅ LZMA-Native initialized successfully');
-    return new LZMANativeInterface(nativeImpl);
+    try {
+      const lzmaNative = await import('lzma-native');
+      const nativeImpl = {
+        compress: (data, level) => lzmaNative.LZMA().compress(data, level),
+        decompress: (data) => lzmaNative.LZMA().decompress(data)
+      };
+      console.log('✅ LZMA-Native initialized successfully');
+      return new LZMANativeInterface(nativeImpl);
+    } catch (nodeError) {
+      console.error('❌ LZMA-Native not available, falling back to browser implementation');
+      // Fallback to browser implementation if lzma-native fails
+      const lzmaInstance = await getBrowserLzmaInstance();
+      return new LZMAWebInterface(lzmaInstance);
+    }
   } catch (error) {
     console.error('❌ Failed to initialize LZMA:', error);
     throw new Error(`LZMA initialization failed: ${error.message}`);
