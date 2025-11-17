@@ -585,6 +585,7 @@ export class ProgrammatorUI {
     }
 
     const actionCode = ProgAction[this.selectedAction];
+
     if (actionCode === undefined) {
       console.log(`❌ Unknown action: ${this.selectedAction}`);
       return;

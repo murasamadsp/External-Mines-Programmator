@@ -145,12 +145,12 @@ export class Program {
   }
 
   /**
-   * Set instruction at specific grid position
+   * Set instruction object at specific grid position
    * @param {number} x - X coordinate (0-15)
    * @param {number} y - Y coordinate (0-11)
    * @param {Instruction} instruction - Instruction object
    */
-  setInstructionAt(x, y, instruction) {
+  setInstructionObjectAt(x, y, instruction) {
     const index = y * this.pageWidth + x;
     while (this.instructions.length <= index) {
       this.instructions.push(new Instruction(ProgAction.None, null, null));
