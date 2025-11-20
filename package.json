@@ -2,13 +2,14 @@
   "name": "external-mines-programmator",
   "version": "1.0.0",
   "description": "Веб-приложение для визуального программирования ботов в игре Mines",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "format": "prettier --config config/prettier.config.js --ignore-path config/prettierignore --write .",
-    "lint:css": "stylelint src/assets/styles/**/*.css --config config/stylelint-entry.config.js --fix"
+    "format": "prettier --config config/prettier.config.cjs --ignore-path config/prettierignore --write .",
+    "lint:css": "stylelint src/assets/styles/**/*.css --config config/stylelint-entry.config.cjs --fix"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,9 @@
   },
   "dependencies": {
     "glob": "^11.0.3",
+    "lzma": "^2.3.2",
+    "lzma-js": "^1.0.1",
+    "pako": "^2.1.0",
     "vite-plugin-full-reload": "^1.2.0",
     "vite-plugin-html-inject": "^1.1.2"
   }
