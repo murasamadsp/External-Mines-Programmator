@@ -1,0 +1,16 @@
+/* Main container component with centered layout and subtle shadow */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  max-width: none; /* Full width */
+  padding: 16px;
+  margin: 0;
+  border-radius: 0;
+  gap: 16px;
+  background-color: var(--color-background-secondary);
+  box-shadow: none;
+  overflow: hidden;
+  box-sizing: border-box;
+}

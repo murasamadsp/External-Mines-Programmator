@@ -1,0 +1,4 @@
+/*
+ * Main stylesheet - CSS files are now loaded via <link> tags in HTML
+ * This approach follows Code Guide recommendations to avoid @import
+ */

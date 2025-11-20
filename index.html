@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="External Mines Programmator - visual program editor for the Mines game" />
+    <meta name="keywords" content="mines, programmator, programming, game, visual editor" />
+    <meta name="author" content="Murasama" />
+
+    <title>EMP</title>
+
+    <!-- Preconnect to Google Fonts for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="./src/css/utils/normalize.css" />
+    <link rel="stylesheet" href="./src/css/utils/reset.css" />
+    <link rel="stylesheet" href="./src/css/base.css" />
+    <link rel="stylesheet" href="./src/css/container.css" />
+    <link rel="stylesheet" href="./src/css/header.css" />
+    <link rel="stylesheet" href="./src/css/footer.css" />
+    <link rel="stylesheet" href="./src/css/components/debug.css" />
+    <link rel="stylesheet" href="./src/css/components/placeholder.css" />
+    <link rel="stylesheet" href="./src/css/components/layout.css" />
+    <link rel="stylesheet" href="./src/css/components/action-palette.css" />
+    <link rel="stylesheet" href="./src/css/components/program-grid.css" />
+    <link rel="stylesheet" href="./src/css/components/snippets-panel.css" />
+    <link rel="stylesheet" href="./src/css/components/controls.css" />
+    <link rel="stylesheet" href="./src/css/components/dialogs.css" />
+    <link rel="stylesheet" href="./src/css/mobile-blocker.css" />
+  </head>
+  <body>
+    <!-- Mobile Block Overlay -->
+    <div class="mobile-block-overlay" id="mobile-block-overlay">
+      <div class="mobile-block-content">
+        <div class="mobile-block-icon">📱</div>
+        <h1 class="mobile-block-title">К сожалению!</h1>
+        <p class="mobile-block-message">
+          Это приложение не поддерживает мобильные устройства.<br />
+          Пожалуйста, используйте компьютер или планшет.
+        </p>
+        <div class="mobile-block-devices">
+          <span class="mobile-device-icon">💻</span>
+          <span class="mobile-device-icon">🖥️</span>
+          <span class="mobile-device-icon">📺</span>
+        </div>
+        <p class="mobile-block-footer">
+          Программатор шахт работает только на стационарных устройствах
+        </p>
+      </div>
+    </div>
+
+    <!-- Global Dialog Overlay (Static) -->
+    <div class="dialog-overlay" id="global-dialog-overlay">
+      <div class="dialog-content">
+        <h3 id="dialog-title">Dialog Title</h3>
+        <div class="dialog-body" id="dialog-body">
+          <!-- Dynamic Content Goes Here -->
+        </div>
+        <div class="dialog-buttons">
+          <button class="expert-btn-primary" id="dialog-ok-btn">✅ OK</button>
+          <button class="expert-btn-secondary" id="dialog-cancel-btn">
+            ❌ Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Site header -->
+    <header class="visually-hidden">
+      <div class="container">
+        <div class="header-content">
+          <h1 class="site-title">EMP</h1>
+          <p class="site-subtitle">External Mines Programmator</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main>
+      <div class="container">
+        <section class="section programmer-section">
+          <div class="programmer-layout">
+            <!-- Left Panel: Action Palette -->
+            <div class="programmer-sidebar programmer-sidebar-left">
+              <!-- Action palette will be created here by JavaScript -->
+            </div>
+
+            <!-- Center Top: Transport Panel -->
+            <div id="transport-panel-container" class="transport-panel-container">
+              <!-- Controls will be injected here -->
+            </div>
+
+            <!-- Center Bottom: Program Grid -->
+            <div class="programmer-main">
+              <!-- Program grid will be created here by JavaScript -->
+            </div>
+
+            <!-- Right Panel: Snippets -->
+            <div class="programmer-sidebar programmer-sidebar-right">
+              <!-- Snippets panel will be created here by JavaScript -->
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Site footer -->
+    <footer class="visually-hidden">
+      <div class="container">
+        <div class="footer-content">
+          <p>
+            &copy; 2025 External Mines Programmator. Made with ❤️ by Murasama
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Simple JS check -->
+    <script>
+      window.JS_LOADED = true;
+      document.body.setAttribute("data-js-loaded", "true");
+      console.log("🔥 HTML: JavaScript is working");
+    </script>
+
+    <!-- Main Application Entry Point -->
+    <script src="/src/js/app.js" type="module"></script>
+  </body>
+</html>

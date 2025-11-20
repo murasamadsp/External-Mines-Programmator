@@ -8,8 +8,9 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
+    "test": "node src/js/core/constants/__tests__/actions.test.js",
     "format": "prettier --config config/prettier.config.cjs --ignore-path config/prettierignore --write .",
-    "lint:css": "stylelint src/assets/styles/**/*.css --config config/stylelint-entry.config.cjs --fix"
+    "lint:css": "stylelint src/css/**/*.css --config config/stylelint-entry.config.cjs --fix"
   },
   "repository": {
     "type": "git",
@@ -31,10 +32,10 @@
     "stylelint-config-standard": "^39.0.1",
     "stylelint-order": "^7.0.0",
     "vite": "^7.2.2",
-    "vite-plugin-full-reload": "^1.2.0",
-    "vite-plugin-html-inject": "^1.1.2"
+    "vite-plugin-full-reload": "^1.2.0"
   },
   "dependencies": {
+    "animejs": "^4.2.2",
     "lzma-js": "^1.0.1",
     "lzma-web": "^3.0.1"
   }

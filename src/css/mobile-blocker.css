@@ -1,0 +1,77 @@
+/* Mobile Device Blocker - CSS Only Solution */
+
+/* Hide mobile blocker by default (desktop) */
+#mobile-block-overlay {
+  display: none;
+}
+
+/* Show mobile blocker on small screens */
+@media (max-width: 768px) {
+  #mobile-block-overlay {
+    display: flex !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, rgb(102 126 234), rgb(118 75 162));
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    font-family: "Google Sans Code", monospace;
+    color: rgb(255 255 255);
+  }
+
+  /* Hide all other content on mobile */
+  body > *:not(#mobile-block-overlay) {
+    display: none !important;
+  }
+}
+
+.mobile-block-content {
+  text-align: center;
+  padding: 40px;
+  max-width: 90%;
+  background: rgb(255 255 255 / 10%);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgb(255 255 255 / 20%);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 30%);
+}
+
+.mobile-block-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.mobile-block-title {
+  font-size: 2rem;
+  margin: 0 0 15px 0;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgb(0 0 0 / 30%);
+}
+
+.mobile-block-message {
+  font-size: 1.1rem;
+  margin: 0 0 25px 0;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.mobile-block-devices {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 25px 0;
+}
+
+.mobile-device-icon {
+  font-size: 2.5rem;
+}
+
+.mobile-block-footer {
+  font-size: 0.9rem;
+  margin-top: 20px;
+  opacity: 0.8;
+}

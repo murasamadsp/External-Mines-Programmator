@@ -1,0 +1,21 @@
+/* Programmer placeholder */
+.programmer-placeholder {
+  padding: 30px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border: 2px solid #dee2e6;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  margin-bottom: 25px;
+}
+
+.programmer-placeholder p {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #6c757d;
+  gap: 10px;
+}

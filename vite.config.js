@@ -1,5 +1,4 @@
 import { defineConfig } from "vite";
-import injectHTML from "vite-plugin-html-inject";
 import FullReload from "vite-plugin-full-reload";
 import legacy from "@vitejs/plugin-legacy";
 
@@ -8,8 +7,8 @@ export default defineConfig(({ command, mode }) => ({
     [command === "serve" ? "global" : "_global"]: {},
   },
   base: mode === "production" ? "/External-Mines-Programmator/" : "/",
-  root: "src",
-  publicDir: "../public",
+  root: ".",
+  publicDir: "public",
   resolve: {
     alias: {
       "lzma-web": "lzma-web/dist/index.js",
@@ -17,26 +16,26 @@ export default defineConfig(({ command, mode }) => ({
     },
   },
   css: {
-    postcss: "./config/postcss.config.cjs",
+    postcss: "config/postcss.config.cjs",
   },
   build: {
     sourcemap: mode === "development",
     rollupOptions: {
-      external: ['lzma-native'],
-      input: "./src/index.html",
+      external: ["lzma-native"],
+      input: "index.html",
       output: {
         manualChunks(id) {
           if (id.includes("node_modules")) {
             return "vendor";
           }
         },
-        entryFileNames: (chunkInfo) => {
+        entryFileNames: chunkInfo => {
           if (chunkInfo.name === "commonHelpers") {
             return "commonHelpers.js";
           }
           return "[name].js";
         },
-        assetFileNames: (assetInfo) => {
+        assetFileNames: assetInfo => {
           if (assetInfo.name && assetInfo.name.endsWith(".html")) {
             return "[name].[ext]";
           }
@@ -48,8 +47,7 @@ export default defineConfig(({ command, mode }) => ({
     emptyOutDir: true,
   },
   plugins: [
-    injectHTML(),
-    FullReload(["./src/**/*.html"]),
+    FullReload(["./**/*.html"]),
     legacy({
       targets: ["defaults", "not IE 11"],
     }),

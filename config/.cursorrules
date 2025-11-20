@@ -98,6 +98,16 @@
 - **PURPOSE**: Reference materials for understanding original game mechanics and algorithms
 - **CONTEXT**: These files are from the original Mines game implementation and should remain unchanged
 
+## CSS RULES
+
+### Responsive Design
+
+- **FORBIDDEN**: Use of `@media` queries for responsive design
+- **REASON**: Application is desktop-only
+- **EXCEPTION**: `@media` queries ARE allowed in `mobile-blocker.css` ONLY for blocking mobile devices
+- **MANDATORY**: All other CSS must be optimized for desktop viewing only
+- **REQUIRED**: Remove any `@media` queries from stylesheets except mobile-blocker.css
+
 ## ENFORCEMENT
 
 These rules are **MANDATORY** and **NON-NEGOTIABLE**. Any violation requires immediate correction. No exceptions, no compromises, no shortcuts.
