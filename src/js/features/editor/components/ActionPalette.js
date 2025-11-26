@@ -2,7 +2,7 @@ import {
   ACTION_DATA,
   ACTION_CATEGORIES,
 } from "../../../core/constants/actions.js";
-import { loggers } from "../../../utils/index.js";
+import { loggers } from "../../../utils/logging/logger.js";
 import { contextMenuManager } from "../../../core/services/context-menu-manager.js";
 
 export class ActionPalette {
@@ -54,7 +54,7 @@ export class ActionPalette {
     this.updateFavoriteIndicator(button, actionKey);
 
     // Додаємо обробник контекстного меню
-    button.addEventListener("contextmenu", (e) => {
+    button.addEventListener("contextmenu", e => {
       e.preventDefault();
       contextMenuManager.showActionPaletteMenu(actionKey);
     });
@@ -92,7 +92,7 @@ export class ActionPalette {
   updateFavoriteIndicators() {
     // Update all action buttons
     const buttons = this.palette.querySelectorAll("button[data-action]");
-    buttons.forEach((button) => {
+    buttons.forEach(button => {
       const actionKey = button.getAttribute("data-action");
       this.updateFavoriteIndicator(button, actionKey);
     });
@@ -102,7 +102,7 @@ export class ActionPalette {
     if (!this.palette) return;
 
     const buttons = this.palette.querySelectorAll("button[data-action]");
-    buttons.forEach((button) => {
+    buttons.forEach(button => {
       const actionKey = button.getAttribute("data-action");
       this.actionButtons.set(actionKey, button);
 
@@ -116,21 +116,33 @@ export class ActionPalette {
   }
 
   selectAction(actionKey) {
-    if (this.selectedAction) {
+    // Якщо натиснуто вже вибрану дію - знімаємо вибір
+    if (this.selectedAction === actionKey) {
       const prevButton = this.actionButtons.get(this.selectedAction);
       if (prevButton) {
         prevButton.classList.remove("selected");
       }
-    }
-
-    if (actionKey) {
-      const button = this.actionButtons.get(actionKey);
-      if (button) {
-        button.classList.add("selected");
+      this.selectedAction = null;
+      actionKey = null;
+    } else {
+      // Знімаємо попередній вибір
+      if (this.selectedAction) {
+        const prevButton = this.actionButtons.get(this.selectedAction);
+        if (prevButton) {
+          prevButton.classList.remove("selected");
+        }
       }
-    }
 
-    this.selectedAction = actionKey;
+      // Встановлюємо новий вибір
+      if (actionKey) {
+        const button = this.actionButtons.get(actionKey);
+        if (button) {
+          button.classList.add("selected");
+        }
+      }
+
+      this.selectedAction = actionKey;
+    }
 
     if (this.onActionSelected) {
       this.onActionSelected(actionKey);
@@ -169,7 +181,7 @@ export class ActionPalette {
       const categoryActions = ACTION_CATEGORIES[category];
       console.log("category:", category, "actions:", categoryActions);
 
-      const categoryActionsFiltered = categoryActions.filter((actionKey) =>
+      const categoryActionsFiltered = categoryActions.filter(actionKey =>
         actionsToRender.has(actionKey),
       );
 
@@ -206,7 +218,7 @@ export class ActionPalette {
       // Додаємо обробник для заголовка та кнопки
       const toggleHandler = () => this.toggleCategory(category);
       categoryHeader.addEventListener("click", toggleHandler);
-      toggleButton.addEventListener("click", (e) => {
+      toggleButton.addEventListener("click", e => {
         e.stopPropagation();
         toggleHandler();
       });
@@ -309,8 +321,8 @@ export class ActionPalette {
       toggleButton.title = "Розгорнути категорію";
     } else {
       // Сначала получаем естественную высоту
-      const scrollHeight = categoryContainer.scrollHeight;
-      categoryContainer.style.maxHeight = scrollHeight + "px";
+      const { scrollHeight } = categoryContainer;
+      categoryContainer.style.maxHeight = `${scrollHeight}px`;
       categoryContainer.style.opacity = "1";
       categoryContainer.style.overflow = "visible";
 

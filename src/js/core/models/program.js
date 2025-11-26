@@ -1,10 +1,11 @@
 // Клас програми шахт
 // Керує інструкціями програми бота та валідацією
 
-import { ProgAction, getActionCode } from "../constants/actions.js";
-import { GRID_WIDTH, GRID_HEIGHT, GRID_SIZE, PAGE_SIZE, MAX_PAGES } from "../constants/grid.js";
+import { ProgAction, ACTION_DATA } from "../constants/actions.js";
+import { GRID_WIDTH, GRID_HEIGHT, PAGE_SIZE } from "../constants/grid.js";
 import { ProgramSerializer } from "../services/serialization/serializer.js";
-import { validateProgram } from "../../utils/index.js";
+import { validateProgram } from "../../utils/validators/program-validator.js";
+import { getActionByCode } from "../utils/action-utils.js";
 
 /**
  * Клас інструкції, що представляє одну інструкцію програми
@@ -70,7 +71,7 @@ export class Program {
     console.log(
       "📊 Exporting",
       this.instructions.length,
-      "instructions (all from grid)"
+      "instructions (all from grid)",
     );
 
     // Якщо немає інструкцій, повертаємо мінімальну програму
@@ -162,7 +163,7 @@ export class Program {
         const index = pageOffset + y * this.pageWidth + x;
         pageInstructions.push(
           this.instructions[index] ||
-            new Instruction(ProgAction.None, null, null)
+            new Instruction(ProgAction.None, null, null),
         );
       }
     }
@@ -179,7 +180,7 @@ export class Program {
 
   /**
    * Validate program structure
-   * @returns {Object} Validation result with errors and warnings
+   * @returns {object} Validation result with errors and warnings
    */
   validate() {
     return validateProgram(this.instructions);
@@ -191,6 +192,14 @@ export class Program {
    * @returns {string} Short code for grid display
    */
   static getActionShortCode(actionCode) {
-    return getShortCode(actionCode);
+    const actionInfo = getActionByCode(actionCode);
+    if (!actionInfo) return String(actionCode);
+
+    const data = ACTION_DATA[actionInfo.name];
+    if (!data) return String(actionCode);
+
+    // Extract icon/short code from label (e.g., "↑ Move Up" -> "↑")
+    const match = data.label.match(/^([^\s]+)/);
+    return match ? match[1] : data.label.substring(0, 2);
   }
 }

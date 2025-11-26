@@ -1,16 +1,13 @@
 // Program Validation Utilities
 // Provides comprehensive validation for program instructions
 
-import {
-  ProgAction,
-  GRID_SIZE,
-  MAX_LABEL_LENGTH,
-} from "../../core/constants/index.js";
+import { ProgAction } from "../../core/constants/actions.js";
+import { GRID_SIZE, MAX_LABEL_LENGTH } from "../../core/constants/grid.js";
 
 /**
  * Validates a program instruction
- * @param {Object} instruction - Instruction to validate
- * @returns {Object} Validation result with errors and warnings
+ * @param {object} instruction - Instruction to validate
+ * @returns {object} Validation result with errors and warnings
  */
 export function validateInstruction(instruction) {
   const errors = [];
@@ -55,11 +52,17 @@ export function validateInstruction(instruction) {
 /**
  * Validates an entire program
  * @param {Array} instructions - Array of program instructions
- * @returns {Object} Validation result with errors and warnings
+ * @returns {object} Validation result with errors and warnings
  */
 export function validateProgram(instructions) {
   const errors = [];
   const warnings = [];
+
+  // Check if instructions is valid
+  if (!Array.isArray(instructions)) {
+    errors.push("Instructions must be an array");
+    return { isValid: false, errors, warnings };
+  }
 
   // Check program size
   if (instructions.length > GRID_SIZE) {
@@ -72,7 +75,7 @@ export function validateProgram(instructions) {
 
   // Check for start instruction
   const hasStart = instructions.some(
-    inst => inst.action === ProgAction.SetStart
+    inst => inst.action === ProgAction.SetStart,
   );
   if (!hasStart) {
     warnings.push("No start position defined (use SetStart action)");
@@ -86,10 +89,10 @@ export function validateProgram(instructions) {
     // Validate individual instruction
     const instValidation = validateInstruction(inst);
     errors.push(
-      ...instValidation.errors.map(err => `Instruction ${index}: ${err}`)
+      ...instValidation.errors.map(err => `Instruction ${index}: ${err}`),
     );
     warnings.push(
-      ...instValidation.warnings.map(warn => `Instruction ${index}: ${warn}`)
+      ...instValidation.warnings.map(warn => `Instruction ${index}: ${warn}`),
     );
 
     // Collect labels

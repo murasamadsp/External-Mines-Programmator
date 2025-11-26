@@ -1,6 +1,6 @@
-import { BaseDialog } from './BaseDialog.js';
-import { Component } from '../../../../core/utils/Component.js';
-import { createInput, createButton } from '../../../../core/utils/dom-utils.js';
+import { BaseDialog } from "./BaseDialog.js";
+import { Component } from "../../../../core/utils/Component.js";
+import { createInput, createButton } from "../../../../core/utils/dom-utils.js";
 
 export class NumberDialog extends BaseDialog {
   constructor(defaultValue = 0, min = 0, max = 9999) {
@@ -14,51 +14,56 @@ export class NumberDialog extends BaseDialog {
     super.create();
 
     const input = createInput({
-      id: 'number-input',
-      type: 'number',
+      id: "number-input",
+      type: "number",
       value: this.defaultValue.toString(),
-      onKeyDown: (e) => {
-        if (e.key === 'Enter') {
+      onKeyDown: e => {
+        if (e.key === "Enter") {
           e.preventDefault();
           this.submit();
         }
-        if (e.key === 'Escape') {
+        if (e.key === "Escape") {
           e.preventDefault();
           this.close(null);
         }
-      }
+      },
     });
 
-    const errorMsg = Component.create('div')
-      .class('dialog-error')
-      .style({ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.5rem', minHeight: '1.25rem' })
+    const errorMsg = Component.create("div")
+      .class("dialog-error")
+      .style({
+        color: "#ef4444",
+        fontSize: "0.875rem",
+        marginTop: "0.5rem",
+        minHeight: "1.25rem",
+      })
       .render();
 
-    const content = Component.create('div')
+    const content = Component.create("div")
       .child(input)
       .child(errorMsg)
       .render();
 
     this.setContent(content);
 
-    const footer = Component.create('div')
-      .class('dialog-buttons')
-      .style({ display: 'flex', justifyContent: 'flexEnd', gap: '0.5rem' })
+    const footer = Component.create("div")
+      .class("dialog-buttons")
+      .style({ display: "flex", justifyContent: "flexEnd", gap: "0.5rem" })
       .child(
         createButton({
-          id: 'cancel-btn',
-          text: 'Cancel',
-          className: 'btn-secondary',
-          onClick: () => this.close(null)
-        })
+          id: "cancel-btn",
+          text: "Cancel",
+          className: "btn-secondary",
+          onClick: () => this.close(null),
+        }),
       )
       .child(
         createButton({
-          id: 'submit-btn',
-          text: 'Save',
-          className: 'btn-primary',
-          onClick: () => this.submit()
-        })
+          id: "submit-btn",
+          text: "Save",
+          className: "btn-primary",
+          onClick: () => this.submit(),
+        }),
       )
       .render();
 
@@ -69,9 +74,9 @@ export class NumberDialog extends BaseDialog {
   }
 
   submit() {
-    const input = this.dialog.querySelector('#number-input');
-    const errorMsg = this.dialog.querySelector('.dialog-error');
-    const val = parseInt(input.value || input.textContent || '0');
+    const input = this.dialog.querySelector("#number-input");
+    const errorMsg = this.dialog.querySelector(".dialog-error");
+    const val = parseInt(input.value || input.textContent || "0");
 
     if (isNaN(val)) {
       errorMsg.textContent = "Not a valid number!";

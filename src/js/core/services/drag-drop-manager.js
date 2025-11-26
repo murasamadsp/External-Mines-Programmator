@@ -2,7 +2,7 @@
 // Handles dragging instructions between cells with visual feedback
 // Refactored to use Pointer Events for unified mouse/touch support
 
-import { loggers } from "../../utils/index.js";
+import { loggers } from "../../utils/logging/logger.js";
 import { stateManager } from "./state-manager.js";
 import { getActionByCode } from "../constants/actions.js";
 
@@ -40,10 +40,10 @@ export class DragDropManager {
     const grid = this.programGrid.container;
 
     // Unified Pointer Events
-    grid.addEventListener("pointerdown", (e) => this.handlePointerDown(e));
-    document.addEventListener("pointermove", (e) => this.handlePointerMove(e));
-    document.addEventListener("pointerup", (e) => this.handlePointerUp(e));
-    document.addEventListener("pointercancel", (e) => this.cancelDrag());
+    grid.addEventListener("pointerdown", e => this.handlePointerDown(e));
+    document.addEventListener("pointermove", e => this.handlePointerMove(e));
+    document.addEventListener("pointerup", e => this.handlePointerUp(e));
+    document.addEventListener("pointercancel", e => this.cancelDrag());
 
     // Prevent default touch actions to allow dragging
     grid.style.touchAction = "none";
@@ -51,7 +51,7 @@ export class DragDropManager {
     // Suppress click event after dragging
     grid.addEventListener(
       "click",
-      (e) => {
+      e => {
         if (this.wasDragging) {
           e.preventDefault();
           e.stopPropagation();
@@ -171,11 +171,9 @@ export class DragDropManager {
     const cell = target?.closest(".program-cell");
 
     // Clear previous highlights
-    this.programGrid.container
-      .querySelectorAll(".drop-target")
-      .forEach((el) => {
-        el.classList.remove("drop-target");
-      });
+    this.programGrid.container.querySelectorAll(".drop-target").forEach(el => {
+      el.classList.remove("drop-target");
+    });
 
     if (cell) {
       cell.classList.add("drop-target");
@@ -203,7 +201,7 @@ export class DragDropManager {
   }
 
   moveInstruction(from, to) {
-    const program = this.programGrid.program;
+    const { program } = this.programGrid;
     const fromInst = program.getInstruction(from);
     const toInst = program.getInstruction(to);
 
@@ -239,11 +237,9 @@ export class DragDropManager {
 
   endDrag() {
     document.body.style.cursor = "";
-    this.programGrid.container
-      .querySelectorAll(".drop-target")
-      .forEach((el) => {
-        el.classList.remove("drop-target");
-      });
+    this.programGrid.container.querySelectorAll(".drop-target").forEach(el => {
+      el.classList.remove("drop-target");
+    });
 
     stateManager.setState({
       dragState: {

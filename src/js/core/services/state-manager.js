@@ -1,7 +1,7 @@
 // State Manager for global application state
 // Implements a simple pub/sub pattern for state updates
 
-import { loggers } from "../../utils/index.js";
+import { loggers } from "../../utils/logging/logger.js";
 
 class StateManager {
   constructor() {
@@ -15,10 +15,10 @@ class StateManager {
       dragState: {
         isDragging: false,
         draggedInstruction: null,
-        startPosition: null
-      }
+        startPosition: null,
+      },
     };
-    
+
     this.listeners = [];
     this.init();
   }
@@ -44,7 +44,7 @@ class StateManager {
   setState(newState) {
     const oldState = { ...this.state };
     this.state = { ...this.state, ...newState };
-    
+
     // Notify listeners
     this.notifyListeners(this.state, oldState);
   }

@@ -11,7 +11,7 @@ import { ACTION_METADATA } from "../data/action-metadata.js";
  * @type {Map<number, string>}
  */
 const CODE_TO_NAME_MAP = new Map(
-  Object.entries(ProgAction).map(([name, code]) => [code, name])
+  Object.entries(ProgAction).map(([name, code]) => [code, name]),
 );
 
 // ============================================================================
@@ -23,14 +23,14 @@ const CODE_TO_NAME_MAP = new Map(
  * @param {string} actionName
  * @returns {number|undefined}
  */
-export const getActionCode = (actionName) => ProgAction[actionName];
+export const getActionCode = actionName => ProgAction[actionName];
 
 /**
  * Get action name and code by action code
  * @param {number} code
  * @returns {{name: string, code: number}|null}
  */
-export const getActionByCode = (code) => {
+export const getActionByCode = code => {
   const name = CODE_TO_NAME_MAP.get(code);
   return name ? { name, code } : null;
 };
@@ -40,16 +40,15 @@ export const getActionByCode = (code) => {
  * @param {string} actionName
  * @returns {{label?: string, tooltip?: string}|null}
  */
-export const getActionMetadata = (actionName) => {
-  return ACTION_METADATA[actionName] || null;
-};
+export const getActionMetadata = actionName =>
+  ACTION_METADATA[actionName] || null;
 
 /**
  * Get action name by action code
  * @param {number} code
  * @returns {string|null}
  */
-export const getActionName = (code) => CODE_TO_NAME_MAP.get(code) || null;
+export const getActionName = code => CODE_TO_NAME_MAP.get(code) || null;
 
 // ============================================================================
 // Action Logic (Moved from ProgrammatorUI)
@@ -60,7 +59,12 @@ export const getActionName = (code) => CODE_TO_NAME_MAP.get(code) || null;
  * @param {number} actionCode
  * @returns {boolean}
  */
-export const needsLabel = (actionCode) => {
+export const needsLabel = actionCode => {
+  // Return false for null, undefined, or non-number values
+  if (actionCode == null || typeof actionCode !== "number") {
+    return false;
+  }
+
   const actionsWithLabels = [
     ProgAction.Goto,
     ProgAction.Call,
@@ -92,7 +96,12 @@ export const needsLabel = (actionCode) => {
  * @param {number} actionCode
  * @returns {boolean}
  */
-export const needsValue = (actionCode) => {
+export const needsValue = actionCode => {
+  // Return false for null, undefined, or non-number values
+  if (actionCode == null || typeof actionCode !== "number") {
+    return false;
+  }
+
   const actionsWithValues = [
     ProgAction.SetNumberToVar,
     ProgAction.AddNumberToVar,
@@ -115,35 +124,34 @@ export const needsValue = (actionCode) => {
  * @param {number} actionCode
  * @returns {number}
  */
-export const getDefaultValueForAction = (actionCode) => {
-  switch (actionCode) {
-    case ProgAction.SetNumberToVar:
-      return 0;
-    case ProgAction.AddNumberToVar:
-    case ProgAction.MultNumberToVar:
-    case ProgAction.DivNumberToVar:
-    case ProgAction.SubNumberToVar:
-      return 1;
-    case ProgAction.PlaySound:
-      return 1;
-    case ProgAction.VarGreaterThanNumber:
-    case ProgAction.VarLessThanNumber:
-    case ProgAction.VarGreaterThanOrEqualNumber:
-    case ProgAction.VarLessThanOrEqualNumber:
-      return 0;
-    case ProgAction.VarEqualsNumber:
-    case ProgAction.VarNotEqualsNumber:
-      return 1;
-    default:
-      return 0;
-  }
+const DEFAULT_VALUES = {
+  [ProgAction.SetNumberToVar]: 0,
+  [ProgAction.AddNumberToVar]: 1,
+  [ProgAction.MultNumberToVar]: 1,
+  [ProgAction.DivNumberToVar]: 1,
+  [ProgAction.SubNumberToVar]: 1,
+  [ProgAction.PlaySound]: 1,
+  [ProgAction.VarGreaterThanNumber]: 0,
+  [ProgAction.VarLessThanNumber]: 0,
+  [ProgAction.VarGreaterThanOrEqualNumber]: 0,
+  [ProgAction.VarLessThanOrEqualNumber]: 0,
+  [ProgAction.VarEqualsNumber]: 1,
+  [ProgAction.VarNotEqualsNumber]: 1,
 };
+
+export const getDefaultValueForAction = actionCode =>
+  DEFAULT_VALUES[actionCode] ?? 0;
 
 /**
  * Check if action needs coordinates
  * @param {number} actionCode
  * @returns {boolean}
  */
-export const needsCoordinates = (actionCode) => {
+export const needsCoordinates = actionCode => {
+  // Return false for null, undefined, or non-number values
+  if (actionCode == null || typeof actionCode !== "number") {
+    return false;
+  }
+
   return actionCode === ProgAction.Teleport;
 };

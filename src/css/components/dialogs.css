@@ -16,7 +16,6 @@
 }
 
 .dialog-overlay.show {
-
   /* Dialog overlay is visible */
 }
 
@@ -34,7 +33,6 @@
 }
 
 .dialog-content.show {
-
   /* Dialog content is shown */
 }
 
@@ -343,4 +341,51 @@
   background: var(--surface-bg-strong);
   border-block-start: 1px solid var(--border-color);
   gap: var(--space-3);
+}
+
+/* ==========================================================================
+   Two Labels Dialog - Dialog for entering two variable names
+   ========================================================================== */
+
+.two-labels-dialog .dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.two-labels-dialog .input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.two-labels-dialog .input-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.two-labels-dialog .dialog-input {
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-md);
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--color-text);
+  background: var(--surface-bg);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.two-labels-dialog .dialog-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: var(--hover-bg);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 20%);
+}
+
+.two-labels-dialog .dialog-input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.7;
 }

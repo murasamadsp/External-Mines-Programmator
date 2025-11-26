@@ -8,22 +8,18 @@ import { ProgAction } from "../../constants/actions.js";
 import { MAX_INSTRUCTIONS } from "../../constants/grid.js";
 import { LZMACompressor } from "../lzma-compressor.js";
 import {
-  V1_PAGE_WIDTH,
   MODERN_PAGE_WIDTH,
   MODERN_PAGE_HEIGHT,
   MODERN_PAGE_SIZE,
   ALPHABET,
-  V1_MAPPINGS,
-  V3_MAPPINGS
 } from "./serializer-constants.js";
 import {
-  findMapping,
   pushInstruction,
   padRowToModernWidth,
   appendNoneUntil,
   parseLabelParts,
   asciiToUint8,
-  uint8ToAscii
+  uint8ToAscii,
 } from "./serializer-utils.js";
 
 export class ProgramSerializer {
@@ -32,112 +28,29 @@ export class ProgramSerializer {
       throw new Error("Program source must be a non-empty string");
     }
 
-    if (
-      (source.length - 2) % 4 === 0 &&
-      /^@\d[\da-zA-Z/+]+={0,2}$/.test(source)
-    ) {
-      if (source[1] === "4") {
-        return ProgramFormatVersion.Packed;
-      }
-      throw new Error("Malformed program");
-    }
-
-    if (/^\$[\w()=<>|+~,:#! ^;?{}\n-.]+$/.test(source)) {
-      return ProgramFormatVersion.Version3;
-    }
-
+    // Only LZMA Base64 format is supported
     if (source.length % 4 === 0 && /^XQAA[\da-zA-Z/+]+={0,2}$/.test(source)) {
       return ProgramFormatVersion.Base64;
     }
 
-    return ProgramFormatVersion.Version1;
+    throw new Error("Only LZMA Base64 format is supported");
   }
 
   static async decode(source, forcedVersion) {
     const version = forcedVersion ?? this.probeFormatVersion(source);
     switch (version) {
-      case ProgramFormatVersion.Version1:
-        return this.decodeV1(source);
       case ProgramFormatVersion.Base64:
         return await this.decodeV2(source);
-      case ProgramFormatVersion.Version3:
-        return this.decodeV3(source);
-      case ProgramFormatVersion.Packed:
-        throw new Error("Packed (V4) format is not implemented");
       default:
-        throw new Error("Unsupported program format");
+        throw new Error("Only LZMA Base64 format is supported");
     }
   }
 
   static async encode(instructions, format = ProgramFormatVersion.Base64) {
-    switch (format) {
-      case ProgramFormatVersion.Base64:
-        return await this.encodeV2(instructions);
-      case ProgramFormatVersion.Version3:
-        return this.encodeV3(instructions);
-      case ProgramFormatVersion.Packed:
-        throw new Error("EncodeV4 is not implemented");
-      default:
-        throw new Error("Unsupported format for encoding");
+    if (format !== ProgramFormatVersion.Base64) {
+      throw new Error("Only LZMA Base64 format is supported");
     }
-  }
-
-  static decodeV1(source) {
-    const ret = [];
-    let column = 0;
-    let remaining = source;
-    while (remaining.length > 0) {
-      if (column >= V1_PAGE_WIDTH) {
-        padRowToModernWidth(ret, column);
-        column = 0;
-      }
-
-      let match = remaining.match(/^(L|G[0-4])\((.+?)\)/);
-      if (match) {
-        const label = match[2];
-        const mapping = V1_MAPPINGS.find(([key]) => key === match[1]);
-        if (!mapping) {
-          throw new Error("Malformed program");
-        }
-        pushInstruction(ret, mapping[1], label);
-        remaining = remaining.slice(match[0].length);
-        column++;
-        continue;
-      }
-
-      if (remaining[0] === "/") {
-        const skipUntil =
-          (Math.floor(ret.length / MODERN_PAGE_SIZE) + 1) * MODERN_PAGE_SIZE;
-        appendNoneUntil(ret, skipUntil);
-        remaining = remaining.slice(1);
-        column = 0;
-        continue;
-      }
-
-      match = remaining.match(new RegExp(`^-[${ALPHABET}]`));
-      if (match) {
-        const skip = ALPHABET.indexOf(remaining[1]);
-        for (let i = 0; i < skip; i++) {
-          pushInstruction(ret, ProgAction.None);
-          column++;
-          if (column >= V1_PAGE_WIDTH) {
-            padRowToModernWidth(ret, column);
-            column = 0;
-          }
-        }
-        remaining = remaining.slice(2);
-        continue;
-      }
-
-      const mapping = findMapping(remaining, V1_MAPPINGS);
-      if (!mapping) {
-        throw new Error("Malformed program");
-      }
-      pushInstruction(ret, mapping[1]);
-      remaining = remaining.slice(mapping[0].length);
-      column++;
-    }
-    return ret;
+    return await this.encodeV2(instructions);
   }
 
   static async decodeV2(source) {
@@ -151,8 +64,7 @@ export class ProgramSerializer {
       throw new Error("Malformed program");
     }
     const operators = decompressed.slice(4, 4 + length);
-    const labelsRaw = uint8ToAscii(decompressed.slice(4 + length))
-      .split(":");
+    const labelsRaw = uint8ToAscii(decompressed.slice(4 + length)).split(":");
     const ret = new Array(length);
     for (let i = 0; i < length; i++) {
       const action = operators[i];
@@ -160,124 +72,6 @@ export class ProgramSerializer {
       ret[i] = new Instruction(action, labelInfo.label, labelInfo.value);
     }
     return ret;
-  }
-
-  static decodeV3(source) {
-    let remaining = source.startsWith("$") ? source.slice(1) : source;
-    remaining = remaining
-      .replace(/\.0\./g, "\n\n\n\n\n\n\n\n\n")
-      .replace(/\.9\./g, "\n\n\n\n\n\n\n\n")
-      .replace(/\.8\./g, "\n\n\n\n\n\n\n")
-      .replace(/\.7\./g, "\n\n\n\n\n\n")
-      .replace(/\.6\./g, "\n\n\n\n\n")
-      .replace(/\.5\./g, "\n\n\n\n")
-      .replace(/\./g, "\n")
-      .replace(/_/g, "   ");
-
-    const ret = [];
-
-    while (remaining.length > 0) {
-      if (remaining[0] === "~") {
-        const skipUntil =
-          (Math.floor(ret.length / MODERN_PAGE_SIZE) + 1) * MODERN_PAGE_SIZE;
-        appendNoneUntil(ret, skipUntil);
-        remaining = remaining.slice(1);
-        continue;
-      }
-      if (remaining[0] === "\n") {
-        const skipUntil =
-          (Math.floor(ret.length / MODERN_PAGE_WIDTH) + 1) * MODERN_PAGE_WIDTH;
-        appendNoneUntil(ret, skipUntil);
-        remaining = remaining.slice(1);
-        continue;
-      }
-
-      const conditionalGoto = remaining.match(/^(!)?\?(.+?)</);
-      if (conditionalGoto) {
-        const label = conditionalGoto[2];
-        const action = conditionalGoto[1]
-          ? ProgAction.YesNoGoto
-          : ProgAction.NoYesGoto;
-        pushInstruction(ret, action, label);
-        remaining = remaining.slice(conditionalGoto[0].length);
-        continue;
-      }
-
-      const debugMatch = remaining.match(/^(!)?\{(.+?)\}/);
-      if (debugMatch) {
-        const label = debugMatch[2];
-        const action = debugMatch[1]
-          ? ProgAction.DebugPause
-          : ProgAction.DebugShow;
-        pushInstruction(ret, action, label);
-        remaining = remaining.slice(debugMatch[0].length);
-        continue;
-      }
-
-      let match = remaining.match(/^\|(.+?):/);
-      if (match) {
-        pushInstruction(ret, ProgAction.Label, match[1]);
-        remaining = remaining.slice(match[0].length);
-        continue;
-      }
-
-      match = remaining.match(/^(#R|[:=-])(.+?)>/);
-      if (match) {
-        const label = match[2];
-        const action =
-          match[1] === "#R"
-            ? ProgAction.CallWhenDied
-            : match[1] === ":"
-              ? ProgAction.Call
-              : match[1] === "-"
-                ? ProgAction.CallArg
-                : ProgAction.CallState;
-        pushInstruction(ret, action, label);
-        remaining = remaining.slice(match[0].length);
-        continue;
-      }
-
-      match = remaining.match(/^>(.+?)\|/);
-      if (match) {
-        pushInstruction(ret, ProgAction.Goto, match[1]);
-        remaining = remaining.slice(match[0].length);
-        continue;
-      }
-
-      match = remaining.match(/^\((.+?)(<[>=]?|>?=?)(-?\d+)\)/);
-      if (match) {
-        const label = match[1];
-        const value = parseInt(match[3], 10);
-        const comparator = match[2];
-        const action = {
-          "=": ProgAction.VarEqualsNumber,
-          ">=": ProgAction.VarGreaterThanOrEqualNumber,
-          ">": ProgAction.VarGreaterThanNumber,
-          "<=": ProgAction.VarLessThanOrEqualNumber,
-          "<": ProgAction.VarLessThanNumber,
-          "<>": ProgAction.VarNotEqualsNumber,
-        }[comparator];
-        if (!action) {
-          throw new Error("Malformed program");
-        }
-        pushInstruction(ret, action, label, value);
-        remaining = remaining.slice(match[0].length);
-        continue;
-      }
-
-      const mapping = findMapping(remaining, V3_MAPPINGS);
-      if (!mapping) {
-        throw new Error("Malformed program");
-      }
-      pushInstruction(ret, mapping[1]);
-      remaining = remaining.slice(mapping[0].length);
-    }
-
-    return ret;
-  }
-
-  static decodeV4() {
-    throw new Error("DecodeV4 is not implemented");
   }
 
   static async encodeV2(program) {
@@ -294,63 +88,6 @@ export class ProgramSerializer {
     buffer.set(labelBytes, 4 + program.length);
     const compressed = await LZMACompressor.compress(buffer);
     return this.base64Encode(compressed);
-  }
-
-  static encodeV3(program) {
-    let sb = "";
-    let spacesBacktrack = 0;
-    let linesBacktrack = 0;
-
-    for (let i = 0; i < program.length; i++) {
-      const inst = program[i] || new Instruction(ProgAction.None, null, null);
-      const col = i % MODERN_PAGE_WIDTH;
-      const row = Math.floor(i / MODERN_PAGE_WIDTH) % MODERN_PAGE_HEIGHT;
-
-      if (inst.action !== ProgAction.None) {
-        linesBacktrack = 0;
-        spacesBacktrack = 0;
-      }
-
-      sb += this.encodeActionSymbol(inst);
-      if (inst.action === ProgAction.None) {
-        spacesBacktrack++;
-      }
-
-      if (col === MODERN_PAGE_WIDTH - 1) {
-        if (spacesBacktrack > 0) {
-          sb = sb.slice(0, sb.length - spacesBacktrack);
-        }
-        sb += "\n";
-        linesBacktrack++;
-        spacesBacktrack = 0;
-        if (row === MODERN_PAGE_HEIGHT - 1) {
-          if (linesBacktrack > 0) {
-            sb = sb.slice(0, sb.length - linesBacktrack);
-          }
-          sb += "~";
-          linesBacktrack = 0;
-        }
-      }
-    }
-
-    if (sb.endsWith("~")) {
-      sb = sb.slice(0, -1);
-    }
-
-    sb = sb
-      .replace(/ {3}/g, "_")
-      .replace(/\n{11}/g, "\n.0.\n")
-      .replace(/\n{10}/g, "\n.9.\n")
-      .replace(/\n{9}/g, "\n.8.\n")
-      .replace(/\n{8}/g, "\n.7.\n")
-      .replace(/\n{7}/g, "\n.6.\n")
-      .replace(/\n{6}/g, "\n.5.\n")
-      .replace(/\n{5}/g, "\n...\n")
-      .replace(/\n{4}/g, "\n..\n")
-      .replace(/\n{3}/g, "\n.\n")
-      .replace(/~/g, "~\n");
-
-    return `$${sb}`;
   }
 
   static encodeActionSymbol(inst) {
@@ -481,6 +218,24 @@ export class ProgramSerializer {
         return `(${inst.label || "0"}<${inst.value ?? 0})`;
       case ProgAction.VarEqualsNumber:
         return `(${inst.label || "0"}=${inst.value ?? 0})`;
+      case ProgAction.VarGreaterThanVar:
+        const [label1_gt, label2_gt] = (inst.label || "A:B").split(":");
+        return `(${label1_gt || "A"}>${label2_gt || "B"})`;
+      case ProgAction.VarLessThanVar:
+        const [label1_lt, label2_lt] = (inst.label || "A:B").split(":");
+        return `(${label1_lt || "A"}<${label2_lt || "B"})`;
+      case ProgAction.VarGreaterThanOrEqualVar:
+        const [label1_gte, label2_gte] = (inst.label || "A:B").split(":");
+        return `(${label1_gte || "A"}>=${label2_gte || "B"})`;
+      case ProgAction.VarLessThanOrEqualVar:
+        const [label1_lte, label2_lte] = (inst.label || "A:B").split(":");
+        return `(${label1_lte || "A"}<=${label2_lte || "B"})`;
+      case ProgAction.VarEqualsVar:
+        const [label1_eq, label2_eq] = (inst.label || "A:B").split(":");
+        return `(${label1_eq || "A"}=${label2_eq || "B"})`;
+      case ProgAction.VarNotEqualsVar:
+        const [label1_neq, label2_neq] = (inst.label || "A:B").split(":");
+        return `(${label1_neq || "A"}<>${label2_neq || "B"})`;
       case ProgAction.ShiftUp:
         return "[w]";
       case ProgAction.ShiftLeft:
@@ -601,7 +356,7 @@ export class ProgramSerializer {
         inst.action !== undefined
       ) {
         throw new Error(
-          `Invalid instruction action at index ${index}: ${inst.action}`
+          `Invalid instruction action at index ${index}: ${inst.action}`,
         );
       }
     });

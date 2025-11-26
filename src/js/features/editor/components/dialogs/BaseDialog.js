@@ -1,5 +1,5 @@
-import { Component } from '../../../../core/utils/Component.js';
-import { loggers } from '../../../../utils/index.js';
+import { Component } from "../../../../core/utils/Component.js";
+import { loggers } from "../../../../utils/logging/logger.js";
 
 export class BaseDialog {
   constructor(title) {
@@ -11,21 +11,21 @@ export class BaseDialog {
 
   create() {
     // Create Overlay
-    this.overlay = Component.create('div')
-      .class('dialog-overlay')
+    this.overlay = Component.create("div")
+      .class("dialog-overlay")
       .style({
-        visibility: 'hidden',
-        opacity: '0'
+        visibility: "hidden",
+        opacity: "0",
       })
-      .on('click', () => this.close(null))
+      .on("click", () => this.close(null))
       .render();
 
     // Create Dialog Container
-    this.dialog = Component.create('div')
-      .class('dialog-content')
-      .on('click', (e) => e.stopPropagation()) // Prevent closing when clicking inside
-      .child(Component.create('h3').text(this.title))
-      .child(Component.create('div').class('dialog-body')) // Content placeholder
+    this.dialog = Component.create("div")
+      .class("dialog-content")
+      .on("click", e => e.stopPropagation()) // Prevent closing when clicking inside
+      .child(Component.create("h3").text(this.title))
+      .child(Component.create("div").class("dialog-body")) // Content placeholder
       // Footer will be added by subclasses or setFooter
       .render();
 
@@ -34,10 +34,10 @@ export class BaseDialog {
   }
 
   setContent(content) {
-    const body = this.dialog.querySelector('.dialog-body');
+    const body = this.dialog.querySelector(".dialog-body");
     if (!body) return;
-    
-    body.innerHTML = '';
+
+    body.innerHTML = "";
     if (content instanceof HTMLElement) {
       body.appendChild(content);
     } else {
@@ -47,12 +47,12 @@ export class BaseDialog {
 
   setFooter(content) {
     // Remove existing footer
-    const existing = this.dialog.querySelector('.dialog-buttons');
+    const existing = this.dialog.querySelector(".dialog-buttons");
     if (existing) existing.remove();
 
     if (content instanceof HTMLElement) {
-      if (!content.classList.contains('dialog-buttons')) {
-        content.classList.add('dialog-buttons');
+      if (!content.classList.contains("dialog-buttons")) {
+        content.classList.add("dialog-buttons");
       }
       this.dialog.appendChild(content);
     }
@@ -62,12 +62,12 @@ export class BaseDialog {
     loggers.ui.debug(`Open Dialog: ${this.title}`);
     this.create();
 
-    this.overlay.style.visibility = 'visible';
-    this.overlay.style.opacity = '1';
-    this.dialog.style.opacity = '1';
-    this.dialog.style.transform = 'none';
+    this.overlay.style.visibility = "visible";
+    this.overlay.style.opacity = "1";
+    this.dialog.style.opacity = "1";
+    this.dialog.style.transform = "none";
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       this.resolve = resolve;
     });
   }

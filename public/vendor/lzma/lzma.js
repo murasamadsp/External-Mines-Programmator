@@ -66,7 +66,7 @@ typeof Worker == "undefined" ||
         }),
         (t.onerror = function (o) {
           var e = new Error(
-            o.message + " (" + o.filename + ":" + o.lineno + ")"
+            o.message + " (" + o.filename + ":" + o.lineno + ")",
           );
           for (var r in n) n[r].on_finish(null, e);
           console.error("Uncaught error in lzma_worker", e);

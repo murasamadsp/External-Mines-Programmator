@@ -50,6 +50,8 @@ export class Logger {
 
   /**
    * Проверяет, нужно ли логировать на данном уровне
+   * @param {number} level - Уровень логирования
+   * @returns {boolean} True если логирование разрешено на данном уровне
    */
   shouldLog(level) {
     return level >= LOG_CONFIG.level;
@@ -57,6 +59,10 @@ export class Logger {
 
   /**
    * Форматирует сообщение для логирования
+   * @param {number} level - Уровень логирования
+   * @param {string} message - Сообщение для логирования
+   * @param {...any} _args - Дополнительные аргументы
+   * @returns {string} Отформатированное сообщение
    */
   formatMessage(level, message, ..._args) {
     const timestamp = LOG_CONFIG.enableTimestamp
@@ -90,6 +96,7 @@ export class Logger {
 
   /**
    * Получает информацию о вызывающем коде
+   * @returns {string} Информация о файле и строке вызывающего кода
    */
   getCallerInfo() {
     const error = new Error();
@@ -122,6 +129,8 @@ export class Logger {
 
   /**
    * Логирование уровня DEBUG
+   * @param {string} message - Сообщение для логирования
+   * @param {...any} args - Дополнительные аргументы
    */
   debug(message, ...args) {
     if (this.shouldLog(LOG_LEVELS.DEBUG)) {
@@ -131,6 +140,8 @@ export class Logger {
 
   /**
    * Логирование уровня INFO
+   * @param {string} message - Сообщение для логирования
+   * @param {...any} args - Дополнительные аргументы
    */
   info(message, ...args) {
     if (this.shouldLog(LOG_LEVELS.INFO)) {
@@ -140,6 +151,8 @@ export class Logger {
 
   /**
    * Логирование уровня WARN
+   * @param {string} message - Сообщение для логирования
+   * @param {...any} args - Дополнительные аргументы
    */
   warn(message, ...args) {
     if (this.shouldLog(LOG_LEVELS.WARN)) {
@@ -149,6 +162,8 @@ export class Logger {
 
   /**
    * Логирование уровня ERROR
+   * @param {string} message - Сообщение для логирования
+   * @param {...any} args - Дополнительные аргументы
    */
   error(message, ...args) {
     if (this.shouldLog(LOG_LEVELS.ERROR)) {
@@ -158,6 +173,8 @@ export class Logger {
 
   /**
    * Создание дочернего логгера с новым контекстом
+   * @param {string} context - Контекст дочернего логгера
+   * @returns {Logger} Новый экземпляр логгера с расширенным контекстом
    */
   child(context) {
     return new Logger(`${this.context}:${context}`);
@@ -165,6 +182,7 @@ export class Logger {
 
   /**
    * Установка уровня логирования
+   * @param {number|string} level - Уровень логирования (число или строка)
    */
   static setLevel(level) {
     if (typeof level === "string") {
@@ -186,6 +204,7 @@ export class Logger {
 
   /**
    * Включение/отключение цветов
+   * @param enabled
    */
   static setColors(enabled) {
     LOG_CONFIG.enableColors = enabled;
@@ -193,6 +212,7 @@ export class Logger {
 
   /**
    * Включение/отключение временных меток
+   * @param enabled
    */
   static setTimestamps(enabled) {
     LOG_CONFIG.enableTimestamp = enabled;
@@ -200,6 +220,7 @@ export class Logger {
 
   /**
    * Включение/отключение информации о вызывающем
+   * @param enabled
    */
   static setCallerInfo(enabled) {
     LOG_CONFIG.enableCallerInfo = enabled;
@@ -245,6 +266,7 @@ export const loggers = {
 
 /**
  * Установка уровня логирования из переменных окружения
+ * Инициализирует логгер на основе URL параметров или localStorage
  */
 export function initLogger() {
   // В браузере можно использовать localStorage или URL параметры
@@ -268,4 +290,3 @@ export function initLogger() {
  * Экспорт по умолчанию
  */
 export default Logger;
-

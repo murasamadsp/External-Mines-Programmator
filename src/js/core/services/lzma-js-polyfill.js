@@ -35,7 +35,7 @@ function loadBrowserScript(src) {
       src,
       new Promise((resolve, reject) => {
         const existing = document.querySelector(
-          `script[data-lzma-src="${src}"]`
+          `script[data-lzma-src="${src}"]`,
         );
         if (existing) {
           if (existing.dataset.loaded === "true") {
@@ -46,7 +46,7 @@ function loadBrowserScript(src) {
           existing.addEventListener(
             "error",
             () => reject(new Error(`Failed to load LZMA script at ${src}`)),
-            { once: true }
+            { once: true },
           );
           return;
         }
@@ -112,7 +112,7 @@ function loadBrowserScript(src) {
           reject(new Error(`Failed to load LZMA script at ${src}`));
         });
         document.head.appendChild(script);
-      })
+      }),
     );
   }
   return browserScriptPromises.get(src);
@@ -129,7 +129,7 @@ async function getBrowserLzmaInstance() {
     await loadBrowserScript(browserScriptUrl);
     if (typeof window === "undefined" || typeof window.LZMA !== "function") {
       throw new Error(
-        "Global LZMA constructor is not available after loading script"
+        "Global LZMA constructor is not available after loading script",
       );
     }
     return new window.LZMA();
@@ -213,8 +213,8 @@ class LZMAWebInterface extends LZMAInterface {
             new Error(
               typeof error === "string"
                 ? error
-                : error?.message || "LZMA compression failed"
-            )
+                : error?.message || "LZMA compression failed",
+            ),
           );
           return;
         }
@@ -236,8 +236,8 @@ class LZMAWebInterface extends LZMAInterface {
             new Error(
               typeof error === "string"
                 ? error
-                : error?.message || "LZMA decompression failed"
-            )
+                : error?.message || "LZMA decompression failed",
+            ),
           );
           return;
         }

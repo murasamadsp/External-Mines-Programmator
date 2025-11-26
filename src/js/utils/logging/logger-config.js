@@ -5,16 +5,23 @@
 
 import { Logger, LOG_LEVELS, loggers } from "./logger.js";
 
-// Налаштування рівня логування залежно від середовища
+/**
+ * Налаштування рівня логування залежно від середовища
+ * @returns {number} Встановлений рівень логування
+ */
 export function configureLogger() {
   const finalLevel = determineLogLevel();
   applyLoggerSettings(finalLevel);
   return finalLevel;
 }
 
-// Визначає рівень логування з пріоритетами: URL > localStorage > default
+/**
+ * Визначає рівень логування з пріоритетами: URL > localStorage > default
+ * @returns {number} Визначений рівень логування
+ */
 function determineLogLevel() {
-  const isDevelopment = import.meta?.env?.DEV || window.location.hostname === "localhost";
+  const isDevelopment =
+    import.meta?.env?.DEV || window.location.hostname === "localhost";
   const defaultLevel = isDevelopment ? LOG_LEVELS.DEBUG : LOG_LEVELS.INFO;
 
   // Спроба отримати рівень з URL
@@ -32,7 +39,10 @@ function determineLogLevel() {
   return defaultLevel;
 }
 
-// Отримує рівень логування з URL параметрів
+/**
+ * Отримує рівень логування з URL параметрів
+ * @returns {number|null} Рівень логування або null якщо не знайдено
+ */
 function getLogLevelFromUrl() {
   const urlParams = new URLSearchParams(window.location.search);
   const urlLogLevel = urlParams.get("loglevel");
@@ -41,9 +51,13 @@ function getLogLevelFromUrl() {
     const parsedLevel = parseLogLevel(urlLogLevel);
     if (parsedLevel !== null) {
       // Зберігаємо в localStorage для майбутніх сесій
-      loggers.storage.debug(`Збереження рівня логування ${LOG_LEVELS[parsedLevel]} в localStorage`);
+      loggers.storage.debug(
+        `Збереження рівня логування ${LOG_LEVELS[parsedLevel]} в localStorage`,
+      );
       localStorage.setItem("emp-log-level", LOG_LEVELS[parsedLevel]);
-      loggers.storage.info(`Рівень логування встановлено через URL: ${LOG_LEVELS[parsedLevel]}`);
+      loggers.storage.info(
+        `Рівень логування встановлено через URL: ${LOG_LEVELS[parsedLevel]}`,
+      );
       return parsedLevel;
     }
   }
@@ -51,14 +65,19 @@ function getLogLevelFromUrl() {
   return null;
 }
 
-// Отримує рівень логування з localStorage
+/**
+ * Отримує рівень логування з localStorage
+ * @returns {number|null} Рівень логування або null якщо не знайдено
+ */
 function getLogLevelFromStorage() {
   const storedLogLevel = localStorage.getItem("emp-log-level");
 
   if (storedLogLevel) {
     const parsedLevel = parseInt(storedLogLevel);
     if (!isNaN(parsedLevel) && parsedLevel >= 0 && parsedLevel <= 4) {
-      loggers.storage.debug(`Завантажено рівень логування з localStorage: ${LOG_LEVELS[parsedLevel]}`);
+      loggers.storage.debug(
+        `Завантажено рівень логування з localStorage: ${LOG_LEVELS[parsedLevel]}`,
+      );
       return parsedLevel;
     }
   }
@@ -66,34 +85,42 @@ function getLogLevelFromStorage() {
   return null;
 }
 
-// Застосовує налаштування логування
+/**
+ * Застосовує налаштування логування до всіх логерів
+ * @param {number} level - Рівень логування для встановлення
+ */
 function applyLoggerSettings(level) {
-  const isDevelopment = import.meta?.env?.DEV || window.location.hostname === "localhost";
+  const isDevelopment =
+    import.meta?.env?.DEV || window.location.hostname === "localhost";
 
   Logger.setLevel(level);
-  Logger.setColors(!window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  Logger.setColors(
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
   Logger.setTimestamps(true);
   Logger.setCallerInfo(isDevelopment);
 }
 
 // Маппинг рядкових значень до числових рівнів логування
 const LOG_LEVEL_MAP = {
-  "DEBUG": LOG_LEVELS.DEBUG,
-  "0": LOG_LEVELS.DEBUG,
-  "INFO": LOG_LEVELS.INFO,
-  "1": LOG_LEVELS.INFO,
-  "WARN": LOG_LEVELS.WARN,
-  "WARNING": LOG_LEVELS.WARN,
-  "2": LOG_LEVELS.WARN,
-  "ERROR": LOG_LEVELS.ERROR,
-  "3": LOG_LEVELS.ERROR,
-  "OFF": LOG_LEVELS.OFF,
-  "NONE": LOG_LEVELS.OFF,
-  "4": LOG_LEVELS.OFF,
+  DEBUG: LOG_LEVELS.DEBUG,
+  0: LOG_LEVELS.DEBUG,
+  INFO: LOG_LEVELS.INFO,
+  1: LOG_LEVELS.INFO,
+  WARN: LOG_LEVELS.WARN,
+  WARNING: LOG_LEVELS.WARN,
+  2: LOG_LEVELS.WARN,
+  ERROR: LOG_LEVELS.ERROR,
+  3: LOG_LEVELS.ERROR,
+  OFF: LOG_LEVELS.OFF,
+  NONE: LOG_LEVELS.OFF,
+  4: LOG_LEVELS.OFF,
 };
 
 /**
  * Парсить рядковий рівень логування
+ * @param {string} levelStr - Рядок з рівнем логування
+ * @returns {number|null} Парсований рівень або null при помилці
  */
 function parseLogLevel(levelStr) {
   if (!levelStr) return null;

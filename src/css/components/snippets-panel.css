@@ -53,12 +53,12 @@
 }
 
 .snippet-card::before {
-  content: "";
   position: absolute;
-  inset: 0;
+  background: linear-gradient(135deg, transparent, rgb(255 255 255 / 2%));
   border-radius: inherit;
-  background: linear-gradient(135deg, transparent, rgb(255 255 255 / 0.02));
   opacity: 0;
+  content: "";
+  inset: 0;
   transition: opacity var(--transition-fast);
 }
 
@@ -91,8 +91,8 @@
 }
 
 .snippet-card:hover .snippet-icon {
-  background: var(--color-primary);
   color: rgb(255 255 255);
+  background: var(--color-primary);
   transform: scale(1.1);
 }
 

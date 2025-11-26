@@ -14,7 +14,7 @@ async function generate() {
     new Instruction(ProgAction.MoveUp),
     new Instruction(ProgAction.MoveDown),
   ];
-  
+
   try {
     const encoded = await ProgramSerializer.encodeV2(program);
     console.log("V2 String:");

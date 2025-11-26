@@ -3,7 +3,7 @@
 
 import { GRID_WIDTH, GRID_HEIGHT } from "../../../core/constants/grid.js";
 import { ProgAction } from "../../../core/constants/actions.js";
-import { loggers } from "../../../utils/index.js";
+import { loggers } from "../../../utils/logging/logger.js";
 import {
   ACTION_DATA,
   getActionByCode,
@@ -70,9 +70,9 @@ export class ProgramGrid {
 
     // Знаходимо sidebar'и і встановлюємо їм висоту
     const sidebars = document.querySelectorAll(".programmer-sidebar");
-    sidebars.forEach((sidebar) => {
-      sidebar.style.height = totalHeight + "px";
-      sidebar.style.maxHeight = totalHeight + "px";
+    sidebars.forEach(sidebar => {
+      sidebar.style.height = `${totalHeight}px`;
+      sidebar.style.maxHeight = `${totalHeight}px`;
     });
 
     loggers.ui.debug(
@@ -82,6 +82,8 @@ export class ProgramGrid {
 
   /**
    * Створює окрему клітинку
+   * @param x
+   * @param y
    */
   createCell(x, y) {
     const cell = document.createElement("div");
@@ -96,7 +98,7 @@ export class ProgramGrid {
     });
 
     // Додаємо обробник контекстного меню (правий клік)
-    cell.addEventListener("contextmenu", (e) => {
+    cell.addEventListener("contextmenu", e => {
       e.preventDefault();
       this.handleCellContextMenu(e, x, y);
     });
@@ -110,6 +112,8 @@ export class ProgramGrid {
 
   /**
    * Обробляє клік по клітинці
+   * @param x
+   * @param y
    */
   handleCellClick(x, y) {
     const position = y * GRID_WIDTH + x;
@@ -122,6 +126,9 @@ export class ProgramGrid {
 
   /**
    * Обробляє контекстне меню (правий клік) по клітинці
+   * @param e
+   * @param x
+   * @param y
    */
   handleCellContextMenu(e, x, y) {
     const position = y * GRID_WIDTH + x; // Convert x,y to linear position
@@ -149,7 +156,7 @@ export class ProgramGrid {
         `📄 Page ${this.currentPage} has ${pageInstructions.length} instructions`,
       );
 
-      const nonEmpty = pageInstructions.filter((i) => i.action !== 0).length;
+      const nonEmpty = pageInstructions.filter(i => i.action !== 0).length;
       loggers.ui.debug(
         `📌 Non-empty instructions on page ${this.currentPage}: ${nonEmpty}`,
       );
@@ -163,7 +170,7 @@ export class ProgramGrid {
           }
         }
       }
-      loggers.ui.debug(`✅ ProgramGrid updateDisplay completed`);
+      loggers.ui.debug("✅ ProgramGrid updateDisplay completed");
     } catch (error) {
       loggers.ui.error("❌ Error in updateDisplay:", error);
     }
@@ -171,6 +178,8 @@ export class ProgramGrid {
 
   /**
    * Оновлює відображення окремої клітинки
+   * @param x
+   * @param y
    */
   updateCellDisplay(x, y) {
     try {
@@ -214,6 +223,7 @@ export class ProgramGrid {
 
   /**
    * Отримує короткий код дії для відображення
+   * @param action
    */
   getActionShortCode(action) {
     const actionInfo = getActionByCode(action);
@@ -229,6 +239,7 @@ export class ProgramGrid {
 
   /**
    * Отримує опис інструкції для tooltip
+   * @param instruction
    */
   getActionDescription(instruction) {
     const actionInfo = getActionByCode(instruction.action);
@@ -238,7 +249,13 @@ export class ProgramGrid {
     let description = data ? data.tooltip : actionInfo.name;
 
     if (instruction.label) {
-      description += ` (Label: "${instruction.label}")`;
+      // Перевіряємо, чи це операція з двома лейблами (містить ":")
+      if (instruction.label.includes(":")) {
+        const [label1, label2] = instruction.label.split(":");
+        description += ` (Vars: "${label1}" та "${label2}")`;
+      } else {
+        description += ` (Label: "${instruction.label}")`;
+      }
     }
 
     if (instruction.value !== null && instruction.value !== undefined) {
@@ -250,6 +267,9 @@ export class ProgramGrid {
 
   /**
    * Виділяє клітинку
+   * @param x
+   * @param y
+   * @param highlight
    */
   highlightCell(x, y, highlight = true) {
     const key = `${x}-${y}`;
@@ -268,13 +288,15 @@ export class ProgramGrid {
    * Очищає всі виділення
    */
   clearHighlights() {
-    this.gridCells.forEach((cell) => {
+    this.gridCells.forEach(cell => {
       cell.classList.remove("highlighted");
     });
   }
 
   /**
    * Отримує елемент клітинки
+   * @param x
+   * @param y
    */
   getCellElement(x, y) {
     const key = `${x}-${y}`;

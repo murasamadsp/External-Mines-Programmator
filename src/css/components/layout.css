@@ -18,7 +18,7 @@
   /* Visual */
   background: var(--surface-bg-elevated);
   backdrop-filter: var(--backdrop-blur-sm);
-  border: 1px solid rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 8%);
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-lg);
 }
@@ -72,7 +72,7 @@
   /* Visual */
   background: var(--surface-bg-elevated);
   backdrop-filter: var(--backdrop-blur-sm);
-  border: 1px solid rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 8%);
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-lg);
 

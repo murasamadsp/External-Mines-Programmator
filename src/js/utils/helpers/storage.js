@@ -122,7 +122,7 @@ export class ProgramStorage {
   /**
    * Load program from storage
    * @param {string} name - Program name
-   * @returns {Object|null} Program data or null if not found
+   * @returns {object | null} Program data or null if not found
    */
   static loadProgram(name) {
     const programs = Storage.get(STORAGE_KEYS.PROGRAMS, {});
@@ -165,7 +165,7 @@ export class ProgramStorage {
 
   /**
    * Load autosaved program
-   * @returns {Object|null} Autosave data or null
+   * @returns {object | null} Autosave data or null
    */
   static loadAutosave() {
     return Storage.get(STORAGE_KEYS.AUTOSAVE, null);
@@ -242,7 +242,7 @@ export class SettingsStorage {
 
   /**
    * Get all settings
-   * @returns {Object} All settings
+   * @returns {object} All settings
    */
   static getAll() {
     return Storage.get(STORAGE_KEYS.SETTINGS, {});

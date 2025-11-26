@@ -1,0 +1,172 @@
+/* Program Decoder Styles */
+.program-decoder {
+  background: var(--color-background);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Modal positioning for program tools */
+.program-tool-modal.program-decoder {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  margin: 0;
+}
+
+/* Modal overlay */
+.program-tool-modal::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: -1;
+}
+
+.program-decoder h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--color-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.decoder-description {
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 1.5rem 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.input-group,
+.output-group {
+  margin-bottom: 1rem;
+}
+
+.input-group label,
+.output-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+#program-input {
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #ffffff;
+  font-family: "Google Sans", monospace;
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 60px;
+  transition: border-color 0.2s ease;
+}
+
+#program-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+#program-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.decode-btn {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary-hover)
+  );
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.decode-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.decode-btn:active {
+  transform: translateY(0);
+}
+
+.program-output {
+  width: 100%;
+  min-height: 60px;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  font-family: "Google Sans Mono", monospace;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+}
+
+.program-output.success {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: rgb(34, 197, 94);
+}
+
+.program-output.error {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: rgb(239, 68, 68);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .program-decoder {
+    padding: 1rem;
+    margin: 0.5rem 0;
+  }
+
+  .program-decoder h3 {
+    font-size: 1.1rem;
+  }
+
+  .decoder-description {
+    font-size: 0.85rem;
+  }
+
+  #program-input,
+  .program-output {
+    font-size: 0.8rem;
+  }
+}
+
+/* Dark theme adjustments */
+@media (prefers-color-scheme: dark) {
+  .program-decoder {
+    background: rgba(8, 14, 27, 0.95);
+  }
+}

@@ -1,4 +1,4 @@
-import { createElement } from './dom-utils.js';
+import { createElement } from "./dom-utils.js";
 
 /**
  * A fluent API builder for creating DOM elements.
@@ -13,7 +13,7 @@ export class Component {
   /**
    * @param {string} tagName - The HTML tag name.
    */
-  constructor(tagName = 'div') {
+  constructor(tagName = "div") {
     this.tagName = tagName;
     this.attributes = {};
     this.children = [];
@@ -23,8 +23,8 @@ export class Component {
 
   /**
    * Creates a new Component instance.
-   * @param {string} tagName 
-   * @returns {Component}
+   * @param {string} tagName - The HTML tag name for the component
+   * @returns {Component} A new Component instance
    */
   static create(tagName) {
     return new Component(tagName);
@@ -32,8 +32,8 @@ export class Component {
 
   /**
    * Sets the ID of the element.
-   * @param {string} id 
-   * @returns {Component}
+   * @param {string} id - The ID to set
+   * @returns {Component} This component instance for chaining
    */
   id(id) {
     this.attributes.id = id;
@@ -42,8 +42,8 @@ export class Component {
 
   /**
    * Adds a class to the element.
-   * @param {string} className 
-   * @returns {Component}
+   * @param {string} className - The CSS class name to add
+   * @returns {Component} This component instance for chaining
    */
   class(className) {
     if (this.attributes.className) {
@@ -56,9 +56,9 @@ export class Component {
 
   /**
    * Sets an attribute.
-   * @param {string} key 
-   * @param {string} value 
-   * @returns {Component}
+   * @param {string} key - The attribute name
+   * @param {string} value - The attribute value
+   * @returns {Component} This component instance for chaining
    */
   attr(key, value) {
     this.attributes[key] = value;
@@ -67,14 +67,17 @@ export class Component {
 
   /**
    * Sets inline styles.
-   * @param {string|Object} styles - CSS string or object.
+   * @param {string | object} styles - CSS string or object.
    * @returns {Component}
    */
   style(styles) {
-    if (typeof styles === 'object') {
+    if (typeof styles === "object") {
       const styleString = Object.entries(styles)
-        .map(([k, v]) => `${k.replace(/[A-Z]/g, m => `-${m.toLowerCase()}`)}: ${v}`)
-        .join('; ');
+        .map(
+          ([k, v]) =>
+            `${k.replace(/[A-Z]/g, m => `-${m.toLowerCase()}`)}: ${v}`,
+        )
+        .join("; ");
       this.attributes.style = styleString;
     } else {
       this.attributes.style = styles;
@@ -84,8 +87,8 @@ export class Component {
 
   /**
    * Sets the text content.
-   * @param {string} text 
-   * @returns {Component}
+   * @param {string} text - The text content to set
+   * @returns {Component} This component instance for chaining
    */
   text(text) {
     this.textContent = text;
@@ -94,9 +97,9 @@ export class Component {
 
   /**
    * Adds an event listener.
-   * @param {string} event 
-   * @param {Function} handler 
-   * @returns {Component}
+   * @param {string} event - The event name
+   * @param {Function} handler - The event handler function
+   * @returns {Component} This component instance for chaining
    */
   on(event, handler) {
     this.eventListeners.push({ event, handler });
@@ -105,8 +108,8 @@ export class Component {
 
   /**
    * Adds a child component or element.
-   * @param {Component|HTMLElement|string} child 
-   * @returns {Component}
+   * @param {Component|HTMLElement|string} child - The child to add
+   * @returns {Component} This component instance for chaining
    */
   child(child) {
     if (child) {
@@ -117,12 +120,13 @@ export class Component {
 
   /**
    * Renders the component to an HTMLElement.
-   * @returns {HTMLElement}
+   * @returns {HTMLElement} The rendered HTML element
    */
   render() {
-    const content = this.children.length > 0 
-      ? this.children.map(c => c instanceof Component ? c.render() : c)
-      : this.textContent;
+    const content =
+      this.children.length > 0
+        ? this.children.map(c => (c instanceof Component ? c.render() : c))
+        : this.textContent;
 
     const element = createElement(this.tagName, this.attributes, content);
 

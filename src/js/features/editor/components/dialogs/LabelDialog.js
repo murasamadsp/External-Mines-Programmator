@@ -1,6 +1,6 @@
-import { BaseDialog } from './BaseDialog.js';
-import { Component } from '../../../../core/utils/Component.js';
-import { createInput, createButton } from '../../../../core/utils/dom-utils.js';
+import { BaseDialog } from "./BaseDialog.js";
+import { Component } from "../../../../core/utils/Component.js";
+import { createInput, createButton } from "../../../../core/utils/dom-utils.js";
 
 export class LabelDialog extends BaseDialog {
   constructor(defaultValue = "") {
@@ -12,31 +12,36 @@ export class LabelDialog extends BaseDialog {
     super.create();
 
     const input = createInput({
-      id: 'label-input',
+      id: "label-input",
       value: this.defaultValue,
-      placeholder: 'Enter label name...',
-      onKeyDown: (e) => {
-        if (e.key === 'Enter') {
+      placeholder: "Enter label name...",
+      onKeyDown: e => {
+        if (e.key === "Enter") {
           e.preventDefault();
           this.submit();
         }
-        if (e.key === 'Escape') {
+        if (e.key === "Escape") {
           e.preventDefault();
           this.close(null);
         }
-      }
+      },
     });
 
-    const errorMsg = Component.create('div')
-      .class('dialog-error')
-      .style({ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.5rem', minHeight: '1.25rem' })
+    const errorMsg = Component.create("div")
+      .class("dialog-error")
+      .style({
+        color: "#ef4444",
+        fontSize: "0.875rem",
+        marginTop: "0.5rem",
+        minHeight: "1.25rem",
+      })
       .render();
 
-    const content = Component.create('div')
+    const content = Component.create("div")
       .child(
-        Component.create('p')
-          .style({ marginBottom: '0.5rem', color: '#9ca3af' })
-          .text('Only letters, numbers, and underscores allowed.')
+        Component.create("p")
+          .style({ marginBottom: "0.5rem", color: "#9ca3af" })
+          .text("Only letters, numbers, and underscores allowed."),
       )
       .child(input)
       .child(errorMsg)
@@ -44,24 +49,24 @@ export class LabelDialog extends BaseDialog {
 
     this.setContent(content);
 
-    const footer = Component.create('div')
-      .class('dialog-buttons')
-      .style({ display: 'flex', justifyContent: 'flexEnd', gap: '0.5rem' })
+    const footer = Component.create("div")
+      .class("dialog-buttons")
+      .style({ display: "flex", justifyContent: "flexEnd", gap: "0.5rem" })
       .child(
         createButton({
-          id: 'cancel-btn',
-          text: 'Cancel',
-          className: 'btn-secondary',
-          onClick: () => this.close(null)
-        })
+          id: "cancel-btn",
+          text: "Cancel",
+          className: "btn-secondary",
+          onClick: () => this.close(null),
+        }),
       )
       .child(
         createButton({
-          id: 'submit-btn',
-          text: 'Save',
-          className: 'btn-primary',
-          onClick: () => this.submit()
-        })
+          id: "submit-btn",
+          text: "Save",
+          className: "btn-primary",
+          onClick: () => this.submit(),
+        }),
       )
       .render();
 
@@ -72,9 +77,9 @@ export class LabelDialog extends BaseDialog {
   }
 
   submit() {
-    const input = this.dialog.querySelector('#label-input');
-    const errorMsg = this.dialog.querySelector('.dialog-error');
-    const val = (input.value || input.textContent || '').trim();
+    const input = this.dialog.querySelector("#label-input");
+    const errorMsg = this.dialog.querySelector(".dialog-error");
+    const val = (input.value || input.textContent || "").trim();
 
     if (!val) {
       errorMsg.textContent = "Label cannot be empty!";
@@ -82,7 +87,8 @@ export class LabelDialog extends BaseDialog {
     }
 
     if (!/^[a-zA-Z0-9_]+$/.test(val)) {
-      errorMsg.textContent = "Invalid characters! Only letters, numbers, and underscores.";
+      errorMsg.textContent =
+        "Invalid characters! Only letters, numbers, and underscores.";
       return;
     }
 

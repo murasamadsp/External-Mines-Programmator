@@ -1,7 +1,7 @@
 // Context Menu Manager for Right-Click Actions
 // Provides context-sensitive menus for program cells and UI elements
 
-import { loggers } from "../../utils/index.js";
+import { loggers } from "../../utils/logging/logger.js";
 import { stateManager } from "./state-manager.js";
 
 // Action descriptions from documentation
@@ -167,6 +167,12 @@ const ACTION_INFO = {
   VarGreaterThanOrEqualNumber: "Змінна більше або дорівнює числу",
   VarLessThanOrEqualNumber: "Змінна менше або дорівнює числу",
   VarNotEqualsNumber: "Змінна не дорівнює числу",
+  VarGreaterThanVar: "Змінна більше змінної",
+  VarLessThanVar: "Змінна менше змінної",
+  VarGreaterThanOrEqualVar: "Змінна більше або дорівнює змінній",
+  VarLessThanOrEqualVar: "Змінна менше або дорівнює змінній",
+  VarEqualsVar: "Змінна дорівнює змінній",
+  VarNotEqualsVar: "Змінна не дорівнює змінній",
   VarGreaterThanOrEqualsState: "Змінна більше або дорівнює стану",
   VarLessThanOrEqualState: "Змінна менше або дорівнює стану",
   VarNotEqualsState: "Змінна не дорівнює стану",
@@ -244,12 +250,12 @@ export class ContextMenuManager {
     document.body.appendChild(this.menuElement);
 
     // Prevent context menu on the menu itself
-    this.menuElement.addEventListener("contextmenu", (e) => e.preventDefault());
+    this.menuElement.addEventListener("contextmenu", e => e.preventDefault());
   }
 
   bindGlobalEvents() {
     // Track mouse position globally
-    document.addEventListener("mousemove", (e) => {
+    document.addEventListener("mousemove", e => {
       window.lastMouseEvent = {
         clientX: e.clientX,
         clientY: e.clientY,
@@ -257,21 +263,21 @@ export class ContextMenuManager {
     });
 
     // Hide menu on left click anywhere
-    document.addEventListener("click", (e) => {
+    document.addEventListener("click", e => {
       if (!this.menuElement.contains(e.target)) {
         this.hideMenu();
       }
     });
 
     // Hide menu on escape
-    document.addEventListener("keydown", (e) => {
+    document.addEventListener("keydown", e => {
       if (e.key === "Escape") {
         this.hideMenu();
       }
     });
 
     // Prevent default context menu globally (we'll show our custom one)
-    document.addEventListener("contextmenu", (e) => {
+    document.addEventListener("contextmenu", e => {
       // Only prevent default if we're not already showing a menu
       // This allows nested context menus if needed
       if (!this.activeMenu) {
@@ -301,7 +307,7 @@ export class ContextMenuManager {
     this.menuElement.focus();
 
     loggers.services.debug(
-      `📋 Context menu показаний на позиції (${x}, ${y}) з ${items.length} елементами: ${items.map((item) => item.name || "анонімний").join(", ")}`,
+      `📋 Context menu показаний на позиції (${x}, ${y}) з ${items.length} елементами: ${items.map(item => item.name || "анонімний").join(", ")}`,
     );
   }
 
@@ -368,7 +374,7 @@ export class ContextMenuManager {
             // Remove hover from other items
             itemsContainer
               .querySelectorAll(".context-menu-item")
-              .forEach((el) => {
+              .forEach(el => {
                 el.classList.remove("hover");
               });
             itemElement.classList.add("hover");
@@ -606,7 +612,7 @@ export class ContextMenuManager {
 
     if (isFavorite) {
       // Remove from favorites
-      const newFavorites = favorites.filter((fav) => fav !== actionKey);
+      const newFavorites = favorites.filter(fav => fav !== actionKey);
       this.saveFavorites(newFavorites);
       loggers.services.info(`⭐ Видалено з обраних: ${actionKey}`);
     } else {
@@ -670,7 +676,7 @@ export class ContextMenuManager {
 
   async showDialog(title, message) {
     // Try to use dialogManager from the editor controller
-    const editorController = window.editorController;
+    const { editorController } = window;
     if (editorController && editorController.dialogManager) {
       await editorController.dialogManager.showInfoDialog(message, title);
     } else {

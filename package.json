@@ -7,8 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "preview": "vite preview",
-    "test": "node src/js/core/services/serialization/__tests__/serializer-v3.test.js",
+    "test": "node --test src/js/**/*.test.js",
     "format": "prettier --config config/prettier.config.cjs --ignore-path config/prettierignore --write .",
     "format:check": "prettier --config config/prettier.config.cjs --ignore-path config/prettierignore --check .",
     "lint:css": "stylelint src/css/**/*.css --config config/stylelint-entry.config.cjs --fix",
@@ -17,11 +16,10 @@
     "lint:js:check": "eslint src/js/**/*.js --config config/eslint-entry.config.js",
     "lint": "npm run lint:js && npm run lint:css",
     "lint:check": "npm run lint:js:check && npm run lint:css:check",
-    "lint:fix": "npm run lint:js && npm run lint:css",
     "lint:watch": "onchange 'src/**/*.{js,css}' -- npm run lint",
     "clean": "rm -rf dist",
     "build:clean": "npm run clean && npm run build",
-    "quality": "npm run lint:check && npm run format:check && npm run test"
+    "quality": "npm run lint:check && npm run format:check && npx markdownlint README.md && npm run test"
   },
   "repository": {
     "type": "git",
@@ -42,18 +40,12 @@
     "eslint-plugin-jsdoc": "^61.4.1",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-promise": "^7.2.1",
-    "postcss": "^8.5.6",
+    "markdownlint-cli": "^0.46.0",
+    "onchange": "^7.1.0",
     "prettier": "^3.6.2",
     "sass": "^1.93.3",
     "stylelint": "^16.25.0",
-    "stylelint-config-standard": "^39.0.1",
-    "stylelint-order": "^7.0.0",
     "vite": "^7.2.2",
-    "vite-plugin-full-reload": "^1.2.0",
-    "onchange": "^7.1.0"
-  },
-  "dependencies": {
-    "lzma-js": "^1.0.1",
-    "lzma-web": "^3.0.1"
+    "vite-plugin-full-reload": "^1.2.0"
   }
 }

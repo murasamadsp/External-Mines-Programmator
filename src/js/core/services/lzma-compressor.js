@@ -14,7 +14,7 @@ export class LZMACompressor {
       } catch (error) {
         console.error("❌ LZMA not available:", error.message);
         throw new Error(
-          "LZMA compression library is required but failed to load. Please check your connection or build configuration."
+          "LZMA compression library is required but failed to load. Please check your connection or build configuration.",
         );
       }
     }
@@ -37,4 +37,3 @@ export class LZMACompressor {
     return lzma.decompress(data);
   }
 }
-

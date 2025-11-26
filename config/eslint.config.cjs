@@ -117,7 +117,10 @@ module.exports = [
       "array-bracket-spacing": ["error", "never"],
       "comma-spacing": ["error", { before: false, after: true }],
       "key-spacing": ["error", { beforeColon: false, afterColon: true }],
-      "space-before-function-paren": ["error", "never"],
+      "space-before-function-paren": [
+        "error",
+        { anonymous: "never", named: "never", asyncArrow: "always" },
+      ],
       "space-in-parens": ["error", "never"],
       "space-before-blocks": "error",
       "keyword-spacing": "error",
@@ -285,6 +288,17 @@ module.exports = [
       "no-console": "off",
       "max-lines-per-function": "off",
       complexity: "off",
+    },
+  },
+
+  // Специфические правила для файлов логгера
+  {
+    files: ["**/utils/logger*.js"],
+    rules: {
+      "comma-dangle": "off",
+      "jsdoc/require-returns": "off",
+      "jsdoc/require-param-description": "off",
+      "jsdoc/require-param-type": "off",
     },
   },
 

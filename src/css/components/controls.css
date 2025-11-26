@@ -68,12 +68,12 @@
 }
 
 #program-controls button::before {
+  /* Misc */
+  display: block;
+
   /* Typography */
   font-size: var(--font-size-xl);
   line-height: 1;
-
-  /* Misc */
-  display: block;
   margin-bottom: var(--space-1);
 }
 

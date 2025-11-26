@@ -37,7 +37,7 @@
   padding: var(--space-8);
   text-align: center;
   background: var(--surface-bg);
-  border: 1px solid rgb(255 255 255 / 0.1);
+  border: 1px solid rgb(255 255 255 / 10%);
   border-radius: var(--radius-3xl);
   box-shadow: var(--shadow-xl);
   backdrop-filter: var(--backdrop-blur);
@@ -47,7 +47,7 @@
   display: block;
   font-size: 4rem;
   margin-bottom: var(--space-5);
-  filter: drop-shadow(0 4px 8px rgb(0 0 0 / 0.3));
+  filter: drop-shadow(0 4px 8px rgb(0 0 0 / 30%));
 }
 
 .mobile-block-title {
@@ -73,12 +73,12 @@
 
 .mobile-device-icon {
   font-size: 2.5rem;
-  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.2));
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 20%));
 }
 
 .mobile-block-footer {
   font-size: var(--font-size-sm);
-  margin-top: var(--space-6);
-  color: var(--color-text-muted);
   font-style: italic;
+  color: var(--color-text-muted);
+  margin-top: var(--space-6);
 }

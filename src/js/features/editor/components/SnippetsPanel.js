@@ -1,7 +1,7 @@
 // Snippets Panel - provides quick access to common program patterns
 // Displays pre-built code snippets that users can insert into their programs
 
-import { loggers } from "../../../utils/index.js";
+import { loggers } from "../../../utils/logging/logger.js";
 import { ProgAction } from "../../../core/constants/actions.js";
 import { UI_TIMEOUTS } from "../../../core/constants/ui-constants.js";
 
@@ -47,6 +47,7 @@ export class SnippetsPanel {
 
   /**
    * Creates a snippet card element
+   * @param snippet
    */
   createSnippetCard(snippet) {
     const card = document.createElement("div");
@@ -92,6 +93,7 @@ export class SnippetsPanel {
 
   /**
    * Handles snippet click
+   * @param snippet
    */
   onSnippetClick(snippet) {
     loggers.ui.info(`📋 Snippet selected: ${snippet.name}`);
@@ -100,6 +102,7 @@ export class SnippetsPanel {
 
   /**
    * Formats snippet pattern for display/copy
+   * @param snippet
    */
   formatSnippetPattern(snippet) {
     return `${snippet.name}\n${snippet.description}\n\nPattern:\n${snippet.pattern.join("\n")}`;

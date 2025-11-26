@@ -1,10 +1,11 @@
 // Менеджер діалогів - CUSTOM UI IMPLEMENTATION
 // Використовує кастомні діалогові вікна замість native prompt/confirm
 
-import { loggers } from "../../../utils/index.js";
+import { loggers } from "../../../utils/logging/logger.js";
 import { LabelDialog } from "./dialogs/LabelDialog.js";
 import { NumberDialog } from "./dialogs/NumberDialog.js";
 import { CoordinatesDialog } from "./dialogs/CoordinatesDialog.js";
+import { TwoLabelsDialog } from "./dialogs/TwoLabelsDialog.js";
 import { ConfirmDialog } from "./dialogs/ConfirmDialog.js";
 import { InfoDialog } from "./dialogs/InfoDialog.js";
 
@@ -30,6 +31,16 @@ export class DialogManager {
   async promptForCoordinates(defaultX = 0, defaultY = 0) {
     loggers.ui.debug("📱 Виклик Custom Coordinates Dialog");
     const dialog = new CoordinatesDialog(defaultX, defaultY);
+    return await dialog.open();
+  }
+
+  async promptForTwoLabels(
+    defaultLabel1 = "",
+    defaultLabel2 = "",
+    title = "Введіть імена змінних",
+  ) {
+    loggers.ui.debug("📱 Виклик Custom Two Labels Dialog");
+    const dialog = new TwoLabelsDialog(defaultLabel1, defaultLabel2, title);
     return await dialog.open();
   }
 

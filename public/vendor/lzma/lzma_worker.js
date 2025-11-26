@@ -31,7 +31,7 @@ var module = typeof module === "undefined" ? { exports: exports } : module;
     return Hr(
       ~~Math.max(Math.min(e[1] / I, 2147483647), -2147483648) &
         ~~Math.max(Math.min(r[1] / I, 2147483647), -2147483648),
-      O(e) & O(r)
+      O(e) & O(r),
     );
   }
   function ne(e, r) {
@@ -264,7 +264,7 @@ var module = typeof module === "undefined" ? { exports: exports } : module;
             e._stream,
             e._bufferBase,
             e._bufferOffset + e._streamPos,
-            o
+            o,
           )),
           r == -1)
         ) {
@@ -566,7 +566,7 @@ var module = typeof module === "undefined" ? { exports: exports } : module;
       e.encoder,
       e.encoder.processedInSize,
       e.encoder.processedOutSize,
-      e.encoder.finished
+      e.encoder.finished,
     ),
       (e.inBytesProcessed = e.encoder.processedInSize[0]),
       e.encoder.finished[0] && (gn(e.encoder), (e.alive = 0)));
@@ -870,7 +870,7 @@ var module = typeof module === "undefined" ? { exports: exports } : module;
           yr(
             me(e._literalEncoder, O(e.nowPos64), e._previousByte),
             e._rangeEncoder,
-            u
+            u,
           ),
           (e._previousByte = u),
           (e._additionalOffset -= 1),
@@ -895,7 +895,7 @@ var module = typeof module === "undefined" ? { exports: exports } : module;
               ? yr(M, e._rangeEncoder, u)
               : ((S = G(
                   e._matchFinder,
-                  -e._repDistances[0] - 1 - e._additionalOffset
+                  -e._repDistances[0] - 1 - e._additionalOffset,
                 )),
                 Tn(M, e._rangeEncoder, S, u)),
             (e._previousByte = u),
@@ -983,7 +983,7 @@ var module = typeof module === "undefined" ? { exports: exports } : module;
       Gn(
         e._literalEncoder,
         e._numLiteralPosStateBits,
-        e._numLiteralContextBits
+        e._numLiteralContextBits,
       ),
       !(
         e._dictionarySize == e._dictionarySizePrev &&
@@ -1370,11 +1370,11 @@ var module = typeof module === "undefined" ? { exports: exports } : module;
                       me(
                         e._literalEncoder,
                         r + P,
-                        G(e._matchFinder, P - 1 - 1)
+                        G(e._matchFinder, P - 1 - 1),
                       ),
                       1,
                       G(e._matchFinder, P - 1 - (e.reps[Y] + 1)),
-                      G(e._matchFinder, P - 1)
+                      G(e._matchFinder, P - 1),
                     ),
                   F = h(F),
                   N = (r + P + 1) & e._posStateMask,
@@ -1436,11 +1436,11 @@ var module = typeof module === "undefined" ? { exports: exports } : module;
                         me(
                           e._literalEncoder,
                           r + P,
-                          G(e._matchFinder, P - 1 - 1)
+                          G(e._matchFinder, P - 1 - 1),
                         ),
                         1,
                         G(e._matchFinder, P - (u + 1) - 1),
-                        G(e._matchFinder, P - 1)
+                        G(e._matchFinder, P - 1),
                       ),
                     F = h(F),
                     N = (r + P + 1) & e._posStateMask,
@@ -1532,7 +1532,7 @@ var module = typeof module === "undefined" ? { exports: exports } : module;
             e._matchFinder,
             r - 1,
             e._matchDistances[e._numDistancePairs - 1],
-            273 - r
+            273 - r,
           ))),
       (e._additionalOffset += 1),
       r

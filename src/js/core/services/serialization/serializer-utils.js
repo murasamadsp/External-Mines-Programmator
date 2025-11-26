@@ -6,18 +6,7 @@ import {
   MODERN_PAGE_WIDTH,
   ASCII_ENCODER,
   ASCII_DECODER,
-  V1_MAPPINGS,
-  V3_MAPPINGS
 } from "./serializer-constants.js";
-
-export function findMapping(source, mappings) {
-  for (const [key, action] of mappings) {
-    if (source.startsWith(key)) {
-      return [key, action];
-    }
-  }
-  return null;
-}
 
 export function pushInstruction(ret, action, label = null, value = null) {
   ret.push(new Instruction(action, label ?? null, value ?? null));
