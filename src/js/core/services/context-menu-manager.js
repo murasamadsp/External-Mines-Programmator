@@ -238,24 +238,38 @@ export class ContextMenuManager {
   createMenuElement() {
     this.menuElement = document.createElement("div");
     this.menuElement.className = "context-menu";
-    this.menuElement.innerHTML = `
-      <div class="context-menu-content">
-        <div class="context-menu-header">
-          <span class="context-menu-title">Actions</span>
-        </div>
-        <div class="context-menu-items"></div>
-      </div>
-    `;
+
+    // Create content container
+    const contentDiv = document.createElement("div");
+    contentDiv.className = "context-menu-content";
+
+    // Create header
+    const headerDiv = document.createElement("div");
+    headerDiv.className = "context-menu-header";
+
+    const titleSpan = document.createElement("span");
+    titleSpan.className = "context-menu-title";
+    titleSpan.textContent = "Actions";
+    headerDiv.appendChild(titleSpan);
+
+    // Create items container
+    const itemsDiv = document.createElement("div");
+    itemsDiv.className = "context-menu-items";
+
+    // Assemble structure
+    contentDiv.appendChild(headerDiv);
+    contentDiv.appendChild(itemsDiv);
+    this.menuElement.appendChild(contentDiv);
 
     document.body.appendChild(this.menuElement);
 
     // Prevent context menu on the menu itself
-    this.menuElement.addEventListener("contextmenu", e => e.preventDefault());
+    this.menuElement.addEventListener("contextmenu", (e) => e.preventDefault());
   }
 
   bindGlobalEvents() {
     // Track mouse position globally
-    document.addEventListener("mousemove", e => {
+    document.addEventListener("mousemove", (e) => {
       window.lastMouseEvent = {
         clientX: e.clientX,
         clientY: e.clientY,
@@ -263,21 +277,21 @@ export class ContextMenuManager {
     });
 
     // Hide menu on left click anywhere
-    document.addEventListener("click", e => {
+    document.addEventListener("click", (e) => {
       if (!this.menuElement.contains(e.target)) {
         this.hideMenu();
       }
     });
 
     // Hide menu on escape
-    document.addEventListener("keydown", e => {
+    document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         this.hideMenu();
       }
     });
 
     // Prevent default context menu globally (we'll show our custom one)
-    document.addEventListener("contextmenu", e => {
+    document.addEventListener("contextmenu", (e) => {
       // Only prevent default if we're not already showing a menu
       // This allows nested context menus if needed
       if (!this.activeMenu) {
@@ -307,7 +321,7 @@ export class ContextMenuManager {
     this.menuElement.focus();
 
     loggers.services.debug(
-      `📋 Context menu показаний на позиції (${x}, ${y}) з ${items.length} елементами: ${items.map(item => item.name || "анонімний").join(", ")}`,
+      `📋 Context menu показаний на позиції (${x}, ${y}) з ${items.length} елементами: ${items.map((item) => item.name || "анонімний").join(", ")}`,
     );
   }
 
@@ -354,13 +368,26 @@ export class ContextMenuManager {
 
       if (item.separator) {
         itemElement.className = "context-menu-separator";
-        itemElement.innerHTML = "<hr>";
+        const hr = document.createElement("hr");
+        itemElement.appendChild(hr);
       } else {
-        itemElement.innerHTML = `
-          <span class="context-menu-icon">${item.icon || ""}</span>
-          <span class="context-menu-label">${item.label}</span>
-          <span class="context-menu-shortcut">${item.shortcut || ""}</span>
-        `;
+        // Create icon span
+        const iconSpan = document.createElement("span");
+        iconSpan.className = "context-menu-icon";
+        iconSpan.textContent = item.icon || "";
+        itemElement.appendChild(iconSpan);
+
+        // Create label span
+        const labelSpan = document.createElement("span");
+        labelSpan.className = "context-menu-label";
+        labelSpan.textContent = item.label || "";
+        itemElement.appendChild(labelSpan);
+
+        // Create shortcut span
+        const shortcutSpan = document.createElement("span");
+        shortcutSpan.className = "context-menu-shortcut";
+        shortcutSpan.textContent = item.shortcut || "";
+        itemElement.appendChild(shortcutSpan);
 
         if (item.disabled) {
           itemElement.classList.add("disabled");
@@ -374,7 +401,7 @@ export class ContextMenuManager {
             // Remove hover from other items
             itemsContainer
               .querySelectorAll(".context-menu-item")
-              .forEach(el => {
+              .forEach((el) => {
                 el.classList.remove("hover");
               });
             itemElement.classList.add("hover");
@@ -612,7 +639,7 @@ export class ContextMenuManager {
 
     if (isFavorite) {
       // Remove from favorites
-      const newFavorites = favorites.filter(fav => fav !== actionKey);
+      const newFavorites = favorites.filter((fav) => fav !== actionKey);
       this.saveFavorites(newFavorites);
       loggers.services.info(`⭐ Видалено з обраних: ${actionKey}`);
     } else {

@@ -27,10 +27,17 @@ export class DragDropManager {
   createDragOverlay() {
     this.dragOverlay = document.createElement("div");
     this.dragOverlay.className = "drag-overlay";
-    this.dragOverlay.innerHTML = `
-      <div class="drag-preview"></div>
-      <div class="drop-zones"></div>
-    `;
+
+    // Create drag preview container
+    const dragPreview = document.createElement("div");
+    dragPreview.className = "drag-preview";
+    this.dragOverlay.appendChild(dragPreview);
+
+    // Create drop zones container
+    const dropZones = document.createElement("div");
+    dropZones.className = "drop-zones";
+    this.dragOverlay.appendChild(dropZones);
+
     document.body.appendChild(this.dragOverlay);
 
     this.dragElement = this.dragOverlay.querySelector(".drag-preview");
@@ -40,10 +47,10 @@ export class DragDropManager {
     const grid = this.programGrid.container;
 
     // Unified Pointer Events
-    grid.addEventListener("pointerdown", e => this.handlePointerDown(e));
-    document.addEventListener("pointermove", e => this.handlePointerMove(e));
-    document.addEventListener("pointerup", e => this.handlePointerUp(e));
-    document.addEventListener("pointercancel", e => this.cancelDrag());
+    grid.addEventListener("pointerdown", (e) => this.handlePointerDown(e));
+    document.addEventListener("pointermove", (e) => this.handlePointerMove(e));
+    document.addEventListener("pointerup", (e) => this.handlePointerUp(e));
+    document.addEventListener("pointercancel", (e) => this.cancelDrag());
 
     // Prevent default touch actions to allow dragging
     grid.style.touchAction = "none";
@@ -51,7 +58,7 @@ export class DragDropManager {
     // Suppress click event after dragging
     grid.addEventListener(
       "click",
-      e => {
+      (e) => {
         if (this.wasDragging) {
           e.preventDefault();
           e.stopPropagation();
@@ -171,9 +178,11 @@ export class DragDropManager {
     const cell = target?.closest(".program-cell");
 
     // Clear previous highlights
-    this.programGrid.container.querySelectorAll(".drop-target").forEach(el => {
-      el.classList.remove("drop-target");
-    });
+    this.programGrid.container
+      .querySelectorAll(".drop-target")
+      .forEach((el) => {
+        el.classList.remove("drop-target");
+      });
 
     if (cell) {
       cell.classList.add("drop-target");
@@ -237,9 +246,11 @@ export class DragDropManager {
 
   endDrag() {
     document.body.style.cursor = "";
-    this.programGrid.container.querySelectorAll(".drop-target").forEach(el => {
-      el.classList.remove("drop-target");
-    });
+    this.programGrid.container
+      .querySelectorAll(".drop-target")
+      .forEach((el) => {
+        el.classList.remove("drop-target");
+      });
 
     stateManager.setState({
       dragState: {

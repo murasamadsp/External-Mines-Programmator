@@ -103,10 +103,13 @@ export class Controls {
           }
 
           if (text && this.callbacks.onImport) {
+            this.showLoading(importBtn, "Importing...");
             await this.callbacks.onImport(text);
+            this.hideLoading(importBtn);
             this.showFeedback("✓ Imported successfully", "success");
           }
         } catch (error) {
+          this.hideLoading(importBtn);
           loggers.ui.error("❌ Import error:", error);
           this.showFeedback("Import failed", "error");
         }
@@ -121,7 +124,9 @@ export class Controls {
       onClick: async () => {
         try {
           if (this.callbacks.onExport) {
+            this.showLoading(exportBtn, "Exporting...");
             const result = await this.callbacks.onExport("base64");
+            this.hideLoading(exportBtn);
             await navigator.clipboard.writeText(result);
             this.showFeedback("✓ Copied to clipboard", "success");
           }
@@ -279,13 +284,13 @@ export class Controls {
       // Додаємо обробники для закриття модального вікна
       const closeModal = () => this.toggleProgramDecoder(container);
 
-      decoderUI.addEventListener("click", e => {
+      decoderUI.addEventListener("click", (e) => {
         if (e.target === decoderUI) {
           closeModal();
         }
       });
 
-      const handleEscape = e => {
+      const handleEscape = (e) => {
         if (e.key === "Escape") {
           closeModal();
           document.removeEventListener("keydown", handleEscape);
@@ -348,13 +353,13 @@ export class Controls {
       // Додаємо обробники для закриття модального вікна
       const closeModal = () => this.toggleProgramAnalyzer(container);
 
-      analyzerUI.addEventListener("click", e => {
+      analyzerUI.addEventListener("click", (e) => {
         if (e.target === analyzerUI) {
           closeModal();
         }
       });
 
-      const handleEscape = e => {
+      const handleEscape = (e) => {
         if (e.key === "Escape") {
           closeModal();
           document.removeEventListener("keydown", handleEscape);
@@ -395,5 +400,38 @@ export class Controls {
     if (analyzerContainer && this.programAnalyzer) {
       this.programAnalyzer.analyzeProgram(instructions || []);
     }
+  }
+
+  /**
+   * Показує loading стан на кнопці
+   * @param {HTMLElement} button - Кнопка для показу loading
+   * @param {string} text - Текст loading
+   */
+  showLoading(button, text = "Loading...") {
+    if (!button) return;
+
+    button.disabled = true;
+    button.dataset.originalText = button.textContent;
+    button.textContent = text;
+
+    // Додаємо клас loading для стилізації
+    button.classList.add("loading");
+  }
+
+  /**
+   * Приховує loading стан на кнопці
+   * @param {HTMLElement} button - Кнопка для приховування loading
+   */
+  hideLoading(button) {
+    if (!button) return;
+
+    button.disabled = false;
+    if (button.dataset.originalText) {
+      button.textContent = button.dataset.originalText;
+      delete button.dataset.originalText;
+    }
+
+    // Видаляємо клас loading
+    button.classList.remove("loading");
   }
 }

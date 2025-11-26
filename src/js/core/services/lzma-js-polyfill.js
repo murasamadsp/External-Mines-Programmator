@@ -254,11 +254,25 @@ class LZMAWebInterface extends LZMAInterface {
 
 class LZMANativeInterface extends LZMAInterface {
   async _compressImpl(data, level) {
-    return await this.impl.compress(data, level);
+    // The lzma package works synchronously
+    const result = this.impl.compress(data, level);
+    // Convert Array to Uint8Array if needed
+    return Array.isArray(result) ? new Uint8Array(result) : result;
   }
 
   async _decompressImpl(data) {
-    return await this.impl.decompress(data);
+    // The lzma package works synchronously
+    const result = this.impl.decompress(data);
+    // Handle different return types
+    if (typeof result === "string") {
+      // Convert string to Uint8Array
+      const bytes = new Array(result.length);
+      for (let i = 0; i < result.length; i++) {
+        bytes[i] = result.charCodeAt(i);
+      }
+      return new Uint8Array(bytes);
+    }
+    return Array.isArray(result) ? new Uint8Array(result) : result;
   }
 }
 
@@ -272,9 +286,13 @@ async function createLZMAInterface() {
       return new LZMAWebInterface(lzmaInstance);
     }
 
-    throw new Error("LZMA assets are only available in browser environments");
+    // For Node.js environments, use the lzma package
+    console.log("🔧 Initializing LZMA in Node.js...");
+    const lzma = await import("lzma");
+    console.log("✅ LZMA Node.js package loaded");
+    return new LZMANativeInterface(lzma);
   } catch (error) {
-    console.error("❌ Failed to initialize LZMA:", error);
+    console.error("❌ Failed to create LZMA interface:", error);
     throw new Error(`LZMA initialization failed: ${error.message}`);
   }
 }

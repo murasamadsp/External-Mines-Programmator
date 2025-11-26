@@ -77,7 +77,7 @@ export class ProgramSerializer {
   static async encodeV2(program) {
     this.validateInstructions(program);
     const labels = program
-      .map(inst => this.formatLabel(inst.label, inst.value))
+      .map((inst) => this.formatLabel(inst.label, inst.value))
       .join(":");
     const labelBytes = asciiToUint8(labels);
     const buffer = new Uint8Array(4 + program.length + labelBytes.length);
@@ -363,20 +363,30 @@ export class ProgramSerializer {
   }
 
   static base64Decode(str) {
-    const binary = atob(str);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
+    // Use Buffer in Node.js, atob in browser
+    if (typeof Buffer !== "undefined") {
+      return new Uint8Array(Buffer.from(str, "base64"));
+    } else {
+      const binary = atob(str);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return bytes;
     }
-    return bytes;
   }
 
   static base64Encode(bytes) {
-    let binary = "";
-    for (let i = 0; i < bytes.length; i++) {
-      binary += String.fromCharCode(bytes[i]);
+    // Use Buffer in Node.js, btoa in browser
+    if (typeof Buffer !== "undefined") {
+      return Buffer.from(bytes).toString("base64");
+    } else {
+      let binary = "";
+      for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary);
     }
-    return btoa(binary);
   }
 
   static readInt32LE(buffer, offset) {

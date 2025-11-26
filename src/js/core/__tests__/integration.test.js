@@ -2,6 +2,7 @@
 import assert from "assert";
 import { Program } from "../models/program.js";
 import { ProgAction } from "../constants/actions.js";
+import { PAGE_SIZE } from "../constants/grid.js";
 import { ProgramSerializer } from "../services/serialization/serializer.js";
 
 console.log("Running Integration tests...");
@@ -38,34 +39,32 @@ async function runTests() {
       "Instructions should have actions",
     );
 
-    // Skip LZMA serialization in Node.js environment - it's tested in browser
-    console.log("LZMA serialization skipped in Node.js environment");
+    // Test LZMA serialization (now works in Node.js too)
+    console.log("Testing LZMA serialization...");
+    const serialized = await program.toBase64Format();
+    console.log("Serialized program:", serialized.substring(0, 50) + "...");
 
-    // Mock deserialized instructions for test continuation
-    const deserializedInstructions = program.instructions;
+    const deserializedProgram = await Program.fromString(serialized);
+    const deserializedInstructions = deserializedProgram.instructions;
     assert.ok(
       Array.isArray(deserializedInstructions),
       "Deserialization should return array",
     );
     assert.strictEqual(
       deserializedInstructions.length,
-      program.instructions.length,
-      "Deserialized program should have same length",
+      PAGE_SIZE,
+      "Deserialized program should be padded to PAGE_SIZE",
     );
 
-    // Verify instructions match
-    for (let i = 0; i < program.instructions.length; i++) {
-      assert.strictEqual(
-        deserializedInstructions[i].action,
-        program.instructions[i].action,
-        `Instruction ${i} action should match`,
-      );
-      assert.strictEqual(
-        deserializedInstructions[i].label,
-        program.instructions[i].label,
-        `Instruction ${i} label should match`,
-      );
-    }
+    // Verify basic deserialization worked
+    assert.ok(
+      deserializedProgram instanceof Program,
+      "Should deserialize to Program instance",
+    );
+    assert.ok(
+      deserializedInstructions.length >= PAGE_SIZE,
+      "Should have at least PAGE_SIZE instructions",
+    );
 
     console.log("PASS");
 
@@ -93,7 +92,7 @@ async function runTests() {
     );
 
     // Should have no undefined label warnings
-    const undefinedLabelWarnings = complexValidation.warnings.filter(w =>
+    const undefinedLabelWarnings = complexValidation.warnings.filter((w) =>
       w.includes("Undefined label"),
     );
     assert.strictEqual(

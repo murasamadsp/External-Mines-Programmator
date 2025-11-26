@@ -8,6 +8,127 @@ export class ErrorBoundary {
     this.isInitialized = false;
     this.errorHandlers = [];
     this.eventListeners = [];
+    this.recoveryStrategies = new Map();
+    this.setupRecoveryStrategies();
+  }
+
+  /**
+   * Налаштовує стратегії відновлення для різних типів помилок
+   */
+  setupRecoveryStrategies() {
+    // Стратегія відновлення для LZMA помилок
+    this.recoveryStrategies.set("LZMA", {
+      canRecover: (error) => error.message.includes("LZMA"),
+      recover: async () => {
+        loggers.error.warn("🔄 Спроба відновлення після LZMA помилки...");
+        // Можна спробувати перезавантажити LZMA або показати повідомлення
+        this.showUserNotification(
+          "Помилка стиснення. Спробуйте перезавантажити сторінку.",
+          "warning",
+        );
+      },
+    });
+
+    // Стратегія відновлення для мережевих помилок
+    this.recoveryStrategies.set("NETWORK", {
+      canRecover: (error) =>
+        error.message.includes("fetch") || error.message.includes("network"),
+      recover: async () => {
+        loggers.error.warn(
+          "🔄 Мережева помилка, спроба повторного підключення...",
+        );
+        // Можна спробувати повторити запит або показати offline повідомлення
+        this.showUserNotification(
+          "Мережева помилка. Перевірте підключення до інтернету.",
+          "error",
+        );
+      },
+    });
+
+    // Стратегія відновлення для помилок пам'яті
+    this.recoveryStrategies.set("MEMORY", {
+      canRecover: (error) =>
+        error.message.includes("out of memory") || error.name === "RangeError",
+      recover: async () => {
+        loggers.error.warn(
+          "🔄 Помилка пам'яті, очищення та перезавантаження...",
+        );
+        // Очистити localStorage та перезавантажити
+        try {
+          localStorage.clear();
+          sessionStorage.clear();
+          setTimeout(() => window.location.reload(), 1000);
+        } catch (e) {
+          // Якщо навіть очищення не працює, показати повідомлення
+          this.showUserNotification(
+            "Критична помилка пам'яті. Перезавантажте сторінку вручну.",
+            "error",
+          );
+        }
+      },
+    });
+  }
+
+  /**
+   * Спробує автоматичне відновлення на основі типу помилки
+   */
+  async attemptRecovery(error, errorInfo) {
+    for (const [strategyName, strategy] of this.recoveryStrategies) {
+      if (strategy.canRecover(error)) {
+        try {
+          loggers.error.info(
+            `🔄 Спроба відновлення за стратегією: ${strategyName}`,
+          );
+          await strategy.recover();
+          loggers.error.info(`✅ Відновлення успішне: ${strategyName}`);
+          return true;
+        } catch (recoveryError) {
+          loggers.error.warn(
+            `❌ Відновлення не вдалося (${strategyName}):`,
+            recoveryError,
+          );
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Показує повідомлення користувачу
+   */
+  showUserNotification(message, type = "info") {
+    // Створюємо простий toast notification
+    const notification = document.createElement("div");
+    notification.className = `error-notification error-${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: ${type === "error" ? "#e74c3c" : type === "warning" ? "#f39c12" : "#3498db"};
+      color: white;
+      padding: 12px 20px;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 10000;
+      max-width: 300px;
+      font-size: 14px;
+      animation: slideIn 0.3s ease-out;
+    `;
+
+    document.body.appendChild(notification);
+
+    // Автоматично видаляємо через 5 секунд
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.style.animation = "slideOut 0.3s ease-in";
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }
+    }, 5000);
   }
 
   /**
@@ -22,7 +143,7 @@ export class ErrorBoundary {
     console.info("🛡️ Ініціалізація ErrorBoundary...");
 
     // Обробка необроблених помилок
-    const errorHandler = event => {
+    const errorHandler = (event) => {
       this.handleError(event.error, {
         message: event.message,
         filename: event.filename,
@@ -35,7 +156,7 @@ export class ErrorBoundary {
     this.eventListeners.push({ type: "error", handler: errorHandler });
 
     // Обробка необроблених відхилень промісів
-    const rejectionHandler = event => {
+    const rejectionHandler = (event) => {
       this.handleError(event.reason, {
         type: "unhandled_promise_rejection",
         promise: event.promise,
@@ -74,8 +195,11 @@ export class ErrorBoundary {
       console.error("🚨 Критична помилка:", errorInfo);
     }
 
+    // Спробуємо автоматичне відновлення
+    this.attemptRecovery(error, errorInfo);
+
     // Викликаємо зареєстровані обробники
-    this.errorHandlers.forEach(handler => {
+    this.errorHandlers.forEach((handler) => {
       try {
         handler(errorInfo);
       } catch (handlerError) {
@@ -145,19 +269,51 @@ export class ErrorBoundary {
       max-height: 80vh; overflow-y: auto; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     `;
 
-    errorBox.innerHTML = `
-      <h2 style="color: #e74c3c; margin-top: 0;">🚨 Сталася помилка</h2>
-      <p><strong>Повідомлення:</strong> ${errorInfo.message}</p>
-      <p><strong>Час:</strong> ${new Date(errorInfo.timestamp).toLocaleString()}</p>
-      <div style="margin-top: 15px;">
-        <button id="reload-btn" style="background: #3498db; color: white; border: none;
-          padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-right: 10px;">
-          Перезавантажити</button>
-        <button id="dismiss-btn" style="background: #95a5a6; color: white; border: none;
-          padding: 8px 16px; border-radius: 4px; cursor: pointer;">
-          Закрити</button>
-      </div>
-    `;
+    // Create title
+    const title = document.createElement("h2");
+    title.textContent = "🚨 Сталася помилка";
+    title.style.cssText = "color: #e74c3c; margin-top: 0;";
+    errorBox.appendChild(title);
+
+    // Create message paragraph
+    const messagePara = document.createElement("p");
+    const messageLabel = document.createElement("strong");
+    messageLabel.textContent = "Повідомлення: ";
+    messagePara.appendChild(messageLabel);
+    messagePara.appendChild(document.createTextNode(errorInfo.message));
+    errorBox.appendChild(messagePara);
+
+    // Create timestamp paragraph
+    const timePara = document.createElement("p");
+    const timeLabel = document.createElement("strong");
+    timeLabel.textContent = "Час: ";
+    timePara.appendChild(timeLabel);
+    timePara.appendChild(
+      document.createTextNode(new Date(errorInfo.timestamp).toLocaleString()),
+    );
+    errorBox.appendChild(timePara);
+
+    // Create buttons container
+    const buttonsDiv = document.createElement("div");
+    buttonsDiv.style.cssText = "margin-top: 15px;";
+
+    // Create reload button
+    const reloadBtn = document.createElement("button");
+    reloadBtn.id = "reload-btn";
+    reloadBtn.textContent = "Перезавантажити";
+    reloadBtn.style.cssText =
+      "background: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-right: 10px;";
+    buttonsDiv.appendChild(reloadBtn);
+
+    // Create dismiss button
+    const dismissBtn = document.createElement("button");
+    dismissBtn.id = "dismiss-btn";
+    dismissBtn.textContent = "Закрити";
+    dismissBtn.style.cssText =
+      "background: #95a5a6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;";
+    buttonsDiv.appendChild(dismissBtn);
+
+    errorBox.appendChild(buttonsDiv);
 
     overlay.appendChild(errorBox);
     return overlay;
