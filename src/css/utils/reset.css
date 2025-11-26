@@ -1,78 +1,80 @@
-/* CSS Reset - Link styles and other resets */
+/* CSS Reset - Complete browser style reset to zero */
 
-/* Links */
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-a:hover, a:focus { color: inherit; }
-
-a:visited { color: inherit; }
-
-/* Button reset for links that look like buttons */
-button {
-  padding: 0;
-  color: inherit;
-  background: none;
-  border: none;
-  font: inherit;
-  cursor: pointer;
-}
-
-/* Focus styles */
-a:focus,
-button:focus {
-  outline: 2px solid currentcolor;
-  outline-offset: 2px;
-}
-
-/* Lists */
-ul,
-ol {
+/* Reset all elements */
+*,
+*::before,
+*::after {
   padding: 0;
   margin: 0;
+  box-sizing: border-box;
+}
+
+/* Reset root element */
+html {
+  box-sizing: border-box;
+}
+
+/* Reset list styles */
+ol,
+ul {
   list-style: none;
 }
 
-li { margin: 0; }
-
-/* Text elements reset */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
+/* Reset quotes */
 blockquote,
-pre,
-figure,
-figcaption {
-  padding: 0;
-  margin: 0;
+q {
+  quotes: none;
 }
 
-/* Form elements reset */
+blockquote::before,
+blockquote::after,
+q::before,
+q::after {
+  content: "";
+  content: none;
+}
+
+/* Reset table styles */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Reset form elements */
 input,
-textarea,
-select {
-  padding: 0;
+button,
+select,
+optgroup,
+textarea {
   margin: 0;
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
+  font: inherit;
+  color: inherit;
 }
 
-/* Layout elements reset */
-div,
-section,
-article,
-aside,
-header,
-footer,
-nav,
-main {
-  padding: 0;
-  margin: 0;
+/* Reset button styles */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Reset input styles */
+input[type="search"] {
+  appearance: textfield;
+  outline-offset: -2px;
+}
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  appearance: none;
+}
+
+/* Reset focus styles */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
 }

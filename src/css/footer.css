@@ -10,16 +10,16 @@ footer {
 }
 
 .footer-container {
+  max-width: var(--max-width);
   padding: 0 var(--spacing-horizontal);
   margin: 0 auto;
-  max-width: var(--max-width);
 }
 
 .footer-content {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -39,8 +39,8 @@ footer {
   padding: 4px 8px;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--color-text);
   text-decoration: none;
+  color: var(--color-text);
   border-radius: 4px;
   opacity: 0.5;
 }
@@ -48,6 +48,6 @@ footer {
 .footer-link:hover,
 .footer-link:focus {
   color: var(--color-primary);
-  opacity: 1;
   background-color: var(--hover-bg);
+  opacity: 1;
 }

@@ -9,9 +9,15 @@
     "serve": "vite preview",
     "test": "node src/js/core/services/serialization/__tests__/serializer-v3.test.js",
     "format": "prettier --config config/prettier.config.cjs --ignore-path config/prettierignore --write .",
+    "format:check": "prettier --config config/prettier.config.cjs --ignore-path config/prettierignore --check .",
     "lint:css": "stylelint src/css/**/*.css --config config/stylelint-entry.config.cjs --fix",
+    "lint:css:check": "stylelint src/css/**/*.css --config config/stylelint-entry.config.cjs",
     "lint:js": "eslint src/js/**/*.js --config config/eslint-entry.config.js --fix",
-    "lint": "npm run lint:js && npm run lint:css"
+    "lint:js:check": "eslint src/js/**/*.js --config config/eslint-entry.config.js",
+    "lint": "npm run lint:js && npm run lint:css",
+    "lint:check": "npm run lint:js:check && npm run lint:css:check",
+    "lint:fix": "npm run lint:js && npm run lint:css",
+    "lint:watch": "onchange 'src/**/*.{js,css}' -- npm run lint"
   },
   "repository": {
     "type": "git",
@@ -39,7 +45,8 @@
     "stylelint-config-standard": "^39.0.1",
     "stylelint-order": "^7.0.0",
     "vite": "^7.2.2",
-    "vite-plugin-full-reload": "^1.2.0"
+    "vite-plugin-full-reload": "^1.2.0",
+    "onchange": "^7.1.0"
   },
   "dependencies": {
     "lzma-js": "^1.0.1",

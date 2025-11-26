@@ -1,10 +1,10 @@
-import js from "@eslint/js";
-import importPlugin from "eslint-plugin-import";
-import jsdocPlugin from "eslint-plugin-jsdoc";
-import promisePlugin from "eslint-plugin-promise";
-import prettierPlugin from "eslint-plugin-prettier";
+const js = require("@eslint/js");
+const importPlugin = require("eslint-plugin-import");
+const jsdocPlugin = require("eslint-plugin-jsdoc");
+const promisePlugin = require("eslint-plugin-promise");
+const prettierPlugin = require("eslint-plugin-prettier");
 
-export default [
+module.exports = [
   // Базовые правила для JavaScript
   js.configs.recommended,
 
@@ -177,7 +177,7 @@ export default [
       "template-curly-spacing": "error",
       "arrow-parens": ["error", "as-needed"],
       "arrow-body-style": ["error", "as-needed"],
-      "prefer-destructuring": ["error", "always"],
+      "prefer-destructuring": ["error", { object: true, array: false }],
       "prefer-spread": "error",
       "prefer-rest-params": "error",
       "prefer-object-spread": "error",

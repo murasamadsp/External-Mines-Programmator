@@ -54,12 +54,10 @@
   --border: 1px solid var(--border-color);
   --border-width: 1px;
   --border-width-thick: 2px;
-
   --hover-bg: rgb(255 255 255 / 5%);
   --active-bg: rgb(255 255 255 / 8%);
   --surface-bg: rgb(255 255 255 / 10%);
   --surface-bg-strong: rgb(255 255 255 / 15%);
-
   --context-menu-bg: rgb(255 255 255 / 95%);
   --context-menu-border: rgb(102 126 234);
   --context-menu-shadow: 0 8px 32px rgb(0 0 0 / 30%);
@@ -80,32 +78,38 @@
 }
 
 /* Base Styles */
+html {
+  line-height: 1.15; /* Correct the line height in all browsers */
+  text-size-adjust: 100%; /* Prevent adjustments of font size after orientation changes in iOS */
+  tab-size: 4; /* Use a more readable tab size */
+}
+
 html,
 body {
-  height: 100vh;
   width: 100vw;
-  margin: 0;
+  height: 100vh;
   padding: 0;
-  overflow: hidden; /* Prevent global scroll */
+  margin: 0;
   font-family: "Google Sans Code", "Fira Code", monospace;
-  background-color: var(--color-background);
-  color: var(--color-text);
   line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  overflow: hidden; /* Prevent global scroll */
 }
 
 body {
   display: flex;
   flex-direction: column;
-  height: 100%;
   width: 100%;
+  height: 100%;
 }
 
 main {
-  flex: 1;
-  margin: 0;
-  height: 100%;
   width: 100%;
+  height: 100%;
+  margin: 0;
   overflow: hidden;
+  flex: 1;
 }
 
 /* Utility Classes */
@@ -154,9 +158,9 @@ main {
 .context-menu-title {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
-  color: rgb(102 126 234);
-  text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgb(102 126 234);
 }
 
 .context-menu-items {
@@ -180,8 +184,8 @@ main {
 
 .context-menu-item.disabled {
   color: rgb(108 117 125);
-  cursor: not-allowed;
   opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .context-menu-item.disabled:hover {
@@ -190,9 +194,9 @@ main {
 
 .context-menu-icon {
   width: 18px;
-  text-align: center;
-  margin-right: var(--space-3);
   font-size: var(--font-size-md);
+  text-align: center;
+  margin-inline-end: var(--space-3);
 }
 
 .context-menu-label {
@@ -201,10 +205,10 @@ main {
 }
 
 .context-menu-shortcut {
+  font-family: "Google Sans Code", monospace;
   font-size: var(--font-size-xs);
   color: rgb(108 117 125);
-  margin-left: var(--space-5);
-  font-family: "Google Sans Code", monospace;
+  margin-inline-start: var(--space-5);
 }
 
 .context-menu-separator {
@@ -215,8 +219,8 @@ main {
 }
 
 .context-menu-separator hr {
-  margin: 0;
-  border: none;
   height: 1px;
+  margin: 0;
   background-color: rgb(255 255 255 / 30%);
+  border: none;
 }

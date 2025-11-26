@@ -1,8 +1,11 @@
-// Code Guide compliant Stylelint configuration
-// Focus on quality, consistency, and maintainability
+// Enhanced Stylelint configuration
+// Focus on quality, consistency, maintainability, accessibility, and performance
 module.exports = {
   extends: ["stylelint-config-standard"],
-  plugins: ["stylelint-order"],
+  plugins: [
+    "stylelint-order",
+    // Additional plugins will be added when installed
+  ],
   rules: {
     // Color notation (Code Guide)
     "color-function-notation": "modern", // rgb() instead of rgba()
@@ -35,6 +38,60 @@ module.exports = {
 
     // @ Rules
     "at-rule-no-unknown": null, // Allow custom at-rules
+    "at-rule-empty-line-before": [
+      "always",
+      {
+        except: ["blockless-after-same-name-blockless", "first-nested"],
+        ignore: ["after-comment"],
+      },
+    ],
+
+    // === Доступність (Accessibility) ===
+    // Note: For full accessibility rules, consider installing stylelint-a11y plugin
+    "selector-max-attribute": 2, // Limit attribute selectors for performance
+    "selector-max-class": 3, // Limit class selectors for specificity control
+
+    // === Продуктивність (Performance) ===
+    "selector-max-combinators": 3, // Limit combinator complexity
+    "selector-max-compound-selectors": 3, // Limit compound selector complexity
+    "selector-max-id": 1, // Limit ID selectors (IDs are too specific)
+
+    // === Сучасний CSS (Modern CSS) ===
+    "function-disallowed-list": [], // Can be customized per project
+    "property-disallowed-list": [], // Can be customized per project
+    "unit-disallowed-list": [], // Can be customized per project
+
+    // === Кастомні правила ===
+    // "custom-property-pattern": "^--[a-z][a-zA-Z0-9-]*$", // CSS custom properties pattern - commented out as existing vars use different naming
+    "keyframes-name-pattern": "^[a-z][a-zA-Z0-9-]*$", // Keyframes naming pattern
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        ignorePseudoClasses: ["global", "local"], // For CSS modules
+      },
+    ],
+    "selector-pseudo-element-no-unknown": [
+      true,
+      {
+        ignorePseudoElements: ["v-deep"], // For Vue scoped styles if needed
+      },
+    ],
+
+    // === Форматування ===
+    "declaration-empty-line-before": [
+      "always",
+      {
+        except: ["after-declaration", "first-nested"],
+        ignore: ["after-comment", "inside-single-line-block"],
+      },
+    ],
+    "rule-empty-line-before": [
+      "always",
+      {
+        except: ["after-single-line-comment", "first-nested"],
+        ignore: ["after-comment"],
+      },
+    ],
 
     // Property ordering (Code Guide inspired)
     "order/properties-order": [

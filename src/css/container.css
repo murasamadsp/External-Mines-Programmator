@@ -2,15 +2,15 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: 100%;
   width: 100%;
   max-width: var(--max-width);
+  height: 100%;
   padding: var(--space-4);
   margin: 0 auto;
-  border-radius: 0;
-  gap: var(--space-4);
   background-color: var(--color-background-secondary);
+  border-radius: 0;
   box-shadow: none;
   overflow: hidden;
+  gap: var(--space-4);
   box-sizing: border-box;
 }

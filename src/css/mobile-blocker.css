@@ -6,20 +6,20 @@
 }
 
 /* Show mobile blocker on small screens */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   #mobile-block-overlay {
-    display: flex !important;
     position: fixed;
     top: 0;
     left: 0;
+    z-index: 9999;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(135deg, rgb(102 126 234), rgb(118 75 162));
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
     font-family: "Google Sans Code", monospace;
     color: rgb(255 255 255);
+    background: linear-gradient(135deg, rgb(102 126 234), rgb(118 75 162));
   }
 
   /* Hide all other content on mobile */
@@ -29,31 +29,31 @@
 }
 
 .mobile-block-content {
-  text-align: center;
-  padding: 20px;
   max-width: 90%;
+  padding: 20px;
+  text-align: center;
   background: rgb(255 255 255 / 10%);
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
   border: 1px solid rgb(255 255 255 / 20%);
+  border-radius: 20px;
   box-shadow: 0 8px 32px rgb(0 0 0 / 30%);
+  backdrop-filter: blur(10px);
 }
 
 .mobile-block-icon {
+  display: block;
   font-size: 3rem;
   margin-bottom: 15px;
-  display: block;
 }
 
 .mobile-block-title {
   font-size: 1.5rem;
-  margin: 0 0 10px 0;
+  margin-bottom: 10px;
   font-weight: var(--font-weight-bold);
 }
 
 .mobile-block-message {
   font-size: 1rem;
-  margin: 0 0 15px 0;
+  margin-bottom: 15px;
   line-height: 1.6;
   opacity: 0.9;
 }

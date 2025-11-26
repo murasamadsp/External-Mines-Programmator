@@ -13,9 +13,9 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-width: var(--max-width);
   padding: 0 var(--spacing-horizontal);
   margin: 0 auto;
-  max-width: var(--max-width);
 }
 
 /* Site title styling */
@@ -26,8 +26,8 @@ header {
 }
 
 .site-title-link {
-  color: var(--color-text);
   text-decoration: none;
+  color: var(--color-text);
 }
 
 .site-title-link:hover {
@@ -55,8 +55,8 @@ header {
 .nav-link {
   padding: 6px 12px;
   font-weight: var(--font-weight-medium);
-  color: var(--color-text);
   text-decoration: none;
+  color: var(--color-text);
   border-radius: 6px;
 }
 
