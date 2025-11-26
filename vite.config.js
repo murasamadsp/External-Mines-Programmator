@@ -12,6 +12,7 @@ export default defineConfig(({ command, mode }) => ({
   resolve: {
     alias: {
       "lzma-web": "lzma-web/dist/index.js",
+      "lzma-js": "lzma-js",
       "@": "src",
     },
   },
@@ -28,21 +29,21 @@ export default defineConfig(({ command, mode }) => ({
       },
     },
     rollupOptions: {
-      external: ["lzma-native"],
+      external: ["lzma-native", "lzma-js"],
       input: "index.html",
       output: {
         manualChunks: {
-          vendor: ["lzma-js", "lzma-web"],
+          vendor: ["lzma-web"],
           ui: ["./src/js/features/editor/editor-controller.js"],
         },
-        entryFileNames: chunkInfo => {
+        entryFileNames: (chunkInfo) => {
           if (chunkInfo.name === "commonHelpers") {
             return "commonHelpers.js";
           }
           return "assets/[name]-[hash].js";
         },
         chunkFileNames: "assets/[name]-[hash].js",
-        assetFileNames: assetInfo => {
+        assetFileNames: (assetInfo) => {
           if (assetInfo.name && assetInfo.name.endsWith(".html")) {
             return "[name].[ext]";
           }
