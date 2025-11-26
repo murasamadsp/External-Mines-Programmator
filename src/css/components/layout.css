@@ -44,17 +44,17 @@
 
 /* Sidebar Panels */
 .programmer-sidebar {
-  grid-row: 2;
+  display: flex;
+  flex-direction: column;
   height: fit-content;
   max-height: var(--program-grid-height);
   padding: var(--space-2);
   background: rgb(86 65 144 / 40%);
   border: var(--border);
   border-radius: var(--radius-2xl);
-  backdrop-filter: blur(12px);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  grid-row: 2;
+  backdrop-filter: blur(12px);
 }
 
 /* Main Content Area */

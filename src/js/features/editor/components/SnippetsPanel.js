@@ -2,7 +2,7 @@
 // Displays pre-built code snippets that users can insert into their programs
 
 import { loggers } from "../../../utils/index.js";
-import { ProgAction } from "../../../core/index.js";
+import { ProgAction } from "../../../core/constants/actions.js";
 import { UI_TIMEOUTS } from "../../../core/constants/ui-constants.js";
 
 export class SnippetsPanel {

@@ -29,6 +29,10 @@
 
 #program-controls button {
   position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 28px;
   padding: var(--space-3) var(--space-4);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
@@ -40,11 +44,7 @@
   overflow: hidden;
   margin-inline-end: var(--space-2);
   margin-bottom: var(--space-2);
-  display: inline-flex;
-  align-items: center;
   gap: var(--space-2);
-  min-width: 28px;
-  justify-content: center;
 }
 
 #program-controls button:hover {

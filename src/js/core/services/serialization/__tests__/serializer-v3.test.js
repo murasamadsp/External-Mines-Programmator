@@ -1,6 +1,8 @@
 import assert from "assert";
 import { ProgramSerializer } from "../serializer.js";
-import { Instruction, ProgAction } from "../../../index.js";
+import { Instruction } from "../../../models/program.js";
+import { ProgAction } from "../../../constants/actions.js";
+import { ProgramFormatVersion } from "../../../constants/formats.js";
 
 console.log("Running ProgramSerializer V3 tests...");
 
@@ -9,7 +11,7 @@ async function runTests() {
     // Test 1: Detect V3 format
     console.log("Test 1: Detect V3 format");
     const v3Source = "$...^W...";
-    assert.strictEqual(ProgramSerializer.probeFormatVersion(v3Source), 3, "Should detect V3 format");
+    assert.strictEqual(ProgramSerializer.probeFormatVersion(v3Source), ProgramFormatVersion.Version3, "Should detect V3 format");
     console.log("PASS");
 
     // Test 2: Decode simple V3 program

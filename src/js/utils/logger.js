@@ -58,7 +58,7 @@ export class Logger {
   /**
    * Форматирует сообщение для логирования
    */
-  formatMessage(level, message, ...args) {
+  formatMessage(level, message, ..._args) {
     const timestamp = LOG_CONFIG.enableTimestamp
       ? new Date().toISOString()
       : "";
@@ -105,7 +105,7 @@ export class Logger {
           const callerLine = stackLines[i + 1].trim();
           // Извлекаем имя файла и номер строки
           const match = callerLine.match(
-            /at\s+(?:.*?\s+)?(?:\(|\s)([^:)]+):(\d+):(\d+)/
+            /at\s+(?:.*?\s+)?(?:\(|\s)([^:)]+):(\d+):(\d+)/,
           );
           if (match) {
             const [, file, line] = match;

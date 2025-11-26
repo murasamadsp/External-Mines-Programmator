@@ -6,7 +6,7 @@ export default defineConfig(({ command, mode }) => ({
   define: {
     [command === "serve" ? "global" : "_global"]: {},
   },
-  base: mode === "production" ? "/External-Mines-Programmator/" : "/",
+  base: "/",
   root: ".",
   publicDir: "public",
   resolve: {

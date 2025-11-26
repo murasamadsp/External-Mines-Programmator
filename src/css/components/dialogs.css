@@ -16,6 +16,7 @@
 }
 
 .dialog-overlay.show {
+
   /* Dialog overlay is visible */
 }
 
@@ -33,6 +34,7 @@
 }
 
 .dialog-content.show {
+
   /* Dialog content is shown */
 }
 

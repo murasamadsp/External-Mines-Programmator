@@ -1,5 +1,6 @@
 import { ProgramSerializer } from "../serializer.js";
-import { Instruction, ProgAction } from "../../../index.js";
+import { Instruction } from "../../../models/program.js";
+import { ProgAction } from "../../../constants/actions.js";
 import { LZMACompressor } from "../../lzma-compressor.js";
 
 // Mock LZMA for Node environment if needed, or rely on polyfill

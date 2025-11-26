@@ -2,7 +2,9 @@
 // Implements the exact format probing, encoding, and decoding logic
 // defined in docs-to-do/code/ProgramSerializer.cs
 
-import { ProgramFormatVersion, Instruction, ProgAction } from "../../index.js";
+import { ProgramFormatVersion } from "../../constants/formats.js";
+import { Instruction } from "../../models/program.js";
+import { ProgAction } from "../../constants/actions.js";
 import { MAX_INSTRUCTIONS } from "../../constants/grid.js";
 import { LZMACompressor } from "../lzma-compressor.js";
 import {

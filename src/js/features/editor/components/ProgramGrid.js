@@ -1,11 +1,8 @@
 // Сітка програми - окремий модуль для відображення та взаємодії з сіткою
 // Відповідає тільки за візуалізацію та обробку кліків по клітинках
 
-import {
-  GRID_WIDTH,
-  GRID_HEIGHT,
-  ProgAction,
-} from "../../../core/index.js";
+import { GRID_WIDTH, GRID_HEIGHT } from "../../../core/constants/grid.js";
+import { ProgAction } from "../../../core/constants/actions.js";
 import { loggers } from "../../../utils/index.js";
 import { ACTION_DATA, getActionByCode } from "../../../core/constants/actions.js";
 import { contextMenuManager } from "../../../core/services/context-menu-manager.js";

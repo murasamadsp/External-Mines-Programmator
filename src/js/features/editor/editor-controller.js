@@ -1,14 +1,9 @@
 // Користувацький інтерфейс Програматора шахт - рефакторинг
 // Використовує модульну архітектуру для кращого розділення відповідальності
 
-import {
-  ProgAction,
-  GRID_WIDTH,
-  GRID_HEIGHT,
-  MAX_PAGES,
-  Program,
-  Instruction,
-} from "../../core/index.js";
+import { ProgAction } from "../../core/constants/actions.js";
+import { GRID_WIDTH, GRID_HEIGHT, MAX_PAGES } from "../../core/constants/grid.js";
+import { Program, Instruction } from "../../core/models/program.js";
 import { ProgramSerializer } from "../../core/services/serialization/serializer.js";
 import { getActionByCode } from "../../core/constants/actions.js";
 import {

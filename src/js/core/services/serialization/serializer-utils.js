@@ -1,6 +1,7 @@
 // Utility functions for Mines Programmator serialization
 
-import { Instruction, ProgAction } from "../../index.js";
+import { Instruction } from "../../models/program.js";
+import { ProgAction } from "../../constants/actions.js";
 import {
   MODERN_PAGE_WIDTH,
   ASCII_ENCODER,

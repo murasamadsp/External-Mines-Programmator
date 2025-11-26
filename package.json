@@ -3,14 +3,15 @@
   "version": "1.0.0",
   "description": "Web application for visual programming of bots in the Mines game",
   "type": "module",
-  "main": "index.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "test": "node src/js/core/constants/__tests__/actions.test.js",
+    "test": "node src/js/core/services/serialization/__tests__/serializer-v3.test.js",
     "format": "prettier --config config/prettier.config.cjs --ignore-path config/prettierignore --write .",
-    "lint:css": "stylelint src/css/**/*.css --config config/stylelint-entry.config.cjs --fix"
+    "lint:css": "stylelint src/css/**/*.css --config config/stylelint-entry.config.cjs --fix",
+    "lint:js": "eslint src/js/**/*.js --config config/eslint-entry.config.js --fix",
+    "lint": "npm run lint:js && npm run lint:css"
   },
   "repository": {
     "type": "git",
@@ -24,7 +25,13 @@
   },
   "homepage": "https://github.com/murasamadsp/External-Mines-Programmator#readme",
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@vitejs/plugin-legacy": "^7.2.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsdoc": "^61.4.1",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-promise": "^7.2.1",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "sass": "^1.93.3",

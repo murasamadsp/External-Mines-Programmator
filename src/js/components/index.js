@@ -1,2 +1,2 @@
 // Components module exports
-export * from "./editor/programmator-ui.js";
+// TODO: Add component exports when components are created

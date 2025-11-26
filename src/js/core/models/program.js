@@ -1,16 +1,9 @@
 // Клас програми шахт
 // Керує інструкціями програми бота та валідацією
 
-import {
-  ProgAction,
-  getActionCode,
-  GRID_WIDTH,
-  GRID_HEIGHT,
-  GRID_SIZE,
-  PAGE_SIZE,
-  MAX_PAGES,
-  ProgramSerializer,
-} from "../index.js";
+import { ProgAction, getActionCode } from "../constants/actions.js";
+import { GRID_WIDTH, GRID_HEIGHT, GRID_SIZE, PAGE_SIZE, MAX_PAGES } from "../constants/grid.js";
+import { ProgramSerializer } from "../services/serialization/serializer.js";
 import { validateProgram } from "../../utils/index.js";
 
 /**
