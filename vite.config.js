@@ -43,7 +43,7 @@ export default defineConfig(({ command, mode }) => ({
         },
       },
     },
-    outDir: "../dist",
+    outDir: "dist",
     emptyOutDir: true,
   },
   plugins: [
