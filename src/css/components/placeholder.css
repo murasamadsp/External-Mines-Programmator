@@ -1,12 +1,16 @@
 /* Programmer placeholder */
 .programmer-placeholder {
-  padding: 30px 20px;
+  padding: var(--space-9) var(--space-6);
   text-align: center;
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  border: 2px solid #dee2e6;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
-  margin-bottom: 25px;
+  background: linear-gradient(
+    135deg,
+    var(--surface-bg-strong),
+    var(--hover-bg)
+  );
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--space-8);
 }
 
 .programmer-placeholder p {
@@ -16,6 +20,6 @@
   margin: 0;
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
-  color: #6c757d;
-  gap: 10px;
+  color: var(--color-text-secondary);
+  gap: var(--space-3);
 }

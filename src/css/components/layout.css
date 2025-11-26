@@ -1,83 +1,125 @@
-/* Transport Panel Container */
+/* ==========================================================================
+   Layout Components - Application structure and positioning
+   ========================================================================== */
+
+/* Enhanced Transport Panel Container - Modern control panel with glassmorphism */
 .transport-panel-container {
+  /* Positioning */
   z-index: var(--z-fixed);
+
+  /* Box model */
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   width: 100%;
-  padding: var(--space-3) var(--space-5);
-  background: rgb(106 90 170 / 40%);
-  border: var(--border);
-  border-radius: var(--radius-xl);
-  backdrop-filter: blur(12px);
-  grid-column: 2;
-  grid-row: 1;
+  padding: var(--space-5) var(--space-7);
+  flex-shrink: 0;
+
+  /* Visual */
+  background: var(--surface-bg-elevated);
+  backdrop-filter: var(--backdrop-blur-sm);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
 }
 
-/* Programmer Title (Removed/Hidden) */
+/* Programmer Title - Hidden legacy element */
 .programmer-title {
+  /* Box model */
   display: none;
 }
 
 .programmer-section {
+  /* Box model */
   display: flex;
   flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
-
-/* Three-Column Layout with Grid */
-.programmer-layout {
-  display: grid;
-  align-items: stretch;
-  min-height: 0;
-  padding: var(--space-4);
-  overflow: hidden;
-  grid-template-columns: var(--sidebar-width) minmax(
-      var(--main-min-width),
-      1fr
-    ) var(--sidebar-width);
-  grid-template-rows: auto 1fr;
   flex: 1;
-  gap: var(--space-4);
+
+  /* Misc */
+  overflow: hidden;
 }
 
-/* Sidebar Panels */
+/* ==========================================================================
+   Three-Column Layout - Main application grid structure
+   ========================================================================== */
+
+.programmer-layout {
+  /* Box model */
+  display: grid;
+  align-items: start;
+  width: 100%;
+  height: fit-content;
+  gap: var(--space-6);
+
+  /* Grid */
+  grid-template-columns: 300px auto 300px;
+  grid-template-rows: auto;
+
+  /* Misc */
+  overflow: visible;
+}
+
+/* ==========================================================================
+   Enhanced Sidebar Panels - Modern action palette and snippets containers
+   ========================================================================== */
+
 .programmer-sidebar {
+  /* Box model */
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-5);
+
+  /* Visual */
+  background: var(--surface-bg-elevated);
+  backdrop-filter: var(--backdrop-blur-sm);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+
+  /* Misc */
+  overflow: hidden;
+}
+
+.programmer-sidebar-left {
+  grid-column: 1;
+}
+
+.programmer-sidebar-right {
+  grid-column: 3;
+}
+
+/* ==========================================================================
+   Enhanced Main Content Area - Program grid display area with modern styling
+   ========================================================================== */
+
+.programmer-main {
+  /* Positioning */
+  grid-column: 2;
+
+  /* Box model */
   display: flex;
   flex-direction: column;
   height: fit-content;
-  max-height: var(--program-grid-height);
-  padding: var(--space-2);
-  background: rgb(86 65 144 / 40%);
-  border: var(--border);
-  border-radius: var(--radius-2xl);
-  overflow: hidden;
-  grid-row: 2;
-  backdrop-filter: blur(12px);
+  gap: var(--space-4);
+
+  /* Misc */
+  overflow: visible;
 }
 
-/* Main Content Area */
-.programmer-main {
-  grid-column: 2;
-  grid-row: 2;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-width: 0;
-  height: 100%;
-  overflow-y: auto;
-  padding: var(--space-2);
-}
+/* ==========================================================================
+   Legacy Container - Deprecated layout component
+   ========================================================================== */
 
-/* Legacy Container */
 .programmer-container {
+  /* Box model */
   display: flex;
   flex-direction: column;
   padding: var(--space-6);
   gap: var(--space-6);
-  background: rgb(86 65 144 / 40%);
+
+  /* Visual */
+  background: var(--surface-elevated);
   border: var(--border);
-  border-radius: var(--radius-3xl);
-  backdrop-filter: blur(12px);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
 }

@@ -4,7 +4,10 @@
 import { GRID_WIDTH, GRID_HEIGHT } from "../../../core/constants/grid.js";
 import { ProgAction } from "../../../core/constants/actions.js";
 import { loggers } from "../../../utils/index.js";
-import { ACTION_DATA, getActionByCode } from "../../../core/constants/actions.js";
+import {
+  ACTION_DATA,
+  getActionByCode,
+} from "../../../core/constants/actions.js";
 import { contextMenuManager } from "../../../core/services/context-menu-manager.js";
 
 export class ProgramGrid {
@@ -24,9 +27,9 @@ export class ProgramGrid {
    */
   create() {
     try {
-    const grid = document.createElement("div");
-    grid.id = "program-grid";
-    grid.className = "program-grid";
+      const grid = document.createElement("div");
+      grid.id = "program-grid";
+      grid.className = "program-grid";
 
       // Створюємо сітку клітинок
       for (let y = 0; y < GRID_HEIGHT; y++) {
@@ -37,10 +40,44 @@ export class ProgramGrid {
       }
 
       this.container.appendChild(grid);
+
+      // Встановлюємо висоту sidebar'ів після повного рендерингу
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          this.adjustSidebarHeights();
+        }, 10);
+      });
+
       loggers.ui.info("✅ Сітка програми створена");
     } catch (error) {
       loggers.ui.error("❌ Помилка створення сітки програми:", error);
     }
+  }
+
+  /**
+   * Встановлює висоту sidebar'ів рівну висоті центральної області (панель управління + сітка)
+   */
+  adjustSidebarHeights() {
+    // Знаходимо центральну область (.programmer-main)
+    const programmerMain = document.querySelector(".programmer-main");
+    if (!programmerMain) {
+      loggers.ui.warn("❌ .programmer-main не знайдено");
+      return;
+    }
+
+    // Отримуємо повну висоту центральної області (панель управління + сітка)
+    const totalHeight = programmerMain.offsetHeight;
+
+    // Знаходимо sidebar'и і встановлюємо їм висоту
+    const sidebars = document.querySelectorAll(".programmer-sidebar");
+    sidebars.forEach((sidebar) => {
+      sidebar.style.height = totalHeight + "px";
+      sidebar.style.maxHeight = totalHeight + "px";
+    });
+
+    loggers.ui.debug(
+      `✅ Висота sidebar'ів встановлена: ${totalHeight}px (= панель управління + сітка)`,
+    );
   }
 
   /**
@@ -77,7 +114,7 @@ export class ProgramGrid {
   handleCellClick(x, y) {
     const position = y * GRID_WIDTH + x;
     this.setCursorPosition(position);
-    
+
     if (this.onCellClick) {
       this.onCellClick(x, y);
     }
@@ -88,7 +125,7 @@ export class ProgramGrid {
    */
   handleCellContextMenu(e, x, y) {
     const position = y * GRID_WIDTH + x; // Convert x,y to linear position
-    const cellElement = e.target.closest('.program-cell');
+    const cellElement = e.target.closest(".program-cell");
 
     contextMenuManager.showProgramCellMenu(cellElement, position);
   }
@@ -98,14 +135,24 @@ export class ProgramGrid {
    */
   updateDisplay() {
     try {
-      loggers.ui.debug(`🔄 ProgramGrid updateDisplay called, current page: ${this.currentPage}`);
-      loggers.ui.debug(`📊 Program has ${this.program.instructions.length} total instructions`);
-      
-      const pageInstructions = this.program.getPageInstructions(this.currentPage);
-      loggers.ui.debug(`📄 Page ${this.currentPage} has ${pageInstructions.length} instructions`);
-      
-      const nonEmpty = pageInstructions.filter(i => i.action !== 0).length;
-      loggers.ui.debug(`📌 Non-empty instructions on page ${this.currentPage}: ${nonEmpty}`);
+      loggers.ui.debug(
+        `🔄 ProgramGrid updateDisplay called, current page: ${this.currentPage}`,
+      );
+      loggers.ui.debug(
+        `📊 Program has ${this.program.instructions.length} total instructions`,
+      );
+
+      const pageInstructions = this.program.getPageInstructions(
+        this.currentPage,
+      );
+      loggers.ui.debug(
+        `📄 Page ${this.currentPage} has ${pageInstructions.length} instructions`,
+      );
+
+      const nonEmpty = pageInstructions.filter((i) => i.action !== 0).length;
+      loggers.ui.debug(
+        `📌 Non-empty instructions on page ${this.currentPage}: ${nonEmpty}`,
+      );
 
       for (let y = 0; y < GRID_HEIGHT; y++) {
         for (let x = 0; x < GRID_WIDTH; x++) {
@@ -132,11 +179,7 @@ export class ProgramGrid {
 
       if (!cell) return;
 
-      const instruction = this.program.getInstructionAt(
-        x,
-        y,
-        this.currentPage
-      );
+      const instruction = this.program.getInstructionAt(x, y, this.currentPage);
 
       // Очищаємо клітинку
       cell.textContent = "";
@@ -225,7 +268,7 @@ export class ProgramGrid {
    * Очищає всі виділення
    */
   clearHighlights() {
-    this.gridCells.forEach(cell => {
+    this.gridCells.forEach((cell) => {
       cell.classList.remove("highlighted");
     });
   }
@@ -242,7 +285,6 @@ export class ProgramGrid {
    * Get current cursor position (linear index)
    * @returns {number|null} Linear index or null
    */
-
 
   /**
    * Get current cursor position (linear index)

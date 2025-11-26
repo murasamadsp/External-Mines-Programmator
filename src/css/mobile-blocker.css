@@ -19,7 +19,11 @@
     height: 100vh;
     font-family: "Google Sans Code", monospace;
     color: rgb(255 255 255);
-    background: linear-gradient(135deg, rgb(102 126 234), rgb(118 75 162));
+    background: linear-gradient(
+      135deg,
+      var(--color-primary),
+      var(--color-accent)
+    );
   }
 
   /* Hide all other content on mobile */
@@ -30,47 +34,51 @@
 
 .mobile-block-content {
   max-width: 90%;
-  padding: 20px;
+  padding: var(--space-8);
   text-align: center;
-  background: rgb(255 255 255 / 10%);
-  border: 1px solid rgb(255 255 255 / 20%);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgb(0 0 0 / 30%);
-  backdrop-filter: blur(10px);
+  background: var(--surface-bg);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: var(--radius-3xl);
+  box-shadow: var(--shadow-xl);
+  backdrop-filter: var(--backdrop-blur);
 }
 
 .mobile-block-icon {
   display: block;
-  font-size: 3rem;
-  margin-bottom: 15px;
+  font-size: 4rem;
+  margin-bottom: var(--space-5);
+  filter: drop-shadow(0 4px 8px rgb(0 0 0 / 0.3));
 }
 
 .mobile-block-title {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--space-4);
   font-weight: var(--font-weight-bold);
+  color: var(--color-text);
 }
 
 .mobile-block-message {
-  font-size: 1rem;
-  margin-bottom: 15px;
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--space-6);
   line-height: 1.6;
-  opacity: 0.9;
+  color: var(--color-text-secondary);
 }
 
 .mobile-block-devices {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  margin: 15px 0;
+  gap: var(--space-6);
+  margin: var(--space-6) 0;
 }
 
 .mobile-device-icon {
-  font-size: 2rem;
+  font-size: 2.5rem;
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.2));
 }
 
 .mobile-block-footer {
-  font-size: 0.8rem;
-  margin-top: 15px;
-  opacity: 0.8;
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-6);
+  color: var(--color-text-muted);
+  font-style: italic;
 }

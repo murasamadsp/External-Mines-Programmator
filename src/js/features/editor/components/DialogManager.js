@@ -6,6 +6,7 @@ import { LabelDialog } from "./dialogs/LabelDialog.js";
 import { NumberDialog } from "./dialogs/NumberDialog.js";
 import { CoordinatesDialog } from "./dialogs/CoordinatesDialog.js";
 import { ConfirmDialog } from "./dialogs/ConfirmDialog.js";
+import { InfoDialog } from "./dialogs/InfoDialog.js";
 
 export class DialogManager {
   constructor() {
@@ -35,6 +36,12 @@ export class DialogManager {
   async showConfirmDialog(message, title = "Confirm") {
     loggers.ui.debug("📱 Виклик Custom Confirm Dialog");
     const dialog = new ConfirmDialog(message, title);
+    return await dialog.open();
+  }
+
+  async showInfoDialog(message, title = "Info") {
+    loggers.ui.debug("📱 Виклик Custom Info Dialog");
+    const dialog = new InfoDialog(message, title);
     return await dialog.open();
   }
 }

@@ -1,11 +1,10 @@
-/* Snippets Panel */
+/* Enhanced Snippets Panel */
 #snippets-panel {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  height: var(--program-grid-height);
-  max-height: var(--program-grid-height);
-  padding: var(--space-2);
+  gap: var(--space-4);
+  height: 100%;
+  padding: var(--space-5);
   flex: none;
 }
 
@@ -15,7 +14,7 @@
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.5px;
   text-align: center;
-  color: rgb(255 255 255);
+  color: var(--color-text);
   padding-bottom: var(--space-4);
   border-bottom: var(--border);
 }
@@ -26,7 +25,7 @@
   font-weight: var(--font-weight-normal);
   font-style: italic;
   text-align: center;
-  color: rgb(255 255 255 / 70%);
+  color: var(--color-text-secondary);
 }
 
 .snippets-container {
@@ -44,34 +43,57 @@
   display: flex;
   align-items: center;
   padding: var(--space-5);
-  background: var(--hover-bg);
-  border: var(--border);
-  border-radius: var(--radius-xl);
+  background: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
   cursor: pointer;
   overflow: hidden;
   gap: var(--space-4);
+  transition: all var(--transition-fast);
+}
+
+.snippet-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, transparent, rgb(255 255 255 / 0.02));
+  opacity: 0;
+  transition: opacity var(--transition-fast);
 }
 
 .snippet-card:hover {
-  background: rgb(255 255 255 / 12%);
-  box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
-  border-color: #667eea;
+  background: var(--hover-bg);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.snippet-card:hover::before {
+  opacity: 1;
 }
 
 .snippet-card:active {
-  box-shadow: 0 2px 6px rgb(0 0 0 / 15%);
+  box-shadow: var(--shadow-sm);
 }
 
 .snippet-icon {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 40px;
-  height: 40px;
-  font-size: 28px;
+  width: 44px;
+  height: 44px;
+  font-size: 24px;
   background: var(--surface-bg);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.snippet-card:hover .snippet-icon {
+  background: var(--color-primary);
+  color: rgb(255 255 255);
+  transform: scale(1.1);
 }
 
 .snippet-content {
@@ -82,7 +104,7 @@
 .snippet-name {
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-semibold);
-  color: #fff;
+  color: var(--color-text);
   margin-bottom: var(--space-2);
   white-space: nowrap;
   overflow: hidden;
@@ -92,21 +114,21 @@
 .snippet-description {
   font-size: var(--font-size-sm);
   line-height: 1.4;
-  color: rgb(255 255 255 / 70%);
+  color: var(--color-text-secondary);
 }
 
 .snippet-feedback {
   position: fixed;
-  right: 24px;
-  bottom: 24px;
+  right: var(--space-8);
+  bottom: var(--space-8);
   z-index: 10000;
-  padding: 12px 20px;
+  padding: var(--space-3) var(--space-6);
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-semibold);
-  color: #fff;
-  background: linear-gradient(135deg, #28a745, #20c997);
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgb(0 0 0 / 30%);
+  color: var(--color-text);
+  background: linear-gradient(135deg, var(--color-success), rgb(22 163 74));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Legacy Snippets Styles */
@@ -122,44 +144,44 @@
   font-weight: var(--font-weight-semibold);
   text-align: center;
   color: var(--color-text);
-  border-bottom: 1px solid rgb(255 255 255 / 10%);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .snippets-placeholder > p {
-  margin-bottom: 20px;
+  margin-bottom: var(--space-6);
   font-size: var(--font-size-md);
   text-align: center;
-  color: #ccc;
+  color: var(--color-text-secondary);
 }
 
 .snippets-content {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .snippet-item {
-  padding: 12px;
-  background-color: rgb(255 255 255 / 5%);
+  padding: var(--space-3);
+  background-color: var(--surface-bg);
   border: var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
 }
 
 .snippet-item:hover {
-  background-color: rgb(255 255 255 / 8%);
-  box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
+  background-color: var(--hover-bg);
+  box-shadow: var(--shadow-md);
 }
 
 .snippet-item h4 {
-  margin: 0 0 5px;
+  margin: 0 0 var(--space-1);
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-semibold);
-  color: #fafafa;
+  color: var(--color-text);
 }
 
 .snippet-item p {
   margin: 0;
   font-size: var(--font-size-sm);
   line-height: 1.4;
-  color: #ccc;
+  color: var(--color-text-secondary);
 }

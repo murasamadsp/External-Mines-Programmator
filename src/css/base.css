@@ -1,16 +1,34 @@
-/* CSS Custom Properties - Design System */
-:root {
-  /* Color Palette */
-  --color-background: rgb(106 90 170);
-  --color-background-secondary: rgb(86 65 144);
-  --color-text: rgb(255 170 255);
-  --color-primary: rgb(0 123 255);
-  --color-secondary: rgb(108 117 125);
-  --color-text-glow: rgb(255 255 255 / 20%);
-  --color-success: rgb(40 167 69);
-  --color-danger: rgb(220 53 69);
+/* ==========================================================================
+   CSS Custom Properties - Design System Variables
+   ========================================================================== */
 
-  /* Spacing Scale */
+:root {
+  /* Enhanced Color Palette - Modern Dark Theme with Better Contrast */
+  --color-background: rgb(8 14 27);
+  --color-background-secondary: rgb(15 23 42);
+  --color-background-elevated: rgb(24 33 52);
+  --color-text: rgb(255 255 255);
+  --color-text-primary: rgb(248 250 252);
+  --color-text-secondary: rgb(148 163 184);
+  --color-text-muted: rgb(100 116 139);
+  --color-primary: rgb(59 130 246);
+  --color-primary-hover: rgb(96 165 250);
+  --color-primary-active: rgb(37 99 235);
+  --color-secondary: rgb(71 85 105);
+  --color-secondary-hover: rgb(100 116 139);
+  --color-accent: rgb(139 92 246);
+  --color-accent-hover: rgb(168 85 247);
+  --color-success: rgb(34 197 94);
+  --color-success-hover: rgb(22 163 74);
+  --color-warning: rgb(245 158 11);
+  --color-warning-hover: rgb(217 119 6);
+  --color-danger: rgb(239 68 68);
+  --color-danger-hover: rgb(220 38 38);
+  --color-surface: rgb(30 41 59);
+  --color-surface-secondary: rgb(51 65 85);
+  --color-surface-tertiary: rgb(71 85 105);
+
+  /* Enhanced Spacing Scale - More Granular and Consistent */
   --space-1: 2px;
   --space-2: 4px;
   --space-3: 6px;
@@ -21,49 +39,82 @@
   --space-8: 24px;
   --space-9: 32px;
   --space-10: 40px;
+  --space-11: 48px;
+  --space-12: 64px;
+  --space-13: 80px;
+  --space-14: 96px;
+  --space-15: 128px;
 
-  /* Border Radius Scale */
+  /* Enhanced Border Radius Scale - More Options for Modern UI */
+  --radius-none: 0;
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-xl: 12px;
   --radius-2xl: 16px;
   --radius-3xl: 20px;
+  --radius-full: 9999px;
 
-  /* Typography Scale */
-  --font-size-xs: 11px;
-  --font-size-sm: 12px;
-  --font-size-md: 14px;
-  --font-size-lg: 16px;
-  --font-size-xl: 18px;
-  --font-size-2xl: 20px;
+  /* Enhanced Typography Scale - More Granular and Modern */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+  --font-size-4xl: 36px;
 
-  /* Font Weights */
+  /* Font Weights - Semantic weight scale */
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  /* Layout */
+  /* Layout - Structural dimensions */
   --max-width: 1400px;
   --sidebar-width: 300px;
   --main-min-width: 600px;
 
-  /* Borders & Shadows */
-  --border-color: rgb(255 255 255 / 10%);
+  /* Enhanced Borders & Shadows - Modern Dark Theme Styling */
+  --border-color: rgb(55 65 81);
+  --border-color-hover: rgb(75 85 99);
   --border: 1px solid var(--border-color);
   --border-width: 1px;
   --border-width-thick: 2px;
-  --hover-bg: rgb(255 255 255 / 5%);
-  --active-bg: rgb(255 255 255 / 8%);
-  --surface-bg: rgb(255 255 255 / 10%);
-  --surface-bg-strong: rgb(255 255 255 / 15%);
-  --context-menu-bg: rgb(255 255 255 / 95%);
-  --context-menu-border: rgb(102 126 234);
-  --context-menu-shadow: 0 8px 32px rgb(0 0 0 / 30%);
-  --context-menu-item-hover: rgb(102 126 234 / 10%);
+  --border-radius: var(--radius-md);
 
-  /* Z-index Scale */
+  /* Surface Colors */
+  --surface-bg: rgb(30 41 59);
+  --surface-bg-strong: rgb(51 65 85);
+  --surface-bg-elevated: rgb(24 33 52);
+  --surface-elevated: rgb(30 41 59);
+  --hover-bg: rgb(51 65 85);
+  --active-bg: rgb(71 85 105);
+
+  /* Enhanced Shadow System */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 1px 3px 0 rgb(0 0 0 / 0.2);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -1px rgb(0 0 0 / 0.3);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -2px rgb(0 0 0 / 0.4);
+  --shadow-xl:
+    0 20px 25px -5px rgb(0 0 0 / 0.6), 0 10px 10px -5px rgb(0 0 0 / 0.5);
+  --shadow-glow: 0 0 20px rgb(59 130 246 / 0.3);
+
+  /* Context Menu */
+  --context-menu-bg: var(--surface-bg-elevated);
+  --context-menu-border: var(--border-color);
+  --context-menu-shadow: var(--shadow-xl);
+  --context-menu-item-hover: var(--hover-bg);
+
+  /* Modern Effects */
+  --backdrop-blur: blur(12px);
+  --backdrop-blur-sm: blur(8px);
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+
+  /* Z-index Scale - Layering hierarchy */
   --z-dropdown: 1000;
   --z-sticky: 1020;
   --z-fixed: 1030;
@@ -73,154 +124,244 @@
   --z-tooltip: 1070;
   --z-toast: 1080;
 
-  /* Component Specific */
-  --program-grid-gap: var(--space-2);
+  /* Component Specific - Program grid configuration */
+  --program-grid-gap: 1px;
 }
 
-/* Base Styles */
+/* ==========================================================================
+   Base Element Styles - Global document styling
+   ========================================================================== */
+
 html {
+  /* Typography */
   line-height: 1.15; /* Correct the line height in all browsers */
+
+  /* Misc */
   text-size-adjust: 100%; /* Prevent adjustments of font size after orientation changes in iOS */
   tab-size: 4; /* Use a more readable tab size */
 }
 
 html,
 body {
+  /* Positioning */
   width: 100vw;
   height: 100vh;
+
+  /* Box model */
   padding: 0;
   margin: 0;
-  font-family: "Google Sans Code", "Fira Code", monospace;
+
+  /* Typography */
+  font-family: "JetBrains Mono", "Cascadia Code", "Fira Code", monospace;
   line-height: 1.5;
   color: var(--color-text);
-  background-color: var(--color-background);
-  overflow: hidden; /* Prevent global scroll */
+
+  /* Visual */
+  background: var(--color-background);
+  background-image:
+    radial-gradient(
+      circle at 25% 25%,
+      rgb(59 130 246 / 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 75% 75%,
+      rgb(139 92 246 / 0.05) 0%,
+      transparent 50%
+    );
+
+  /* Misc */
+  overflow: auto; /* Allow scroll if needed */
 }
 
 body {
-  display: flex;
-  flex-direction: column;
+  /* Box model */
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
 }
 
 main {
+  /* Box model */
   width: 100%;
   height: 100%;
   margin: 0;
+
+  /* Misc */
   overflow: hidden;
-  flex: 1;
 }
 
-/* Utility Classes */
+/* ==========================================================================
+   Utility Classes - Accessible and reusable helpers
+   ========================================================================== */
+
 .visually-hidden {
+  /* Positioning */
   position: absolute;
+
+  /* Box model */
   width: 1px;
   height: 1px;
   padding: 0;
   margin: -1px;
   border: 0;
+
+  /* Misc */
   white-space: nowrap;
   clip-path: inset(50%);
   overflow: hidden;
 }
 
-/* Context Menu */
+/* ==========================================================================
+   Context Menu - Application-wide context menu component
+   ========================================================================== */
+
 .context-menu {
+  /* Positioning */
   position: fixed;
   z-index: 10000;
+
+  /* Box model */
   min-width: 200px;
   max-width: 300px;
+  padding: 0;
+
+  /* Visual */
   background: var(--context-menu-bg);
-  backdrop-filter: blur(10px);
-  border: 2px solid var(--context-menu-border);
-  border-radius: 8px;
+  backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--context-menu-border);
+  border-radius: var(--radius-lg);
   box-shadow: var(--context-menu-shadow);
+
+  /* Misc */
   visibility: hidden;
   pointer-events: none;
+  transition:
+    opacity var(--transition-fast),
+    visibility var(--transition-fast);
+}
+
+.context-menu {
+  opacity: 0;
+  transform: scale(0.95);
 }
 
 .context-menu.visible {
+  /* Misc */
   visibility: visible;
   pointer-events: auto;
+  opacity: 1;
+  transform: scale(1);
 }
 
 .context-menu-content {
+  /* Box model */
   padding: 4px 0;
 }
 
 .context-menu-header {
+  /* Box model */
   padding: 6px 12px 3px;
-  border-bottom: 1px solid rgb(255 255 255 / 20%);
   margin-bottom: 3px;
+
+  /* Visual */
+  border-bottom: 1px solid var(--color-surface-secondary);
 }
 
 .context-menu-title {
+  /* Typography */
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: rgb(102 126 234);
+  color: var(--color-primary);
 }
 
 .context-menu-items {
+  /* Box model */
   padding: 2px 0;
 }
 
 .context-menu-item {
+  /* Box model */
   display: flex;
   align-items: center;
   padding: var(--space-3) var(--space-5);
+
+  /* Typography */
   font-size: 13px; /* Keep specific size for context menu readability */
-  color: rgb(33 37 41);
+  color: var(--color-text-secondary);
+
+  /* Misc */
   cursor: pointer;
   user-select: none;
 }
 
 .context-menu-item:hover,
 .context-menu-item.hover {
+  /* Visual */
   background-color: var(--context-menu-item-hover);
 }
 
 .context-menu-item.disabled {
-  color: rgb(108 117 125);
+  /* Typography */
+  color: var(--color-secondary);
+
+  /* Visual */
   opacity: 0.6;
+
+  /* Misc */
   cursor: not-allowed;
 }
 
 .context-menu-item.disabled:hover {
+  /* Visual */
   background-color: transparent;
 }
 
 .context-menu-icon {
+  /* Box model */
   width: 18px;
+  margin-inline-end: var(--space-3);
+
+  /* Typography */
   font-size: var(--font-size-md);
   text-align: center;
-  margin-inline-end: var(--space-3);
 }
 
 .context-menu-label {
+  /* Box model */
   flex: 1;
+
+  /* Typography */
   font-weight: var(--font-weight-medium);
 }
 
 .context-menu-shortcut {
+  /* Typography */
   font-family: "Google Sans Code", monospace;
   font-size: var(--font-size-xs);
-  color: rgb(108 117 125);
+  color: var(--color-secondary);
+
+  /* Box model */
   margin-inline-start: var(--space-5);
 }
 
 .context-menu-separator {
+  /* Box model */
   height: 1px;
   margin: 2px 0;
-  background-color: rgb(255 255 255 / 30%);
+
+  /* Visual */
+  background-color: var(--color-surface-secondary);
   border: none;
 }
 
 .context-menu-separator hr {
+  /* Box model */
   height: 1px;
   margin: 0;
-  background-color: rgb(255 255 255 / 30%);
+
+  /* Visual */
+  background-color: var(--color-surface-secondary);
   border: none;
 }

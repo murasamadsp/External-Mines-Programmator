@@ -1,204 +1,371 @@
-/* Action Palette Component */
+/* ==========================================================================
+   Action Palette - Available programming actions sidebar
+   ========================================================================== */
+
 #action-palette {
+  /* Box model */
   display: flex;
   flex-direction: column;
-  height: var(--program-grid-height);
-  max-height: var(--program-grid-height);
-  padding: var(--space-2);
+  height: 100%;
+  padding: var(--space-5);
   margin: 0;
-  overflow: hidden;
   flex: none;
+
+  /* Misc */
+  overflow: visible;
 }
 
 #action-palette h3 {
+  /* Box model */
   margin: 0 0 var(--space-4);
   padding-bottom: var(--space-3);
+
+  /* Typography */
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.5px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.25px;
   text-align: center;
-  color: rgb(255 255 255);
+  color: var(--color-text);
+
+  /* Visual */
   border-bottom: var(--border);
 }
 
 .actions-list {
+  /* Box model */
   display: flex;
   flex-direction: column;
   max-height: 100%;
   padding: var(--space-1);
   margin: 0;
-  gap: var(--space-2);
+  gap: var(--space-3);
   flex: 1;
+
+  /* Misc */
   overflow-y: auto;
 }
 
-/* Action Buttons */
-.actions-list button,
+/* ==========================================================================
+   Category Headers - Group section titles
+   ========================================================================== */
+
+.category-header {
+  padding: var(--space-2) 0 var(--space-1);
+
+  /* Box model */
+  margin: 0;
+
+  /* Typography */
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--color-primary);
+
+  /* Visual */
+  border-bottom: 1px solid var(--color-surface-secondary);
+}
+
+/* ==========================================================================
+   Category Actions - Grid layout for action buttons within categories
+   ========================================================================== */
+
+.category-actions {
+  /* Box model */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+/* ==========================================================================
+   Category Headers - Collapsible category sections
+   ========================================================================== */
+
+.category-header {
+  transition: all var(--transition-fast);
+}
+
+.category-header:hover {
+  background: var(--hover-bg);
+  border-radius: var(--radius-sm);
+}
+
+.category-toggle {
+  transition: transform var(--transition-fast);
+}
+
+.category-toggle:hover {
+  background: var(--active-bg);
+  border-radius: 50%;
+}
+
+/* ==========================================================================
+   Category Actions - Grid layout for action buttons within categories
+   ========================================================================== */
+
+.category-actions {
+  transition:
+    max-height var(--transition-normal),
+    opacity var(--transition-normal);
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Action Buttons - Interactive programming action elements
+   ========================================================================== */
+
 #action-palette button[data-action] {
+  /* Positioning */
   position: relative;
+
+  /* Box model */
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  min-height: 32px;
-  padding: var(--space-2);
+  height: 56px;
+  padding: var(--space-3);
+  aspect-ratio: 1;
+
+  /* Typography */
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   line-height: 1.2;
   text-align: center;
-  color: rgb(255 255 255 / 90%);
-  background-color: var(--hover-bg);
-  border: var(--border);
-  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+
+  /* Visual */
+  background: var(--surface-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+
+  /* Misc */
   cursor: pointer;
   overflow: hidden;
+  transition: all var(--transition-fast);
 }
 
-.actions-list button:hover,
+#action-palette button[data-action]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, transparent, rgb(255 255 255 / 0.03));
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
 #action-palette button[data-action]:hover {
-  color: rgb(255 255 255);
-  background-color: var(--active-bg);
-  box-shadow: 0 4px 8px rgb(0 0 0 / 25%);
-  border-color: rgb(102 126 234);
+  /* Typography */
+  color: var(--color-text);
+
+  /* Visual */
+  background: var(--hover-bg);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
 }
 
-.actions-list button:active,
+#action-palette button[data-action]:hover::before {
+  opacity: 1;
+}
+
 #action-palette button[data-action]:active {
-  box-shadow: 0 2px 4px rgb(0 0 0 / 15%);
+  /* Visual */
+  box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
 
-.actions-list button.selected,
 #action-palette button[data-action].selected {
-  font-weight: var(--font-weight-bold);
+  /* Typography */
+  font-weight: var(--font-weight-semibold);
   color: rgb(255 255 255);
-  background: linear-gradient(135deg, rgb(0 123 255), rgb(0 86 179));
-  box-shadow: 0 4px 12px rgb(0 123 255 / 40%);
-  border-color: transparent;
+
+  /* Visual */
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary-active)
+  );
+  border-color: var(--color-primary);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgb(255 255 255 / 0.2);
+  animation: pulse-selected 2s infinite;
 }
 
-.actions-list button.selected::after,
+@keyframes pulse-selected {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+#action-palette button[data-action].selected::before {
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.1), transparent);
+  opacity: 1;
+}
+
 #action-palette button[data-action].selected::after {
+  /* Positioning */
   position: absolute;
   top: 4px;
   right: 4px;
+
+  /* Box model */
   display: flex;
   justify-content: center;
   align-items: center;
   width: 14px;
   height: 14px;
+
+  /* Typography */
   font-size: var(--font-size-xs);
   color: rgb(255 255 255);
+
+  /* Visual */
   background: rgb(0 0 0 / 25%);
   border-radius: 50%;
+
+  /* Misc */
   content: "✓";
 }
 
-/* Empty State */
+/* ==========================================================================
+   Empty State - Display when no actions are available
+   ========================================================================== */
+
 .empty-actions {
+  /* Box model */
   display: flex;
   justify-content: center;
   align-items: center;
   padding: var(--space-8) var(--space-5);
+
+  /* Typography */
   font-size: var(--font-size-sm);
   font-style: italic;
   text-align: center;
-  color: rgb(255 255 255 / 50%);
+  color: var(--color-text-secondary);
 }
 
-/* Scrollbar */
+/* ==========================================================================
+   Custom Scrollbar - Styled scrollbar for action list
+   ========================================================================== */
+
 .actions-list::-webkit-scrollbar {
+  /* Box model */
   width: 8px;
 }
 
 .actions-list::-webkit-scrollbar-track {
-  margin: 4px 0;
-  background: rgb(255 255 255 / 5%);
-  border-radius: 4px;
+  /* Box model */
+  margin: var(--space-1) 0;
+
+  /* Visual */
+  background: var(--hover-bg);
+  border-radius: var(--radius-md);
 }
 
 .actions-list::-webkit-scrollbar-thumb {
-  background: rgb(255 255 255 / 20%);
-  border-radius: 4px;
+  /* Visual */
+  background: var(--active-bg);
+  border-radius: var(--radius-md);
 }
 
 .actions-list::-webkit-scrollbar-thumb:hover {
-  background: rgb(255 255 255 / 35%);
+  /* Visual */
+  background: var(--surface-bg-strong);
 }
 
-/* Category Styles */
-.category-header {
-  padding: var(--space-2) var(--space-1);
-  margin: var(--space-4) 0 var(--space-2) 0;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: rgb(255 255 255 / 80%);
-  background: linear-gradient(90deg, rgb(255 255 255 / 5%), transparent);
-  border-bottom: 1px solid rgb(255 255 255 / 10%);
-}
+/* ==========================================================================
+   Category Styles - Action categorization and organization
+   ========================================================================== */
 
-.category-actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  margin-bottom: var(--space-4);
-}
+/* ==========================================================================
+   Search Panel - Action filtering and search functionality
+   ========================================================================== */
 
-/* Search Panel */
 .search-panel {
+  /* Box model */
   margin-bottom: var(--space-3);
   padding: var(--space-3);
+  flex-shrink: 0;
+
+  /* Visual */
   background: var(--hover-bg);
   border: var(--border);
   border-radius: var(--radius-lg);
   backdrop-filter: blur(8px);
-  flex-shrink: 0;
 }
 
 .search-input-container {
+  /* Positioning */
   position: relative;
+
+  /* Box model */
   margin-bottom: 6px;
 }
 
 .search-input {
+  /* Box model */
   width: 100%;
   padding: var(--space-3) calc(var(--space-6) + var(--space-2)) var(--space-3)
     var(--space-4);
+
+  /* Typography */
   font-size: var(--font-size-sm);
   color: rgb(255 255 255);
+
+  /* Visual */
   background: var(--surface-bg);
   border: var(--border);
   border-radius: var(--radius-md);
 }
 
 .search-input:focus {
+  /* Visual */
   outline: none;
-  border-color: rgb(102 126 234);
+  border-color: var(--color-primary);
   background: var(--active-bg);
-  box-shadow: 0 0 0 3px rgb(102 126 234 / 20%);
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 20%);
 }
 
 .clear-search {
+  /* Positioning */
   position: absolute;
   top: 50%;
   right: var(--space-4);
+
+  /* Box model */
   padding: var(--space-2);
+
+  /* Typography */
   font-size: var(--font-size-md);
   color: rgb(255 255 255 / 60%);
+
+  /* Visual */
   background: none;
   border: none;
   border-radius: var(--radius-sm);
   transform: translateY(-50%);
+
+  /* Misc */
   cursor: pointer;
 }
 
 .clear-search:hover {
-  color: rgb(255 255 255);
-  background: rgb(255 255 255 / 10%);
+  /* Typography */
+  color: var(--color-text);
+
+  /* Visual */
+  background: var(--hover-bg);
 }
 
 .filter-controls {
+  /* Box model */
   display: flex;
   gap: var(--space-3);
   align-items: center;
@@ -206,75 +373,119 @@
 
 .category-filter,
 .sort-toggle {
+  /* Box model */
   padding: var(--space-3) var(--space-5);
+
+  /* Typography */
   font-size: var(--font-size-sm);
   color: rgb(255 255 255);
+
+  /* Visual */
   background: var(--surface-bg);
   border: var(--border);
   border-radius: var(--radius-md);
+
+  /* Misc */
   cursor: pointer;
 }
 
 .category-filter:focus,
 .sort-toggle:focus {
+  /* Visual */
   outline: none;
-  border-color: rgb(102 126 234);
-  box-shadow: 0 0 0 2px rgb(102 126 234 / 20%);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 20%);
 }
 
 .category-filter:hover,
 .sort-toggle:hover {
-  background: rgb(255 255 255 / 15%);
+  /* Visual */
+  background: var(--hover-bg);
 }
 
 .results-indicator {
+  /* Typography */
   font-size: var(--font-size-xs);
   text-align: center;
-  color: rgb(255 255 255 / 70%);
+  color: var(--color-text-secondary);
+
+  /* Box model */
   margin-top: var(--space-2);
 }
 
 .results-indicator.filtered {
+  /* Typography */
   font-weight: var(--font-weight-semibold);
-  color: rgb(102 126 234);
+  color: var(--color-primary);
 }
 
-/* Action Type Styles */
+/* ==========================================================================
+   Action Type Styles - Color-coded action categories
+   ========================================================================== */
+
 .action-moveup {
+  /* Typography */
   color: rgb(255 255 255);
-  background: linear-gradient(135deg, rgb(40 167 69), rgb(32 201 151));
-  border-color: rgb(30 126 52);
+
+  /* Visual */
+  background: linear-gradient(135deg, var(--color-success), rgb(22 163 74));
+  border-color: var(--color-success);
+  box-shadow: var(--shadow-sm);
 }
 
 .action-moveleft {
+  /* Typography */
   color: rgb(255 255 255);
-  background: linear-gradient(135deg, rgb(0 123 255), rgb(102 16 242));
-  border-color: rgb(0 86 179);
+
+  /* Visual */
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary-dark)
+  );
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .action-movedown {
+  /* Typography */
   color: rgb(255 255 255);
-  background: linear-gradient(135deg, rgb(220 53 69), rgb(232 62 140));
-  border-color: rgb(189 33 48);
+
+  /* Visual */
+  background: linear-gradient(135deg, var(--color-danger), rgb(220 38 38));
+  border-color: var(--color-danger);
+  box-shadow: var(--shadow-sm);
 }
 
 .action-moveright {
-  font-weight: var(--font-weight-bold);
-  color: rgb(33 37 41);
-  background: linear-gradient(135deg, rgb(255 193 7), rgb(253 126 20));
-  border-color: rgb(211 158 0);
+  /* Typography */
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+
+  /* Visual */
+  background: linear-gradient(135deg, var(--color-warning), rgb(217 119 6));
+  border-color: var(--color-warning);
+  box-shadow: var(--shadow-sm);
 }
 
 .action-dig {
+  /* Typography */
   color: rgb(255 255 255);
-  background: linear-gradient(135deg, rgb(111 66 193), rgb(233 30 99));
-  border-color: rgb(90 53 154);
+
+  /* Visual */
+  background: linear-gradient(135deg, var(--color-accent), rgb(126 34 206));
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-sm);
 }
 
 .action-setstart {
+  /* Typography */
   color: rgb(255 255 255);
-  background: linear-gradient(135deg, rgb(253 126 20), rgb(255 107 53));
-  border-color: rgb(210 92 14);
+
+  /* Visual */
+  background: linear-gradient(135deg, rgb(249 115 22), rgb(234 88 12));
+  border-color: rgb(249 115 22);
+  box-shadow: var(--shadow-sm);
 }
 
 .action-rotateright,
@@ -282,32 +493,37 @@
 .action-rotateup,
 .action-rotatedown {
   color: rgb(255 255 255);
-  background: linear-gradient(135deg, rgb(23 162 184), rgb(32 201 151));
-  border-color: rgb(19 132 150);
+  background: linear-gradient(135deg, rgb(6 182 212), rgb(5 150 179));
+  border-color: rgb(6 182 212);
+  box-shadow: var(--shadow-sm);
 }
 
 .action-rotaterandom {
-  color: rgb(255 255 255);
-  background: linear-gradient(135deg, rgb(108 117 125), rgb(73 80 87));
-  border-color: rgb(84 91 98);
+  color: var(--color-text);
+  background: linear-gradient(135deg, var(--color-secondary), rgb(107 114 128));
+  border-color: var(--color-secondary);
+  box-shadow: var(--shadow-sm);
 }
 
 .action-buildblock,
 .action-buildroad,
 .action-buildquadro {
   color: rgb(255 255 255);
-  background: linear-gradient(135deg, rgb(253 126 20), rgb(255 87 34));
-  border-color: rgb(210 92 14);
+  background: linear-gradient(135deg, rgb(234 88 12), rgb(194 65 12));
+  border-color: rgb(234 88 12);
+  box-shadow: var(--shadow-sm);
 }
 
 .action-terminate {
   color: rgb(255 255 255);
-  background: linear-gradient(135deg, rgb(220 53 69), rgb(200 35 51));
-  border-color: rgb(189 33 48);
+  background: linear-gradient(135deg, var(--color-danger), rgb(185 28 28));
+  border-color: var(--color-danger);
+  box-shadow: var(--shadow-sm);
 }
 
 .action-nextline {
   color: rgb(255 255 255);
-  background: linear-gradient(135deg, rgb(40 167 69), rgb(23 162 184));
-  border-color: rgb(30 126 52);
+  background: linear-gradient(135deg, var(--color-success), rgb(5 150 105));
+  border-color: var(--color-success);
+  box-shadow: var(--shadow-sm);
 }

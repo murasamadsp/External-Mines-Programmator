@@ -4,6 +4,210 @@
 import { loggers } from "../../utils/index.js";
 import { stateManager } from "./state-manager.js";
 
+// Action descriptions from documentation
+const ACTION_INFO = {
+  // Рухові команди
+  MoveUp: "Рухатися вгору на одну клітинку",
+  MoveLeft: "Рухатися вліво на одну клітинку",
+  MoveDown: "Рухатися вниз на одну клітинку",
+  MoveRight: "Рухатися вправо на одну клітинку",
+  MoveForward: "Рухатися вперед у напрямку погляду бота",
+  ShiftUp: "Змістити відносну позицію вгору",
+  ShiftLeft: "Змістити відносну позицію вліво",
+  ShiftDown: "Змістити відносну позицію вниз",
+  ShiftRight: "Змістити відносну позицію вправо",
+  ShiftForward: "Змістити відносну позицію вперед",
+
+  // Повороти
+  RotateUp: "Повернути погляд бота вгору",
+  RotateLeft: "Повернути погляд бота вліво",
+  RotateDown: "Повернути погляд бота вниз",
+  RotateRight: "Повернути погляд бота вправо",
+  RotateLefthand: "Поворот лівою рукою (за годинниковою стрілкою)",
+  RotateRighthand: "Поворот правою рукою (проти годинникової стрілки)",
+  RotateRandom: "Випадковий поворот погляду бота",
+
+  // Будівництво та копання
+  Dig: "Копати блок у напрямку погляду",
+  BuildBlock: "Будувати блок у напрямку погляду",
+  BuildRoad: "Будувати дорогу у напрямку погляду",
+  BuildQuadro: "Будувати quadro блок у напрямку погляду",
+  BuildWar: "Будувати військовий блок",
+  STDDig: "Стандартне копання",
+  STDBlock: "Стандартний блок",
+  STDHeal: "Стандартне лікування",
+  STDTunnel: "Стандартний тунель",
+
+  // Використання предметів
+  UseGeo: "Використати гео-пакет",
+  Heal: "Використати лікувальний предмет",
+  CallWhenDied:
+    "При смерти будет вызван модуль, записанный в этом операторе. Для срабатывания необходимо чтобы программа хотя бы раз прошла через этот оператор",
+  UseGeopack: "Использовать геопак",
+  UseZZ: "Использовать заряд защиты",
+  UseC190: "Использовать C-190",
+  UsePoly: "Использовать полимер",
+  Upgrade: "Улучшить все умения по 1 разу если бот находится в апе",
+  RefillCraft:
+    "Завершить крафт и запустить тот же самый рецепт если бот находится в крафтере",
+  UseNano: "Использовать нанобота. Чинит 50 единиц прочности бота",
+  UseRem: "Использовать рем бота. Чинит 1000 единиц прочности бота",
+  UseBoom: "Использовать взрывчатку",
+  UseRaz: "Использовать разрядник",
+  UseProt: "Использовать протектор",
+  ChargeGun: "Зарядити оружие",
+
+  // Інвентар
+  InventoryUp:
+    "При использовании данного оператора, след действие по использованию предмета инвентаря, будет выполнено вверх относительно бота",
+  InventoryLeft:
+    "При использовании данного оператора, след действие по использованию предмета инвентаря, будет выполнено влево относительно бота",
+  InventoryDown:
+    "При использовании данного оператора, след действие по использованию предмета инвентаря, будет выполнено вниз относительно бота",
+  InventoryRight:
+    "При использовании данного оператора, след действие по использованию предмета инвентаря, будет выполнено вправо относительно бота",
+
+  // Управління
+  EnableHand: "Включает ручной режим",
+  DisableHand: "Выключает ручной режим",
+  SetStart: "Встановити точку старту програми",
+  Terminate: "Завершити виконання програми",
+  RepeatLastAction: "Повторити останню дію",
+
+  // Логіка та умови
+  NextLine: "Перейти до наступного рядка",
+  Goto: "Перейти до мітки",
+  Call: "Викликати підпрограму",
+  CallArg: "Викликати підпрограму з аргументом",
+  Return: "Повернутися з підпрограми",
+  ReturnArg: "Повернутися з підпрограми з аргументом",
+  Label: "Встановити мітку для переходів",
+  CallState: "Викликати підпрограму з станом",
+  ReturnState: "Повернутися з підпрограми зі станом",
+
+  // Умови перевірки
+  IsNotEmpty: "Перевірити чи клітинка не порожня",
+  IsEmpty: "Перевірити чи клітинка порожня",
+  IsFalling: "Перевірити чи блок падає",
+  IsCrystal: "Перевірити чи це кристал",
+  IsAliveCrystal: "Перевірити чи це живий кристал",
+  IsFallingLikeBoulder: "Перевірити чи падає як валун",
+  IsFallingLikeLiquid: "Перевірити чи падає як рідина",
+  IsBreakable: "Перевірити чи блок можна зламати",
+  IsUnbreakable: "Перевірити чи блок незламний",
+  IsRedRock: "Перевірити чи червона скеля",
+  IsBlackRock: "Перевірити чи чорна скеля",
+  IsAcid: "Перевірити чи кислота",
+  IsSand: "Перевірити чи пісок",
+  IsQuadro: "Перевірити чи quadro блок",
+  IsRoad: "Перевірити чи дорога",
+  IsRedBlock: "Перевірити чи червоний блок",
+  IsYellowBlock: "Перевірити чи жовтий блок",
+  IsGreenBlock: "Перевірити чи зелений блок",
+  IsAcidRock: "Перевірити чи кисла скеля",
+  IsBoulder: "Перевірити чи валун",
+  IsLava: "Перевірити чи лава",
+  IsCyanAlive: "Перевірити чи бірюзовий живий блок",
+  IsWhiteAlive: "Перевірити чи білий живий блок",
+  IsRedAlive: "Перевірити чи червоний живий блок",
+  IsVioletAlive: "Перевірити чи фіолетовий живий блок",
+  IsBlackAlive: "Перевірити чи чорний живий блок",
+  IsBlueAlive: "Перевірити чи синій живий блок",
+  IsRainbowAlive: "Перевірити чи веселковий живий блок",
+  IsBox: "Перевірити чи скриня",
+  IsStructure: "Перевірити чи структура",
+  IsBasketFull: "Перевірити чи кошик повний",
+  IsGeoFull: "Перевірити чи гео повне",
+  IsInsideGun: "Перевірити чи бот знаходиться в зброї",
+  IsHealthNotFull: "Перевірити чи здоров'я не повне",
+  IsHealthLessThanHalf: "Перевірити чи здоров'я менше половини",
+
+  // Налаштування
+  EnableAutoDig: "Увімкнути автоматичне копання",
+  DisableAutoDig: "Вимкнути автоматичне копання",
+  EnableAggression: "Увімкнути агресивний режим",
+  DisableAggression: "Вимкнути агресивний режим",
+
+  // Тригери
+  SetStartWhenDied: "Початок при смерті бота",
+  SetStartWhenHurt: "Початок при пораненні бота",
+  SetStartWhenBotNearby: "Початок коли інший бот поруч",
+
+  // Скрині
+  BoxAll: "Взаємодія з усіма скринями",
+  BoxHalf: "Взаємодія з половиною скринь",
+  BoxWhite: "Взаємодія з білими скринями",
+  BoxGreen: "Взаємодія з зеленими скринями",
+  BoxRed: "Взаємодія з червоними скринями",
+  BoxBlue: "Взаємодія з синіми скринями",
+  BoxCyan: "Взаємодія з бірюзовими скринями",
+  BoxViolet: "Взаємодія з фіолетовими скринями",
+
+  // Змінні
+  WriteStateToVar: "Записати стан у змінну",
+  ReadVarToState: "Прочитати змінну у стан",
+  SetNumberToVar: "Встановити число у змінну",
+  AddNumberToVar: "Додати число до змінної",
+  MultNumberToVar: "Помножити змінну на число",
+  DivNumberToVar: "Поділити змінну на число",
+  SubNumberToVar: "Відняти число від змінної",
+  AddVarToVar: "Додати змінну до змінної",
+  MultVarToVar: "Помножити змінну на змінну",
+  DivVarToVar: "Поділити змінну на змінну",
+  SubVarToVar: "Відняти змінну від змінної",
+
+  // Порівняння змінних
+  VarLessThanState: "Змінна менше стану",
+  VarGreaterThanState: "Змінна більше стану",
+  VarEqualState: "Змінна дорівнює стану",
+  VarNotEqualState: "Змінна не дорівнює стану",
+  VarGreaterThanNumber: "Змінна більше числа",
+  VarLessThanNumber: "Змінна менше числа",
+  VarEqualsNumber: "Змінна дорівнює числу",
+  VarGreaterThanOrEqualNumber: "Змінна більше або дорівнює числу",
+  VarLessThanOrEqualNumber: "Змінна менше або дорівнює числу",
+  VarNotEqualsNumber: "Змінна не дорівнює числу",
+  VarGreaterThanOrEqualsState: "Змінна більше або дорівнює стану",
+  VarLessThanOrEqualState: "Змінна менше або дорівнює стану",
+  VarNotEqualsState: "Змінна не дорівнює стану",
+  VarRound: "Округлити змінну",
+  VarCeil: "Округлити змінну вгору",
+  VarFloor: "Округлити змінну вниз",
+
+  // Клітинки відносно бота
+  CellUpLeft: "Клітинка вгорі-зліва від бота",
+  CellDownRight: "Клітинка знизу-справа від бота",
+  CellUp: "Клітинка вгорі від бота",
+  CellUpRight: "Клітинка вгорі-справа від бота",
+  CellLeft: "Клітинка зліва від бота",
+  Cell: "Поточна клітинка бота",
+  CellRight: "Клітинка справа від бота",
+  CellDownLeft: "Клітинка знизу-зліва від бота",
+  CellDown: "Клітинка знизу від бота",
+  CellForward: "Клітинка вперед від бота",
+  CellLefthand: "Клітинка ліворуч від бота",
+  CellRighthand: "Клітинка праворуч від бота",
+
+  // Логічні оператори
+  BooleanOR: "Логічне АБО",
+  BooleanAND: "Логічне І",
+  YesNoGoto: "Якщо так - перейти до мітки, якщо ні - продовжити",
+  NoYesGoto: "Якщо ні - перейти до мітки, якщо так - продовжити",
+  YesNoNextRow: "Якщо так - наступний рядок, якщо ні - продовжити",
+  NoYesNextRow: "Якщо ні - наступний рядок, якщо так - продовжити",
+  YesNoGotoStart: "Якщо так - перейти на початок, якщо ні - продовжити",
+  NoYesGotoStart: "Якщо ні - перейти на початок, якщо так - продовжити",
+  YesNoTerminate: "Якщо так - завершити, якщо ні - продовжити",
+  NoYesTerminate: "Якщо ні - завершити, якщо так - продовжити",
+  Flip: "Інвертувати результат умови",
+
+  // Звук та відлагодження
+  PlaySound: "Програти звук",
+  DebugPause:
+    "При прохождении через этот оператор, будет выведено сообщение, записанное в нем. Программа остановится",
+  DebugShow: "Выводит сообщение без остановки программы",
+};
+
 export class ContextMenuManager {
   constructor() {
     this.activeMenu = null;
@@ -44,6 +248,14 @@ export class ContextMenuManager {
   }
 
   bindGlobalEvents() {
+    // Track mouse position globally
+    document.addEventListener("mousemove", (e) => {
+      window.lastMouseEvent = {
+        clientX: e.clientX,
+        clientY: e.clientY,
+      };
+    });
+
     // Hide menu on left click anywhere
     document.addEventListener("click", (e) => {
       if (!this.menuElement.contains(e.target)) {
@@ -251,8 +463,14 @@ export class ContextMenuManager {
       items.push({ separator: true });
 
       items.push({
-        label: "Cell Info",
+        label: "Action Info",
         icon: "ℹ️",
+        action: () => this.showActionInfo(instruction.action),
+      });
+
+      items.push({
+        label: "Cell Info",
+        icon: "📊",
         action: () => this.showCellInfo(position, instruction),
       });
     } else {
@@ -287,17 +505,22 @@ export class ContextMenuManager {
       action: () => this.selectAllCells(),
     });
 
-    this.showMenu(event.clientX, event.clientY, items, {
+    // Get mouse position from the last mouse event
+    const mouseEvent = window.lastMouseEvent || { clientX: 100, clientY: 100 };
+
+    this.showMenu(mouseEvent.clientX, mouseEvent.clientY, items, {
       type: "cell",
       position,
     });
   }
 
   showActionPaletteMenu(actionKey) {
+    const isFavorite = this.isFavorite(actionKey);
+
     const items = [
       {
-        label: "Add to Favorites",
-        icon: "⭐",
+        label: isFavorite ? "Remove from Favorites" : "Add to Favorites",
+        icon: isFavorite ? "⭐" : "☆",
         action: () => this.toggleFavorite(actionKey),
       },
       {
@@ -312,7 +535,10 @@ export class ContextMenuManager {
       },
     ];
 
-    this.showMenu(event.clientX, event.clientY, items, {
+    // Get mouse position from the last mouse event
+    const mouseEvent = window.lastMouseEvent || { clientX: 100, clientY: 100 };
+
+    this.showMenu(mouseEvent.clientX, mouseEvent.clientY, items, {
       type: "action",
       actionKey,
     });
@@ -375,10 +601,44 @@ export class ContextMenuManager {
   }
 
   toggleFavorite(actionKey) {
-    // Implementation would depend on search/filter manager
-    loggers.services.info(
-      `⭐ Перемкнено статус обраного для дії: ${actionKey}`,
-    );
+    const favorites = this.getFavorites();
+    const isFavorite = favorites.includes(actionKey);
+
+    if (isFavorite) {
+      // Remove from favorites
+      const newFavorites = favorites.filter((fav) => fav !== actionKey);
+      this.saveFavorites(newFavorites);
+      loggers.services.info(`⭐ Видалено з обраних: ${actionKey}`);
+    } else {
+      // Add to favorites
+      favorites.push(actionKey);
+      this.saveFavorites(favorites);
+      loggers.services.info(`⭐ Додано до обраних: ${actionKey}`);
+    }
+
+    // Update UI to reflect changes
+    this.updateFavoriteIndicators();
+  }
+
+  getFavorites() {
+    // Get favorites from localStorage
+    const favorites = localStorage.getItem("emp_favorites");
+    return favorites ? JSON.parse(favorites) : [];
+  }
+
+  saveFavorites(favorites) {
+    localStorage.setItem("emp_favorites", JSON.stringify(favorites));
+  }
+
+  isFavorite(actionKey) {
+    const favorites = this.getFavorites();
+    return favorites.includes(actionKey);
+  }
+
+  updateFavoriteIndicators() {
+    // This will be called to update UI indicators
+    // Dispatch custom event to notify ActionPalette
+    window.dispatchEvent(new CustomEvent("favoritesUpdated"));
   }
 
   copyToClipboard(text) {
@@ -389,9 +649,34 @@ export class ContextMenuManager {
     });
   }
 
-  showActionInfo(actionKey) {
-    // Could show detailed info about the action
-    loggers.services.info(`Showing info for action: ${actionKey}`);
+  async showActionInfo(actionKey) {
+    const actionDescription = ACTION_INFO[actionKey];
+
+    if (!actionDescription) {
+      loggers.services.warn(`ℹ️ Опис для дії "${actionKey}" не знайдено`);
+      await this.showDialog(
+        "Action Info",
+        `Дія: ${actionKey}\n\nОпис недоступний.`,
+      );
+      return;
+    }
+
+    const title = `Action Info: ${actionKey}`;
+    const message = `Дія: ${actionKey}\n\nОпис: ${actionDescription}`;
+
+    await this.showDialog(title, message);
+    loggers.services.info(`ℹ️ Показано інформацію про дію: ${actionKey}`);
+  }
+
+  async showDialog(title, message) {
+    // Try to use dialogManager from the editor controller
+    const editorController = window.editorController;
+    if (editorController && editorController.dialogManager) {
+      await editorController.dialogManager.showInfoDialog(message, title);
+    } else {
+      // Fallback to browser alert
+      alert(`${title}\n\n${message}`);
+    }
   }
 
   selectAllCells() {
