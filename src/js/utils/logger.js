@@ -215,12 +215,32 @@ export const logger = new Logger("EMP");
  * Специализированные логгеры для разных частей приложения
  */
 export const loggers = {
+  // Основное приложение
   app: logger,
+
+  // Пользовательский интерфейс
   ui: logger.child("UI"),
+
+  // Редактор программы
+  editor: logger.child("EDITOR"),
+
+  // Сервисы приложения
+  services: logger.child("SERVICES"),
+
+  // Ядро приложения
   core: logger.child("CORE"),
-  network: logger.child("NET"),
-  storage: logger.child("STORAGE"),
+
+  // Сериализация и импорт/экспорт
+  serialization: logger.child("SERIAL"),
+
+  // Валидация программ
   validation: logger.child("VALIDATION"),
+
+  // Сетевое взаимодействие
+  network: logger.child("NET"),
+
+  // Работа с хранилищем
+  storage: logger.child("STORAGE"),
 };
 
 /**
@@ -248,3 +268,4 @@ export function initLogger() {
  * Экспорт по умолчанию
  */
 export default Logger;
+

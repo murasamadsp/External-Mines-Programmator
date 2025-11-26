@@ -150,7 +150,6 @@ export class ProgramSerializer {
     }
     const operators = decompressed.slice(4, 4 + length);
     const labelsRaw = uint8ToAscii(decompressed.slice(4 + length))
-      .toUpperCase()
       .split(":");
     const ret = new Array(length);
     for (let i = 0; i < length; i++) {
@@ -578,10 +577,10 @@ export class ProgramSerializer {
   }
 
   static formatLabel(label, value) {
-    const baseLabel = (label || "0").toUpperCase();
-    return value === null || value === undefined
-      ? baseLabel
-      : `${baseLabel}@${value}`;
+    const baseLabel = label || "0";
+    return value !== null && value !== undefined
+      ? `${baseLabel}@${value}`
+      : baseLabel;
   }
 
   static validateInstructions(instructions) {

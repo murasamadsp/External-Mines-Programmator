@@ -8,7 +8,6 @@ import {
   MAX_PAGES,
   Program,
   Instruction,
-  ProgramFormatVersion,
 } from "../../core/index.js";
 import { ProgramSerializer } from "../../core/services/serialization/serializer.js";
 import { getActionByCode } from "../../core/constants/actions.js";
@@ -31,7 +30,8 @@ import { contextMenuManager } from "../../core/services/context-menu-manager.js"
 
 export class EditorController {
   constructor() {
-    loggers.ui.info("🏗️ Започаткування EditorController...");
+    const startTime = performance.now();
+    loggers.editor.info("🏗️ Започаткування EditorController...");
 
     // Індикатор ініціалізації
     document.body.setAttribute("data-programmator-init", "started");
@@ -40,21 +40,31 @@ export class EditorController {
     this.program = new Program();
     this.currentPage = 0; // Номер поточної сторінки (0-15)
 
+
+
+    const constructorTime = performance.now() - startTime;
+    loggers.editor.debug(`⏱️ Конструктор EditorController виконано за ${constructorTime.toFixed(2)}ms`);
+
     // Автозбереження
     this.autosaveTimer = null;
     this.autosaveInterval = 30000; // 30 секунд
     this.lastSaveHash = null;
+
+    // Синхронізація висоти при зміні розміру вікна
+    window.addEventListener('resize', () => {
+      this.syncSidebarHeight();
+    });
 
     // Перевірка контейнерів лейаута
     const layoutContainer = document.querySelector(".programmer-layout");
     const oldContainer = document.querySelector(".programmer-container");
 
     if (!layoutContainer && !oldContainer) {
-      loggers.ui.error("❌ Не знайдено контейнер програматора!");
+      loggers.editor.error("❌ Не знайдено контейнер програматора!");
       return;
     }
 
-    loggers.ui.info(
+    loggers.editor.info(
       "✅ Знайдено лейаут програматора, продовжуємо ініціалізацію"
     );
     document.body.setAttribute("data-programmator-init", "layout-found");
@@ -63,33 +73,57 @@ export class EditorController {
   }
 
   /**
+   * Синхронізує висоту бічних панелей з висотою сітки програми
+   */
+  syncSidebarHeight() {
+    try {
+      const programGrid = document.getElementById('program-grid');
+      if (programGrid) {
+        const gridHeight = programGrid.offsetHeight;
+        document.documentElement.style.setProperty('--program-grid-height', `${gridHeight}px`);
+        loggers.editor.debug(`🔄 Синхронізовано висоту бічних панелей: ${gridHeight}px`);
+      }
+    } catch (error) {
+      loggers.editor.error('❌ Помилка синхронізації висоти бічних панелей:', error);
+    }
+  }
+
+  /**
    * Ініціалізація користувацького інтерфейсу
    */
   initializeUI() {
-    loggers.ui.info("Налаштування контейнерів лейаута...");
+    const startTime = performance.now();
+    loggers.editor.info("🔧 Початок ініціалізації UI інтерфейсу...");
+
+    loggers.editor.info("📐 Налаштування контейнерів лейаута...");
     this.setupLayoutContainers();
 
-    loggers.ui.info("Ініціалізація модулів ІЧ...");
+    loggers.editor.info("🎮 Ініціалізація модулів інтерфейсу...");
     this.initializeUIModules();
 
-    loggers.ui.info("✅ Ініціалізація Programmator UI завершена!");
+    const totalTime = performance.now() - startTime;
+    loggers.editor.info(`✅ Ініціалізація UI завершена за ${totalTime.toFixed(2)}ms`);
   }
 
   /**
    * Ініціалізує модулі користувацького інтерфейсу
    */
   initializeUIModules() {
+    const modulesStartTime = performance.now();
     try {
-      loggers.ui.info("🎨 Створення палітри діянь...");
       // Палітра діянь
+      const paletteStartTime = performance.now();
+      loggers.editor.info("🎨 Створення палітри діянь...");
       this.actionPalette = new ActionPalette(this.leftSidebar, actionKey =>
         this.onActionSelected(actionKey)
       );
       this.actionPalette.create();
-      loggers.ui.info("✅ Палітру діянь утворено");
+      const paletteTime = performance.now() - paletteStartTime;
+      loggers.editor.info(`✅ Палітру діянь утворено (${paletteTime.toFixed(2)}ms)`);
 
-      loggers.ui.info("🎯 Створення сітки програми...");
       // Сітка програми
+      const gridStartTime = performance.now();
+      loggers.editor.info("🎯 Створення сітки програми...");
       this.programGrid = new ProgramGrid(
         this.mainContent,
         this.program,
@@ -97,21 +131,33 @@ export class EditorController {
       );
       this.programGrid.create();
 
+      // Синхронізувати висоту бічних панелей з висотою сітки
+      this.syncSidebarHeight();
+
+      const gridTime = performance.now() - gridStartTime;
+      loggers.editor.debug(`📊 Сітка створена: ${this.program.instructions.length} інструкцій завантажено`);
+
       // Ініціалізувати Drag & Drop
+      loggers.editor.debug("🎮 Ініціалізація Drag & Drop менеджера...");
       this.dragDropManager = new DragDropManager(this.programGrid);
 
       // Ініціалізувати Context Menu Manager
-      // (вже ініціалізовано як singleton, просто перевіряємо)
       if (!contextMenuManager) {
-        loggers.ui.error("❌ Context Menu Manager не ініціалізовано");
+        loggers.editor.error("❌ Context Menu Manager не ініціалізовано - функціонал контекстного меню буде обмежено");
+      } else {
+        loggers.editor.debug("✅ Context Menu Manager готовий до роботи");
       }
 
-      loggers.ui.info("✅ Сітку програми утворено");
+      loggers.editor.info(`✅ Сітку програми утворено (${gridTime.toFixed(2)}ms)`);
 
-      loggers.ui.info("🎛️ Створення панелі керування...");
-      // Панель керування (тепер у transportContainer)
+      // Панель керування
+      const controlsStartTime = performance.now();
+      loggers.editor.info("🎛️ Створення панелі керування...");
+      const controlsContainer = this.transportContainer || this.mainContent;
+      loggers.editor.debug(`📍 Панель керування буде розміщена в: ${controlsContainer === this.transportContainer ? 'transport container' : 'main content'}`);
+
       this.controls = new Controls(
-        this.transportContainer || this.mainContent, // Fallback to mainContent if transport not found
+        controlsContainer,
         this.program,
         text => this.onImport(text), // onImport
         format => this.onExport(format), // onExport
@@ -120,32 +166,40 @@ export class EditorController {
         direction => this.onPageNavigation(direction) // onPageNavigation
       );
       this.controls.create();
-      loggers.ui.info("✅ Панель керування утворено");
+      const controlsTime = performance.now() - controlsStartTime;
+      loggers.editor.info(`✅ Панель керування утворено (${controlsTime.toFixed(2)}ms)`);
 
-      loggers.ui.info("🧩 Створення панелі сніпетів...");
-      // Панель сніпетів (у rightSidebar)
+      // Панель сніпетів
+      const snippetsStartTime = performance.now();
+      loggers.editor.info("🧩 Створення панелі сніпетів...");
       this.snippetsPanel = new SnippetsPanel(this.rightSidebar);
       this.snippetsPanel.create();
-      loggers.ui.info("✅ Панель сніпетів утворено");
+      const snippetsTime = performance.now() - snippetsStartTime;
+      loggers.editor.info(`✅ Панель сніпетів утворено (${snippetsTime.toFixed(2)}ms)`);
 
-      loggers.ui.info("💬 Створення менеджера діалогів...");
       // Менеджер діалогів
+      const dialogsStartTime = performance.now();
+      loggers.editor.info("💬 Створення менеджера діалогів...");
       this.dialogManager = new DialogManager();
-      loggers.ui.info("✅ Менеджера діалогів утворено");
+      const dialogsTime = performance.now() - dialogsStartTime;
+      loggers.editor.info(`✅ Менеджера діалогів утворено (${dialogsTime.toFixed(2)}ms)`);
 
       // Оновлюємо відображення
       this.updatePageDisplay();
 
       // Запускаємо автозбереження
+      loggers.editor.debug(`⏰ Запуск автозбереження (інтервал: ${this.autosaveInterval}ms)`);
       this.startAutosave();
 
       // Перевіряємо наявність автозбереження
+      loggers.editor.debug("🔍 Перевірка автозбереження...");
       this.restoreAutosave();
 
-      loggers.ui.info("🎉 Усі модулі ІЧ започатковано успішно!");
+      const totalModulesTime = performance.now() - modulesStartTime;
+      loggers.editor.info(`🎉 Усі модулі інтерфейсу започатковано успішно (загальний час: ${totalModulesTime.toFixed(2)}ms)!`);
     } catch (error) {
-      loggers.ui.error("❌ Помилка започаткування модулів ІЧ:", error);
-      loggers.ui.error("Слід стеку:", error.stack);
+      loggers.editor.error("❌ Помилка започаткування модулів ІЧ:", error);
+      loggers.editor.error("Слід стеку:", error.stack);
       throw error;
     }
   }
@@ -157,7 +211,7 @@ export class EditorController {
    */
   onActionSelected(actionKey) {
     this.selectedAction = actionKey ? ProgAction[actionKey] : null;
-    loggers.ui.debug(`🎯 Вибрано дію: ${actionKey} (${this.selectedAction})`);
+    loggers.editor.debug(`🎯 Вибрано дію: ${actionKey} (${this.selectedAction})`);
   }
 
   /**
@@ -173,7 +227,7 @@ export class EditorController {
    * Обробляє клік по клітинці сітки
    */
   async onCellClick(x, y) {
-    loggers.ui.debug(`🖱️ Клік по клітинці: [${x}, ${y}]`);
+    loggers.editor.debug(`🖱️ Клік по клітинці: [${x}, ${y}] (сторінка ${this.currentPage})`);
 
     const existingInstruction = this.program.getInstructionAt(
       x,
@@ -186,7 +240,8 @@ export class EditorController {
       existingInstruction.action !== ProgAction.None &&
       !this.selectedAction
     ) {
-      loggers.ui.info(`🗑️ Видаляємо інструкцію з [${x}, ${y}]`);
+      const actionName = this.getActionName(existingInstruction.action);
+      loggers.editor.info(`🗑️ Видаляємо інструкцію "${actionName}" з [${x}, ${y}]`);
       this.program.setInstructionAt(
         x,
         y,
@@ -196,12 +251,15 @@ export class EditorController {
         this.currentPage
       );
       this.programGrid.updateCellDisplay(x, y);
+      loggers.editor.debug(`✅ Інструкцію видалено, клітинка тепер порожня`);
       return;
     }
 
     // Якщо дія вибрана - розміщуємо її
     if (this.selectedAction) {
       await this.placeActionAt(x, y, this.selectedAction);
+    } else {
+      loggers.editor.debug(`ℹ️ Клік по порожній клітинці без вибраної дії - ігнорується`);
     }
   }
 
@@ -209,54 +267,57 @@ export class EditorController {
    * Розміщує дію в клітинці з обробкою параметрів
    */
   async placeActionAt(x, y, actionCode) {
+    const startTime = performance.now();
     let label = null;
     let value = null;
 
-    loggers.ui.debug(
-      `🔧 Розміщення дії ${actionCode} (${this.getActionName(actionCode)}) на [${x}, ${y}]`
+    const actionName = this.getActionName(actionCode);
+    loggers.editor.debug(
+      `🔧 Розміщення дії ${actionCode} (${actionName}) на [${x}, ${y}] (сторінка ${this.currentPage})`
     );
 
     // Перевіряємо, чи потрібен лейбл
     if (this.needsLabel(actionCode)) {
-      loggers.ui.info(
+      loggers.editor.info(
         `🏷️ Дія потребує лейбл: ${this.getActionName(actionCode)}`
       );
       label = await this.dialogManager.promptForLabel();
       if (label === null) {
-        loggers.ui.info("❌ Введення лейблу скасовано");
+        loggers.editor.info("❌ Введення лейблу скасовано");
         return; // Скасовано
       }
-      loggers.ui.info(`✅ Отримано лейбл: "${label}"`);
+      loggers.editor.info(`✅ Отримано лейбл: "${label}"`);
     }
 
     // Перевіряємо, чи потрібне значення
     if (this.needsValue(actionCode)) {
       const defaultValue = this.getDefaultValueForAction(actionCode);
-      loggers.ui.info(
+      loggers.editor.info(
         `🔢 Дія потребує значення: ${this.getActionName(actionCode)}, за замовчуванням: ${defaultValue}`
       );
       value = await this.dialogManager.promptForNumber(defaultValue);
       if (value === null) {
-        loggers.ui.info("❌ Введення значення скасовано");
+        loggers.editor.info("❌ Введення значення скасовано");
         return; // Скасовано
       }
-      loggers.ui.info(`✅ Отримано значення: ${value}`);
+      loggers.editor.info(`✅ Отримано значення: ${value}`);
     }
 
     // Перевіряємо, чи потрібні координати
     if (this.needsCoordinates(actionCode)) {
-      loggers.ui.info(
+      loggers.editor.info(
         `📍 Дія потребує координат: ${this.getActionName(actionCode)}`
       );
       const coords = await this.dialogManager.promptForCoordinates();
       if (coords === null) {
-        loggers.ui.info("❌ Введення координат скасовано");
+        loggers.editor.info("❌ Введення координат скасовано");
         return; // Скасовано
       }
       value = coords;
-      loggers.ui.info(`✅ Отримано координати: ${coords}`);
+      loggers.editor.info(`✅ Отримано координати: ${coords}`);
     }
 
+    // Розміщуємо інструкцію
     // Розміщуємо інструкцію
     this.program.setInstructionAt(
       x,
@@ -268,23 +329,50 @@ export class EditorController {
     );
     this.programGrid.updateCellDisplay(x, y);
 
-    loggers.ui.info(`✅ Розміщено дію ${actionCode} в [${x}, ${y}]`);
+    const totalTime = performance.now() - startTime;
+    const details = [];
+    if (label) details.push(`лейбл: "${label}"`);
+    if (value !== null && value !== undefined) details.push(`значення: ${value}`);
+    const detailsStr = details.length > 0 ? ` (${details.join(", ")})` : "";
+
+    loggers.editor.info(`✅ Розміщено дію "${actionName}" в [${x}, ${y}]${detailsStr} (${totalTime.toFixed(2)}ms)`);
   }
 
   /**
    * Імпорт програми
    */
   async onImport(importText) {
+    const startTime = performance.now();
     try {
+      loggers.editor.info(`📥 Початок імпорту (розмір тексту: ${importText.length} символів)...`);
+      loggers.editor.debug(`Import text preview: ${importText.substring(0, 200)}...`);
+
       this.program = await Program.fromString(importText);
+      
+      // CRITICAL: Update the reference in ProgramGrid!
+      this.programGrid.program = this.program;
+      loggers.editor.debug(`✅ Updated ProgramGrid reference to new program`);
+
+      const importTime = performance.now() - startTime;
+      const instructionCount = this.program.instructions.length;
+      const nonEmptyCount = this.program.instructions.filter(inst => inst.action !== ProgAction.None).length;
+
       this.programGrid.updateDisplay();
-      this.controls.showMessage("✅ Програма імпортована успішно");
-      loggers.ui.info(
-        `📥 Імпортовано програму з ${this.program.instructions.length} інструкціями`
+      this.controls.showFeedback("✅ Програма імпортована успішно", "success");
+
+      loggers.editor.info(
+        `📥 Імпортовано програму: ${instructionCount} інструкцій (${nonEmptyCount} не порожніх) за ${importTime.toFixed(2)}ms`
       );
     } catch (error) {
-      loggers.ui.error("❌ Помилка імпорту:", error);
-      this.controls.showMessage(`❌ Помилка імпорту: ${error.message}`);
+      const errorTime = performance.now() - startTime;
+      loggers.editor.error(`❌ Помилка імпорту після ${errorTime.toFixed(2)}ms:`);
+      loggers.editor.error(`Error message: ${error?.message || 'Unknown error'}`);
+      loggers.editor.error(`Error name: ${error?.name || 'Unknown'}`);
+      loggers.editor.error(`Full error:`, error);
+      if (error?.stack) {
+        loggers.editor.error(`Stack trace:`, error.stack);
+      }
+      this.controls.showFeedback(`❌ Помилка імпорту: ${error?.message || 'Unknown error'}`, "error");
       throw error;
     }
   }
@@ -293,8 +381,15 @@ export class EditorController {
    * Експорт програми
    */
   async onExport(format) {
+    const startTime = performance.now();
     try {
+      loggers.editor.info(`📤 Початок експорту в форматі ${format}...`);
+
       let result;
+      const instructionCount = this.program.instructions.length;
+      const nonEmptyCount = this.program.instructions.filter(
+        inst => inst.action !== ProgAction.None
+      ).length;
 
       switch (format) {
         case "codes":
@@ -302,29 +397,27 @@ export class EditorController {
             inst => inst.action !== ProgAction.None
           );
           result = nonEmptyInstructions.map(inst => inst.action).join(" ");
+          loggers.editor.debug(`📋 Експорт кодів: ${nonEmptyCount} інструкцій → ${result.length} символів`);
           break;
 
         case "text":
-          result = await ProgramSerializer.encode(
-            this.program.instructions,
-            ProgramFormatVersion.Version3
-          );
-          break;
-
         case "base64":
           result = await this.program.toBase64Format();
+          loggers.editor.debug(`📦 Експорт Base64: ${instructionCount} інструкцій → ${result.length} символів`);
           break;
 
         default:
           throw new Error(`Невідомий формат експорту: ${format}`);
       }
 
-      loggers.ui.info(
-        `📤 Експортовано в форматі ${format}, довжина: ${result.length}`
+      const exportTime = performance.now() - startTime;
+      loggers.editor.info(
+        `📤 Експортовано в форматі ${format}: ${result.length} символів за ${exportTime.toFixed(2)}ms`
       );
       return result;
     } catch (error) {
-      loggers.ui.error(`❌ Помилка експорту в форматі ${format}:`, error);
+      const errorTime = performance.now() - startTime;
+      loggers.editor.error(`❌ Помилка експорту в форматі ${format} після ${errorTime.toFixed(2)}ms:`, error);
       throw error;
     }
   }
@@ -333,31 +426,42 @@ export class EditorController {
    * Валідація програми
    */
   onValidate() {
+    const startTime = performance.now();
+    const instructionCount = this.program.instructions.length;
+    const nonEmptyCount = this.program.instructions.filter(inst => inst.action !== ProgAction.None).length;
+
+    loggers.validation.info(`🔍 Початок валідації: ${instructionCount} інструкцій (${nonEmptyCount} не порожніх)`);
+
     const validation = this.program.validate();
-    loggers.ui.info("🔍 Результати валідації:", validation);
+    const validationTime = performance.now() - startTime;
+
+    loggers.validation.info(
+      `🔍 Результати валідації: ${validation.errors.length} помилок, ${validation.warnings.length} попереджень (за ${validationTime.toFixed(2)}ms)`
+    );
 
     if (validation.errors.length > 0) {
-      loggers.ui.error("❌ Помилки валідації:", validation.errors);
+      loggers.validation.error(`❌ Знайдено ${validation.errors.length} помилок валідації:`, validation.errors);
       const errorMessages = validation.errors
         .map(e => `• ${e.message}`)
         .join("\n");
-      this.controls.showMessage(
-        `❌ Знайдено помилок: ${validation.errors.length}\n${errorMessages}`
+      this.controls.showFeedback(
+        `❌ Знайдено помилок: ${validation.errors.length}\n${errorMessages}`, "error"
       );
     }
 
     if (validation.warnings.length > 0) {
-      loggers.ui.warn("⚠️ Попередження валідації:", validation.warnings);
+      loggers.validation.warn(`⚠️ Знайдено ${validation.warnings.length} попереджень валідації:`, validation.warnings);
       const warningMessages = validation.warnings
         .map(w => `• ${w.message}`)
         .join("\n");
-      this.controls.showMessage(
-        `⚠️ Попередження: ${validation.warnings.length}\n${warningMessages}`
+      this.controls.showFeedback(
+        `⚠️ Попередження: ${validation.warnings.length}\n${warningMessages}`, "info"
       );
     }
 
     if (validation.errors.length === 0 && validation.warnings.length === 0) {
-      this.controls.showMessage("✅ Програма валідна!");
+      loggers.validation.info("✅ Програма пройшла валідацію без помилок та попереджень");
+      this.controls.showFeedback("✅ Програма валідна!", "success");
     }
   }
 
@@ -365,6 +469,12 @@ export class EditorController {
    * Очистка програми
    */
   async onClear() {
+    const startTime = performance.now();
+    const instructionCount = this.program.instructions.length;
+    const nonEmptyCount = this.program.instructions.filter(inst => inst.action !== ProgAction.None).length;
+
+    loggers.editor.debug(`🗑️ Запит на очистку програми (${instructionCount} інструкцій, ${nonEmptyCount} не порожніх)`);
+
     const confirmed = await this.dialogManager.showConfirmDialog(
       "Ви дійсно хочете очистити всю програму?",
       "Очистка програми"
@@ -373,7 +483,11 @@ export class EditorController {
     if (confirmed) {
       this.program.clear();
       this.programGrid.updateDisplay();
-      loggers.ui.info("🗑️ Програму очищено");
+
+      const clearTime = performance.now() - startTime;
+      loggers.editor.info(`🗑️ Програму очищено: видалено ${nonEmptyCount} інструкцій за ${clearTime.toFixed(2)}ms`);
+    } else {
+      loggers.editor.debug("❌ Очистку програми скасовано користувачем");
     }
   }
 
@@ -381,8 +495,12 @@ export class EditorController {
    * Експертні налаштування
    */
   onExpertSettings() {
+    loggers.editor.debug("⚙️ Відкриття діалогу експертних налаштувань");
+
     this.dialogManager.showExpertSettingsDialog(settings => {
-      loggers.ui.info("💾 Збережено експертні налаштування:", settings);
+      loggers.editor.info(`💾 Збережено експертні налаштування: ${Object.keys(settings).length} параметрів`);
+      loggers.editor.debug("💾 Деталі налаштувань:", settings);
+
       // Тут можна зберегти налаштування в localStorage або застосувати їх
       this.applyExpertSettings(settings);
     });
@@ -431,7 +549,7 @@ export class EditorController {
     ].includes(actionCode);
 
     if (result) {
-      loggers.ui.debug(
+      loggers.editor.debug(
         `🏷️ Команда ${this.getActionName(actionCode)} (${actionCode}) потребує лейбл`
       );
     }
@@ -462,7 +580,7 @@ export class EditorController {
     ].includes(actionCode);
 
     if (result) {
-      loggers.ui.debug(
+      loggers.editor.debug(
         `🔢 Команда ${this.getActionName(actionCode)} (${actionCode}) потребує значення`
       );
     }
@@ -508,9 +626,14 @@ export class EditorController {
    * Застосовує експертні налаштування
    */
   applyExpertSettings(settings) {
+    loggers.editor.debug(`🔧 Застосування експертних налаштувань: ${Object.keys(settings).length} параметрів`);
+
     // Перевіряємо налаштування автосохранения
     if (settings.hasOwnProperty("autoSave")) {
-      if (settings.autoSave) {
+      const autoSaveEnabled = settings.autoSave;
+      loggers.editor.debug(`⏰ Автозбереження: ${autoSaveEnabled ? 'увімкнено' : 'вимкнено'}`);
+
+      if (autoSaveEnabled) {
         this.startAutosave();
       } else {
         this.stopAutosave();
@@ -518,14 +641,14 @@ export class EditorController {
     }
 
     // Тут можна додати інші налаштування
-    loggers.ui.debug("Застосовано експертні налаштування:", settings);
+    loggers.editor.debug("✅ Експертні налаштування застосовано успішно:", settings);
   }
 
   /**
    * Налаштування контейнерів лейаута для триколонкового компонування
    */
   setupLayoutContainers() {
-    loggers.ui.debug("🔍 Пошук контейнерів лейаута...");
+    loggers.editor.debug("🔍 Пошук контейнерів лейаута...");
 
     // Отримуємо контейнери лейаута
     this.leftSidebar = document.querySelector(".programmer-sidebar-left");
@@ -533,13 +656,13 @@ export class EditorController {
     this.rightSidebar = document.querySelector(".programmer-sidebar-right");
     this.transportContainer = document.querySelector("#transport-panel-container");
 
-    loggers.ui.debug(`📍 Знайдено елементів:`);
-    loggers.ui.debug(`  - Left sidebar: ${this.leftSidebar ? "✅" : "❌"}`);
-    loggers.ui.debug(`  - Main content: ${this.mainContent ? "✅" : "❌"}`);
-    loggers.ui.debug(`  - Right sidebar: ${this.rightSidebar ? "✅" : "❌"}`);
+    loggers.editor.debug(`📍 Знайдено елементів:`);
+    loggers.editor.debug(`  - Left sidebar: ${this.leftSidebar ? "✅" : "❌"}`);
+    loggers.editor.debug(`  - Main content: ${this.mainContent ? "✅" : "❌"}`);
+    loggers.editor.debug(`  - Right sidebar: ${this.rightSidebar ? "✅" : "❌"}`);
 
     if (!this.leftSidebar || !this.mainContent || !this.rightSidebar) {
-      loggers.ui.warn(
+      loggers.editor.warn(
         "⚠️ Деякі контейнери лейаута не знайдено, перевірка резервних..."
       );
 
@@ -553,10 +676,10 @@ export class EditorController {
         ".container",
       ];
 
-      loggers.ui.debug("🔍 Перевірка всіх можливих контейнерів:");
+      loggers.editor.debug("🔍 Перевірка всіх можливих контейнерів:");
       selectors.forEach(selector => {
         const element = document.querySelector(selector);
-        loggers.ui.debug(`  ${selector}: ${element ? "✅" : "❌"}`);
+        loggers.editor.debug(`  ${selector}: ${element ? "✅" : "❌"}`);
       });
 
       // Відкат до старого одинарного контейнера
@@ -571,22 +694,22 @@ export class EditorController {
           fallbackContainer;
 
       if (!this.leftSidebar) {
-        loggers.ui.error(
+        loggers.editor.error(
           "❌ Жодні контейнери не знайдено! DOM структура пошкоджена."
         );
-        loggers.ui.error(
+        loggers.editor.error(
           "📄 Поточний вміст body:",
           document.body.innerHTML.substring(0, 500)
         );
         throw new Error("Cannot find any container elements in DOM");
       }
 
-      loggers.ui.warn(
+      loggers.editor.warn(
         "⚠️ Використовується резервний контейнер:",
         this.leftSidebar.tagName
       );
     } else {
-      loggers.ui.debug("✅ Усі контейнери лейаута знайдено успішно");
+      loggers.editor.debug("✅ Усі контейнери лейаута знайдено успішно");
     }
   }
 
@@ -601,7 +724,7 @@ export class EditorController {
       this.programGrid.setCurrentPage(this.currentPage);
       this.updatePageDisplay();
       this.programGrid.updateDisplay();
-      loggers.ui.info(`📄 Переключено на сторінку ${this.currentPage}`);
+      loggers.editor.info(`📄 Переключено на сторінку ${this.currentPage}`);
     }
   }
 
@@ -614,7 +737,7 @@ export class EditorController {
       this.programGrid.setCurrentPage(this.currentPage);
       this.updatePageDisplay();
       this.programGrid.updateDisplay();
-      loggers.ui.info(`📄 Переключено на сторінку ${this.currentPage}`);
+      loggers.editor.info(`📄 Переключено на сторінку ${this.currentPage}`);
     }
   }
 
@@ -638,19 +761,20 @@ export class EditorController {
     const autoSaveEnabled = SettingsStorage.get("autoSave", true);
 
     if (!autoSaveEnabled) {
-      loggers.ui.info("⏸️ Автозбереження вимкнено в налаштуваннях");
+      loggers.editor.info("⏸️ Автозбереження вимкнено в налаштуваннях користувача");
       return;
     }
 
     if (this.autosaveTimer) {
       clearInterval(this.autosaveTimer);
+      loggers.editor.debug("🔄 Перезапуск таймера автозбереження");
     }
 
     this.autosaveTimer = setInterval(() => {
       this.performAutosave();
     }, this.autosaveInterval);
 
-    loggers.ui.info(
+    loggers.editor.info(
       `⏰ Автозбереження запущено (інтервал: ${this.autosaveInterval / 1000} сек)`
     );
   }
@@ -662,7 +786,7 @@ export class EditorController {
     if (this.autosaveTimer) {
       clearInterval(this.autosaveTimer);
       this.autosaveTimer = null;
-      loggers.ui.info("⏸️ Автозбереження зупинено");
+      loggers.editor.info("⏸️ Автозбереження зупинено");
     }
   }
 
@@ -670,27 +794,32 @@ export class EditorController {
    * Виконує автоматичне збереження
    */
   performAutosave() {
+    const startTime = performance.now();
     try {
       const instructions = this.program.instructions;
       const currentHash = this.calculateProgramHash(instructions);
 
       // Перевіряємо, чи змінилася програма
       if (currentHash === this.lastSaveHash) {
+        loggers.editor.debug("🔄 Автозбереження: немає змін з останнього збереження");
         return; // Немає змін
       }
 
+      loggers.editor.debug(`💾 Виконання автозбереження (${instructions.length} інструкцій)...`);
       const success = ProgramStorage.autosave(instructions);
 
       if (success) {
         this.lastSaveHash = currentHash;
-        loggers.ui.debug(
-          `💾 Автозбереження виконано успішно (${instructions.length} інструкцій)`
+        const saveTime = performance.now() - startTime;
+        loggers.editor.debug(
+          `💾 Автозбереження виконано успішно: ${instructions.length} інструкцій за ${saveTime.toFixed(2)}ms`
         );
       } else {
-        loggers.ui.warn("⚠️ Помилка автозбереження");
+        loggers.editor.warn("⚠️ Помилка автозбереження - дані не збережено");
       }
     } catch (error) {
-      loggers.ui.error("❌ Критична помилка автозбереження:", error);
+      const errorTime = performance.now() - startTime;
+      loggers.editor.error(`❌ Критична помилка автозбереження після ${errorTime.toFixed(2)}ms:`, error);
     }
   }
 
@@ -743,7 +872,7 @@ export class EditorController {
           this.updatePageDisplay();
           this.programGrid.updateDisplay();
 
-          loggers.ui.info(
+          loggers.editor.info(
             `🔄 Автосохранена програма відновлена (${autosaveData.instructions.length} інструкцій)`
           );
 
@@ -752,7 +881,7 @@ export class EditorController {
         }
       }
     } catch (error) {
-      loggers.ui.error("❌ Помилка відновлення автозбереження:", error);
+      loggers.editor.error("❌ Помилка відновлення автозбереження:", error);
     }
   }
 }

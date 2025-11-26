@@ -18,8 +18,14 @@ export class NumberDialog extends BaseDialog {
       type: 'number',
       value: this.defaultValue.toString(),
       onKeyDown: (e) => {
-        if (e.key === 'Enter') this.submit();
-        if (e.key === 'Escape') this.close(null);
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          this.submit();
+        }
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          this.close(null);
+        }
       }
     });
 
@@ -65,7 +71,7 @@ export class NumberDialog extends BaseDialog {
   submit() {
     const input = this.dialog.querySelector('#number-input');
     const errorMsg = this.dialog.querySelector('.dialog-error');
-    const val = parseInt(input.value);
+    const val = parseInt(input.value || input.textContent || '0');
 
     if (isNaN(val)) {
       errorMsg.textContent = "Not a valid number!";

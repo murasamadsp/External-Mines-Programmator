@@ -1,77 +1,70 @@
 /* Program Controls Component */
 #program-controls {
-  grid-column: 2; /* Center in the grid */
   display: flex;
   flex-direction: row;
-  align-items: center;
   justify-content: center; /* Center buttons within the column */
-  gap: 24px;
+  align-items: center;
   width: 100%;
   padding: 0;
   margin: 0;
   background: transparent;
   border: none;
   box-shadow: none;
+  grid-column: 2; /* Center in the grid */
+  gap: 12px;
   backdrop-filter: none;
-}
-
-#program-controls:hover {
-  border-color: rgb(255 255 255 / 20%);
-  box-shadow: 0 12px 40px rgb(0 0 0 / 25%);
 }
 
 #program-controls h3 {
   margin-top: 0;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  font-size: 20px;
-  font-weight: 700;
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-4);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
   letter-spacing: 0.5px;
   text-align: center;
   color: rgb(255 255 255);
-  text-shadow: 0 2px 4px rgb(0 0 0 / 20%);
-  border-bottom: 1px solid rgb(255 255 255 / 10%);
+  border-bottom: var(--border);
 }
 
 #program-controls button {
   position: relative;
-  padding: 12px 20px;
-  font-size: 14px;
-  font-weight: 600;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   color: rgb(255 255 255);
   background: linear-gradient(135deg, rgb(108 117 125), rgb(73 80 87));
   border: var(--border);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
-  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+  border-radius: var(--radius-lg);
   cursor: pointer;
   overflow: hidden;
-  margin-inline-end: 12px;
-  margin-bottom: 12px;
+  margin-inline-end: var(--space-2);
+  margin-bottom: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 28px;
+  justify-content: center;
 }
 
 #program-controls button:hover {
   background: linear-gradient(135deg, rgb(90 98 104), rgb(52 58 64));
-  box-shadow: 0 6px 12px rgb(0 0 0 / 20%);
-  transform: translateY(-2px);
 }
 
 #program-controls button:active {
-  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
-  transform: translateY(0);
 }
 
 /* Control Sections */
 .controls-section {
   display: flex;
   align-items: center;
-  gap: 12px;
+  min-width: 0;
   padding: 0;
   background: transparent;
   border: none;
-  border-right: 1px solid rgb(255 255 255 / 10%);
-  padding-right: 24px;
-  min-width: 0;
+  gap: var(--space-5);
+  border-right: var(--border);
+  padding-right: var(--space-8);
   flex: 0 0 auto;
 }
 
@@ -87,7 +80,7 @@
 .control-buttons {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-4);
 }
 
 /* Legacy Control Groups (keeping for compatibility if needed) */
@@ -97,7 +90,6 @@
   background: rgb(0 0 0 / 25%);
   border: 1px solid rgb(255 255 255 / 5%);
   border-radius: 12px;
-  transition: background-color 0.3s;
 }
 
 .control-group label {
@@ -105,14 +97,14 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
   color: rgb(224 224 224);
 }
 
 .control-group label::before {
   content: "📝";
-  font-size: 18px;
+  font-size: var(--font-size-xl);
   filter: drop-shadow(0 2px 2px rgb(0 0 0 / 20%));
 }
 
@@ -123,13 +115,12 @@
   margin-bottom: 16px;
   box-sizing: border-box;
   font-family: "Google Sans Code", "Fira Code", monospace;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   line-height: 1.5;
   color: rgb(255 255 255);
   background-color: rgb(30 30 40 / 60%);
   border: 2px solid rgb(255 255 255 / 10%);
   border-radius: 8px;
-  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
   resize: vertical;
 }
 
@@ -143,12 +134,11 @@
 .control-group select {
   width: 100%;
   padding: 12px;
-  font-size: 14px;
+  font-size: var(--font-size-md);
   color: rgb(255 255 255);
   background-color: rgb(106 90 170 / 60%);
   border: 2px solid rgb(255 255 255 / 10%);
   border-radius: 8px;
-  transition: border-color 0.2s, box-shadow 0.2s;
   cursor: pointer;
   margin-bottom: 16px;
 }
@@ -161,14 +151,13 @@
 
 .control-group button {
   padding: 12px 20px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
   color: rgb(255 255 255);
   background: linear-gradient(135deg, rgb(0 123 255), rgb(0 86 179));
   border: var(--border);
   border-radius: 8px;
   box-shadow: 0 4px 6px rgb(0 0 0 / 15%);
-  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
   cursor: pointer;
   margin-inline-end: 12px;
   margin-bottom: 8px;
@@ -193,16 +182,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
-  margin: 0;
   padding: 0;
+  margin: 0;
+  gap: var(--space-5);
 }
 
 .page-controls button {
   min-width: 60px;
-  padding: 10px 16px;
-  font-size: 16px;
-  font-weight: 700;
+  padding: var(--space-5) var(--space-6);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
   background: linear-gradient(135deg, rgb(102 126 234), rgb(118 75 162));
 }
 
@@ -212,29 +201,29 @@
 
 #page-indicator {
   min-width: 100px;
-  padding: 10px 16px;
+  padding: var(--space-5) var(--space-6);
   font-family: "Google Sans Code", "Fira Code", monospace;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
   text-align: center;
   color: rgb(255 255 255);
   background: rgb(0 0 0 / 20%);
-  border: 2px solid rgb(255 255 255 / 20%);
-  border-radius: 8px;
+  border: var(--border-width-thick) solid rgb(255 255 255 / 20%);
+  border-radius: var(--radius-lg);
   box-shadow: inset 0 2px 4px rgb(0 0 0 / 20%);
 }
 
 #program-output {
   width: 100%;
   min-height: 160px;
-  padding: 16px;
+  padding: var(--space-6);
   font-family: "Google Sans Code", "Fira Code", monospace;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: rgb(160 160 160);
   background-color: rgb(20 20 30 / 80%);
   border: var(--border);
-  border-radius: 8px;
-  margin-top: 8px;
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-4);
   resize: vertical;
   box-sizing: border-box;
 }
@@ -246,8 +235,8 @@
   bottom: 24px;
   z-index: 10000;
   padding: 12px 20px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
   border-radius: 8px;
   box-shadow: 0 4px 16px rgb(0 0 0 / 30%);
 }
@@ -265,4 +254,46 @@
 .control-feedback-info {
   color: rgb(255 255 255);
   background: linear-gradient(135deg, rgb(23 162 184), rgb(19 132 150));
+}
+
+/* Form Input Styles */
+.form-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #111827;
+  background-color: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%);
+}
+
+.form-input:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
+}
+
+/* ContentEditable Input Styles (protection from browser extensions) */
+.form-input-editable {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.form-input-editable:empty::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.form-input-editable[data-placeholder-visible]:empty::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+}
+
+.form-input-editable:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
 }

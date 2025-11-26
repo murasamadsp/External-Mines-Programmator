@@ -3,7 +3,7 @@
  * Дозволяє налаштовувати рівень логування для різних середовищ
  */
 
-import { Logger, LOG_LEVELS } from "./logger.js";
+import { Logger, LOG_LEVELS, loggers } from "./logger.js";
 
 // Налаштування рівня логування залежно від середовища
 export function configureLogger() {
@@ -28,12 +28,15 @@ export function configureLogger() {
     if (parsedLevel !== null) {
       finalLevel = parsedLevel;
       // Зберігаємо в localStorage для майбутніх сесій
+      loggers.storage.debug(`Збереження рівня логування ${LOG_LEVELS[parsedLevel]} в localStorage`);
       localStorage.setItem("emp-log-level", LOG_LEVELS[parsedLevel]);
+      loggers.storage.info(`Рівень логування встановлено через URL: ${LOG_LEVELS[parsedLevel]}`);
     }
   } else if (storedLogLevel) {
     const parsedLevel = parseInt(storedLogLevel);
     if (!isNaN(parsedLevel) && parsedLevel >= 0 && parsedLevel <= 4) {
       finalLevel = parsedLevel;
+      loggers.storage.debug(`Завантажено рівень логування з localStorage: ${LOG_LEVELS[parsedLevel]}`);
     }
   }
 
@@ -76,7 +79,7 @@ function parseLogLevel(levelStr) {
     case "4":
       return LOG_LEVELS.OFF;
     default:
-      console.warn(`Невідомий рівень логування: ${levelStr}`);
+      loggers.storage.warn(`Невідомий рівень логування: ${levelStr}`);
       return null;
   }
 }

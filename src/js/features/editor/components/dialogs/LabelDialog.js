@@ -16,8 +16,14 @@ export class LabelDialog extends BaseDialog {
       value: this.defaultValue,
       placeholder: 'Enter label name...',
       onKeyDown: (e) => {
-        if (e.key === 'Enter') this.submit();
-        if (e.key === 'Escape') this.close(null);
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          this.submit();
+        }
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          this.close(null);
+        }
       }
     });
 
@@ -68,7 +74,7 @@ export class LabelDialog extends BaseDialog {
   submit() {
     const input = this.dialog.querySelector('#label-input');
     const errorMsg = this.dialog.querySelector('.dialog-error');
-    const val = input.value.trim();
+    const val = (input.value || input.textContent || '').trim();
 
     if (!val) {
       errorMsg.textContent = "Label cannot be empty!";

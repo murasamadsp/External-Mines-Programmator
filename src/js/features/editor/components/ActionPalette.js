@@ -1,5 +1,6 @@
 import {
   ACTION_DATA,
+  ACTION_CATEGORIES,
 } from "../../../core/constants/actions.js";
 import { loggers } from "../../../utils/index.js";
 import { contextMenuManager } from "../../../core/services/context-menu-manager.js";
@@ -101,7 +102,7 @@ export class ActionPalette {
 
     const actionsToRender = actionsMap || new Map(Object.entries(ACTION_DATA));
     let actionsList = this.palette.querySelector('.actions-list');
-    
+
     if (!actionsList) {
       actionsList = document.createElement('div');
       actionsList.className = 'actions-list';
@@ -110,11 +111,43 @@ export class ActionPalette {
 
     actionsList.innerHTML = '';
 
-    for (const [actionKey, _] of actionsToRender) {
-      const button = this.createActionButton(actionKey);
-      if (button) {
-        actionsList.appendChild(button);
+    console.log('ACTION_CATEGORIES:', ACTION_CATEGORIES);
+
+    // Групуємо дії за категоріями
+    const categoriesOrder = Object.keys(ACTION_CATEGORIES);
+    console.log('categoriesOrder:', categoriesOrder);
+
+    for (const category of categoriesOrder) {
+      const categoryActions = ACTION_CATEGORIES[category];
+      console.log('category:', category, 'actions:', categoryActions);
+
+      const categoryActionsFiltered = categoryActions.filter(actionKey =>
+        actionsToRender.has(actionKey)
+      );
+
+      console.log('filtered actions:', categoryActionsFiltered);
+
+      if (categoryActionsFiltered.length === 0) continue;
+
+      // Створюємо заголовок категорії
+      const categoryHeader = document.createElement('div');
+      categoryHeader.className = 'category-header';
+      categoryHeader.textContent = category;
+      console.log('Creating header:', category);
+      actionsList.appendChild(categoryHeader);
+
+      // Створюємо контейнер для дій категорії
+      const categoryContainer = document.createElement('div');
+      categoryContainer.className = 'category-actions';
+
+      for (const actionKey of categoryActionsFiltered) {
+        const button = this.createActionButton(actionKey);
+        if (button) {
+          categoryContainer.appendChild(button);
+        }
       }
+
+      actionsList.appendChild(categoryContainer);
     }
 
     this.bindActionButtons();

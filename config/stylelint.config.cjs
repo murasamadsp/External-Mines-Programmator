@@ -91,8 +91,6 @@ module.exports = {
 
       // Animation
       "transform",
-      "transition",
-      "animation",
 
       // Misc
       "cursor",

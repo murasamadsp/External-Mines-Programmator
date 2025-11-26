@@ -63,23 +63,29 @@ export class Controls {
 
     const importButton = createButton({
       id: "import-btn",
-      text: "Import",
+      text: "",
+      icon: "📥",
       onClick: async () => {
         try {
-          const text = await navigator.clipboard.readText();
-          if (!text.trim()) {
-            loggers.ui.warn("❌ Буфер обміну порожній");
-            this.showFeedback("Clipboard is empty", "error");
-            return;
+          let text = "";
+          try {
+            text = await navigator.clipboard.readText();
+          } catch (clipboardError) {
+            loggers.ui.warn("⚠️ Clipboard access denied or failed, using fallback prompt", clipboardError);
           }
 
-          if (this.callbacks.onImport) {
+          if (!text) {
+            // Fallback: Ask user to paste manually
+            text = prompt("Please paste the program code here (starts with $):");
+          }
+
+          if (text && this.callbacks.onImport) {
             await this.callbacks.onImport(text);
-            this.showFeedback("✓ Imported from clipboard", "success");
+            this.showFeedback("✓ Imported successfully", "success");
           }
         } catch (error) {
-          loggers.ui.error("❌ Помилка читання з буфера обміну:", error);
-          this.showFeedback("Failed to read clipboard", "error");
+          loggers.ui.error("❌ Import error:", error);
+          this.showFeedback("Import failed", "error");
         }
       }
     });
@@ -87,7 +93,7 @@ export class Controls {
 
     const exportButton = createButton({
       id: "export-btn",
-      text: "Export",
+      text: "",
       icon: "📤",
       onClick: async () => {
         try {
@@ -116,7 +122,7 @@ export class Controls {
 
     const clearBtn = createButton({
       id: "clear-program",
-      text: "Clear",
+      text: "",
       icon: "🗑️",
       onClick: () => {
         if (this.callbacks.onClear) {
@@ -138,7 +144,7 @@ export class Controls {
 
     const prevBtn = createButton({
       id: "prev-page",
-      text: "Previous",
+      text: "",
       icon: "⬅️",
       onClick: () => {
         if (this.callbacks.onPageNavigation) {
@@ -155,7 +161,7 @@ export class Controls {
 
     const nextBtn = createButton({
       id: "next-page",
-      text: "Next",
+      text: "",
       icon: "➡️",
       onClick: () => {
         if (this.callbacks.onPageNavigation) {

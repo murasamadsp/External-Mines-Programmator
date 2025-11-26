@@ -31,7 +31,7 @@ class StateManager {
   }
 
   init() {
-    loggers.core.info("🧠 StateManager initialized");
+    loggers.services.info("🧠 StateManager initialized");
   }
 
   getState(key) {
@@ -61,7 +61,7 @@ class StateManager {
       try {
         listener(newState, oldState);
       } catch (error) {
-        loggers.core.error("Error in state listener:", error);
+        loggers.services.error("Error in state listener:", error);
       }
     });
   }

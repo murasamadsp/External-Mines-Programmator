@@ -35,7 +35,6 @@
     "vite-plugin-full-reload": "^1.2.0"
   },
   "dependencies": {
-    "animejs": "^4.2.2",
     "lzma-js": "^1.0.1",
     "lzma-web": "^3.0.1"
   }

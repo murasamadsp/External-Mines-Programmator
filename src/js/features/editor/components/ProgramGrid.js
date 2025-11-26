@@ -54,6 +54,7 @@ export class ProgramGrid {
     cell.className = "program-cell"; // Fixed: changed from grid-cell to program-cell
     cell.setAttribute("data-x", x);
     cell.setAttribute("data-y", y);
+    // cell.textContent = `${x},${y}`; // Debug: coordinates removed
 
     // Додаємо обробник кліку
     cell.addEventListener("click", () => {
@@ -99,10 +100,28 @@ export class ProgramGrid {
    * Оновлює відображення всієї сітки
    */
   updateDisplay() {
-    for (let y = 0; y < GRID_HEIGHT; y++) {
-      for (let x = 0; x < GRID_WIDTH; x++) {
-        this.updateCellDisplay(x, y);
+    try {
+      loggers.ui.debug(`🔄 ProgramGrid updateDisplay called, current page: ${this.currentPage}`);
+      loggers.ui.debug(`📊 Program has ${this.program.instructions.length} total instructions`);
+      
+      const pageInstructions = this.program.getPageInstructions(this.currentPage);
+      loggers.ui.debug(`📄 Page ${this.currentPage} has ${pageInstructions.length} instructions`);
+      
+      const nonEmpty = pageInstructions.filter(i => i.action !== 0).length;
+      loggers.ui.debug(`📌 Non-empty instructions on page ${this.currentPage}: ${nonEmpty}`);
+
+      for (let y = 0; y < GRID_HEIGHT; y++) {
+        for (let x = 0; x < GRID_WIDTH; x++) {
+          try {
+            this.updateCellDisplay(x, y);
+          } catch (cellError) {
+            loggers.ui.error(`❌ Error updating cell [${x}, ${y}]:`, cellError);
+          }
+        }
       }
+      loggers.ui.debug(`✅ ProgramGrid updateDisplay completed`);
+    } catch (error) {
+      loggers.ui.error("❌ Error in updateDisplay:", error);
     }
   }
 
@@ -110,37 +129,47 @@ export class ProgramGrid {
    * Оновлює відображення окремої клітинки
    */
   updateCellDisplay(x, y) {
-    const key = `${x}-${y}`;
-    const cell = this.gridCells.get(key);
+    try {
+      const key = `${x}-${y}`;
+      const cell = this.gridCells.get(key);
 
-    if (!cell) return;
+      if (!cell) return;
 
-    const instruction = this.program.getInstructionAt(
-      x,
-      y,
-      this.currentPage
-    );
+      const instruction = this.program.getInstructionAt(
+        x,
+        y,
+        this.currentPage
+      );
 
-    // Очищаємо клітинку
-    cell.textContent = "";
-    cell.className = "program-cell"; // Fixed: changed from grid-cell to program-cell
+      // Очищаємо клітинку
+      cell.textContent = "";
+      cell.className = "program-cell"; // Fixed: changed from grid-cell to program-cell
 
-    // Якщо інструкція порожня
-    if (!instruction || instruction.action === 0) {
-      cell.classList.add("empty");
-      return;
+      // Якщо інструкція порожня
+      if (!instruction || instruction.action === 0) {
+        cell.classList.add("empty");
+        return;
+      }
+
+      // Додаємо клас з дією
+      cell.classList.add("has-action");
+
+      // Відображаємо короткий код дії
+      const shortCode = this.getActionShortCode(instruction.action);
+      cell.textContent = shortCode;
+
+      // Додаємо tooltip з повним описом
+      const description = this.getActionDescription(instruction);
+      cell.title = description;
+    } catch (error) {
+      loggers.ui.error(`❌ Помилка відображення клітинки [${x}, ${y}]:`, error);
+      const cell = this.gridCells.get(`${x}-${y}`);
+      if (cell) {
+        cell.textContent = "ERR";
+        cell.classList.add("error");
+        cell.title = `Error: ${error.message}`;
+      }
     }
-
-    // Додаємо клас з дією
-    cell.classList.add("has-action");
-
-    // Відображаємо короткий код дії
-    const shortCode = this.getActionShortCode(instruction.action);
-    cell.textContent = shortCode;
-
-    // Додаємо tooltip з повним описом
-    const description = this.getActionDescription(instruction);
-    cell.title = description;
   }
 
   /**

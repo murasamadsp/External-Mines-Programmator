@@ -1,5 +1,6 @@
-/* CSS Custom Properties */
+/* CSS Custom Properties - Design System */
 :root {
+  /* Color Palette */
   --color-background: rgb(106 90 170);
   --color-background-secondary: rgb(86 65 144);
   --color-text: rgb(255 170 255);
@@ -8,15 +9,74 @@
   --color-text-glow: rgb(255 255 255 / 20%);
   --color-success: rgb(40 167 69);
   --color-danger: rgb(220 53 69);
+
+  /* Spacing Scale */
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 12px;
+  --space-6: 16px;
+  --space-7: 20px;
+  --space-8: 24px;
+  --space-9: 32px;
+  --space-10: 40px;
+
+  /* Border Radius Scale */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+
+  /* Typography Scale */
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Layout */
   --max-width: 1400px;
-  --spacing-horizontal: 40px;
+  --sidebar-width: 300px;
+  --main-min-width: 600px;
+
+  /* Borders & Shadows */
   --border-color: rgb(255 255 255 / 10%);
   --border: 1px solid var(--border-color);
+  --border-width: 1px;
+  --border-width-thick: 2px;
+
   --hover-bg: rgb(255 255 255 / 5%);
+  --active-bg: rgb(255 255 255 / 8%);
+  --surface-bg: rgb(255 255 255 / 10%);
+  --surface-bg-strong: rgb(255 255 255 / 15%);
+
   --context-menu-bg: rgb(255 255 255 / 95%);
   --context-menu-border: rgb(102 126 234);
   --context-menu-shadow: 0 8px 32px rgb(0 0 0 / 30%);
   --context-menu-item-hover: rgb(102 126 234 / 10%);
+
+  /* Z-index Scale */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
+
+  /* Component Specific */
+  --program-grid-gap: var(--space-2);
 }
 
 /* Base Styles */
@@ -72,50 +132,44 @@ main {
   border: 2px solid var(--context-menu-border);
   border-radius: 8px;
   box-shadow: var(--context-menu-shadow);
-  opacity: 0;
   visibility: hidden;
-  transform: scale(0.95);
-  transition: opacity 0.15s, visibility 0.15s, transform 0.15s;
   pointer-events: none;
 }
 
 .context-menu.visible {
-  opacity: 1;
   visibility: visible;
-  transform: scale(1);
   pointer-events: auto;
 }
 
 .context-menu-content {
-  padding: 8px 0;
+  padding: 4px 0;
 }
 
 .context-menu-header {
-  padding: 8px 16px 4px;
+  padding: 6px 12px 3px;
   border-bottom: 1px solid rgb(255 255 255 / 20%);
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .context-menu-title {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   color: rgb(102 126 234);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .context-menu-items {
-  padding: 4px 0;
+  padding: 2px 0;
 }
 
 .context-menu-item {
   display: flex;
   align-items: center;
-  padding: 8px 16px;
-  font-size: 14px;
+  padding: var(--space-3) var(--space-5);
+  font-size: 13px; /* Keep specific size for context menu readability */
   color: rgb(33 37 41);
   cursor: pointer;
-  transition: background-color 0.15s;
   user-select: none;
 }
 
@@ -135,27 +189,27 @@ main {
 }
 
 .context-menu-icon {
-  width: 20px;
+  width: 18px;
   text-align: center;
-  margin-right: 8px;
-  font-size: 16px;
+  margin-right: var(--space-3);
+  font-size: var(--font-size-md);
 }
 
 .context-menu-label {
   flex: 1;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 .context-menu-shortcut {
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: rgb(108 117 125);
-  margin-left: 16px;
-  font-family: 'Google Sans Code', monospace;
+  margin-left: var(--space-5);
+  font-family: "Google Sans Code", monospace;
 }
 
 .context-menu-separator {
   height: 1px;
-  margin: 4px 0;
+  margin: 2px 0;
   background-color: rgb(255 255 255 / 30%);
   border: none;
 }

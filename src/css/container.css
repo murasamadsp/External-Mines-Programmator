@@ -4,11 +4,11 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
-  max-width: none; /* Full width */
-  padding: 16px;
-  margin: 0;
+  max-width: var(--max-width);
+  padding: var(--space-4);
+  margin: 0 auto;
   border-radius: 0;
-  gap: 16px;
+  gap: var(--space-4);
   background-color: var(--color-background-secondary);
   box-shadow: none;
   overflow: hidden;

@@ -30,7 +30,7 @@
 
 .mobile-block-content {
   text-align: center;
-  padding: 40px;
+  padding: 20px;
   max-width: 90%;
   background: rgb(255 255 255 / 10%);
   border-radius: 20px;
@@ -40,21 +40,20 @@
 }
 
 .mobile-block-icon {
-  font-size: 4rem;
-  margin-bottom: 20px;
+  font-size: 3rem;
+  margin-bottom: 15px;
   display: block;
 }
 
 .mobile-block-title {
-  font-size: 2rem;
-  margin: 0 0 15px 0;
-  font-weight: 700;
-  text-shadow: 0 2px 4px rgb(0 0 0 / 30%);
+  font-size: 1.5rem;
+  margin: 0 0 10px 0;
+  font-weight: var(--font-weight-bold);
 }
 
 .mobile-block-message {
-  font-size: 1.1rem;
-  margin: 0 0 25px 0;
+  font-size: 1rem;
+  margin: 0 0 15px 0;
   line-height: 1.6;
   opacity: 0.9;
 }
@@ -62,16 +61,16 @@
 .mobile-block-devices {
   display: flex;
   justify-content: center;
-  gap: 20px;
-  margin: 25px 0;
+  gap: 15px;
+  margin: 15px 0;
 }
 
 .mobile-device-icon {
-  font-size: 2.5rem;
+  font-size: 2rem;
 }
 
 .mobile-block-footer {
-  font-size: 0.9rem;
-  margin-top: 20px;
+  font-size: 0.8rem;
+  margin-top: 15px;
   opacity: 0.8;
 }

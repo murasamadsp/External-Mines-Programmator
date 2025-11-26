@@ -1,17 +1,17 @@
 /* Transport Panel Container */
 .transport-panel-container {
-  grid-column: 2;
-  grid-row: 1;
+  z-index: var(--z-fixed);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  padding: 8px 16px;
+  padding: var(--space-3) var(--space-5);
   background: rgb(106 90 170 / 40%);
   border: var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   backdrop-filter: blur(12px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
+  grid-column: 2;
+  grid-row: 1;
 }
 
 /* Programmer Title (Removed/Hidden) */
@@ -26,36 +26,35 @@
   overflow: hidden;
 }
 
-/* Three-Column Layout with Header Row */
+/* Three-Column Layout with Grid */
 .programmer-layout {
   display: grid;
-  grid-template-columns: 300px minmax(600px, 1fr) 300px;
-  grid-template-rows: auto 1fr; /* Header row for controls, Content row for grid */
   align-items: stretch;
-  flex: 1;
   min-height: 0;
-  gap: 16px;
+  padding: var(--space-4);
   overflow: hidden;
-  padding: 16px; /* Uniform padding */
+  grid-template-columns: var(--sidebar-width) minmax(
+      var(--main-min-width),
+      1fr
+    ) var(--sidebar-width);
+  grid-template-rows: auto 1fr;
+  flex: 1;
+  gap: var(--space-4);
 }
 
-/* Sidebar Panels - Span full height */
+/* Sidebar Panels */
 .programmer-sidebar {
-  grid-row: 1 / -1; /* Span all rows */
-  height: 100%;
-  padding: 16px;
+  grid-row: 2;
+  height: fit-content;
+  max-height: var(--program-grid-height);
+  padding: var(--space-2);
   background: rgb(86 65 144 / 40%);
   border: var(--border);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
+  border-radius: var(--radius-2xl);
   backdrop-filter: blur(12px);
-  transition: box-shadow 0.3s, border-color 0.3s;
-  overflow-y: auto;
-}
-
-.programmer-sidebar:hover {
-  box-shadow: 0 12px 40px rgb(0 0 0 / 25%);
-  border-color: rgb(255 255 255 / 15%);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Main Content Area */
@@ -63,23 +62,22 @@
   grid-column: 2;
   grid-row: 2;
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  justify-content: center;
+  align-items: flex-start;
   min-width: 0;
   height: 100%;
   overflow-y: auto;
-  padding-right: 4px;
+  padding: var(--space-2);
 }
 
 /* Legacy Container */
 .programmer-container {
   display: flex;
   flex-direction: column;
-  padding: 32px;
-  gap: 32px;
+  padding: var(--space-6);
+  gap: var(--space-6);
   background: rgb(86 65 144 / 40%);
   border: var(--border);
-  border-radius: 20px;
+  border-radius: var(--radius-3xl);
   backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
 }

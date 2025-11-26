@@ -26,8 +26,8 @@ export class ContextMenuManager {
   }
 
   createMenuElement() {
-    this.menuElement = document.createElement('div');
-    this.menuElement.className = 'context-menu';
+    this.menuElement = document.createElement("div");
+    this.menuElement.className = "context-menu";
     this.menuElement.innerHTML = `
       <div class="context-menu-content">
         <div class="context-menu-header">
@@ -40,26 +40,26 @@ export class ContextMenuManager {
     document.body.appendChild(this.menuElement);
 
     // Prevent context menu on the menu itself
-    this.menuElement.addEventListener('contextmenu', (e) => e.preventDefault());
+    this.menuElement.addEventListener("contextmenu", (e) => e.preventDefault());
   }
 
   bindGlobalEvents() {
     // Hide menu on left click anywhere
-    document.addEventListener('click', (e) => {
+    document.addEventListener("click", (e) => {
       if (!this.menuElement.contains(e.target)) {
         this.hideMenu();
       }
     });
 
     // Hide menu on escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
         this.hideMenu();
       }
     });
 
     // Prevent default context menu globally (we'll show our custom one)
-    document.addEventListener('contextmenu', (e) => {
+    document.addEventListener("contextmenu", (e) => {
       // Only prevent default if we're not already showing a menu
       // This allows nested context menus if needed
       if (!this.activeMenu) {
@@ -83,12 +83,14 @@ export class ContextMenuManager {
     this.renderMenuItems(items);
 
     // Show the menu
-    this.menuElement.classList.add('visible');
+    this.menuElement.classList.add("visible");
 
     // Focus management
     this.menuElement.focus();
 
-    loggers.ui.debug(`Context menu shown at (${x}, ${y}) with ${items.length} items`);
+    loggers.services.debug(
+      `📋 Context menu показаний на позиції (${x}, ${y}) з ${items.length} елементами: ${items.map((item) => item.name || "анонімний").join(", ")}`,
+    );
   }
 
   positionMenu(x, y) {
@@ -109,45 +111,55 @@ export class ContextMenuManager {
     }
 
     // Ensure minimum distance from edges
-    adjustedX = Math.max(10, Math.min(adjustedX, viewportWidth - menuRect.width - 10));
-    adjustedY = Math.max(10, Math.min(adjustedY, viewportHeight - menuRect.height - 10));
+    adjustedX = Math.max(
+      10,
+      Math.min(adjustedX, viewportWidth - menuRect.width - 10),
+    );
+    adjustedY = Math.max(
+      10,
+      Math.min(adjustedY, viewportHeight - menuRect.height - 10),
+    );
 
     this.menuElement.style.left = `${adjustedX}px`;
     this.menuElement.style.top = `${adjustedY}px`;
   }
 
   renderMenuItems(items) {
-    const itemsContainer = this.menuElement.querySelector('.context-menu-items');
-    itemsContainer.innerHTML = '';
+    const itemsContainer = this.menuElement.querySelector(
+      ".context-menu-items",
+    );
+    itemsContainer.innerHTML = "";
 
     items.forEach((item, index) => {
-      const itemElement = document.createElement('div');
-      itemElement.className = 'context-menu-item';
+      const itemElement = document.createElement("div");
+      itemElement.className = "context-menu-item";
 
       if (item.separator) {
-        itemElement.className = 'context-menu-separator';
-        itemElement.innerHTML = '<hr>';
+        itemElement.className = "context-menu-separator";
+        itemElement.innerHTML = "<hr>";
       } else {
         itemElement.innerHTML = `
-          <span class="context-menu-icon">${item.icon || ''}</span>
+          <span class="context-menu-icon">${item.icon || ""}</span>
           <span class="context-menu-label">${item.label}</span>
-          <span class="context-menu-shortcut">${item.shortcut || ''}</span>
+          <span class="context-menu-shortcut">${item.shortcut || ""}</span>
         `;
 
         if (item.disabled) {
-          itemElement.classList.add('disabled');
+          itemElement.classList.add("disabled");
         } else {
-          itemElement.addEventListener('click', () => {
+          itemElement.addEventListener("click", () => {
             this.executeAction(item.action);
             this.hideMenu();
           });
 
-          itemElement.addEventListener('mouseenter', () => {
+          itemElement.addEventListener("mouseenter", () => {
             // Remove hover from other items
-            itemsContainer.querySelectorAll('.context-menu-item').forEach(el => {
-              el.classList.remove('hover');
-            });
-            itemElement.classList.add('hover');
+            itemsContainer
+              .querySelectorAll(".context-menu-item")
+              .forEach((el) => {
+                el.classList.remove("hover");
+              });
+            itemElement.classList.add("hover");
           });
         }
       }
@@ -157,30 +169,53 @@ export class ContextMenuManager {
   }
 
   executeAction(action) {
-    if (typeof action === 'function') {
+    if (typeof action === "function") {
+      const actionName = action.name || "анонімна функція";
+      loggers.services.debug(
+        `▶️ Виконання дії контекстного меню: ${actionName}`,
+      );
+
       try {
+        const startTime = performance.now();
         action(this.currentTarget);
-        loggers.ui.info(`Context menu action executed: ${action.name || 'anonymous'}`);
+        const executionTime = performance.now() - startTime;
+
+        loggers.services.info(
+          `✅ Дію контекстного меню виконано успішно: "${actionName}" (${executionTime.toFixed(2)}ms)`,
+        );
       } catch (error) {
-        loggers.ui.error('Context menu action failed:', error);
+        loggers.services.error(
+          `❌ Помилка виконання дії контекстного меню "${actionName}":`,
+          error,
+        );
       }
+    } else {
+      loggers.services.warn(
+        "⚠️ Спроба виконати некоректну дію контекстного меню",
+      );
     }
   }
 
   hideMenu() {
-    if (!this.activeMenu) return;
+    if (!this.activeMenu) {
+      loggers.services.debug(
+        "🔍 Спроба сховати контекстне меню, але воно вже не активне",
+      );
+      return;
+    }
 
-    this.menuElement.classList.remove('visible');
+    loggers.services.debug("🔽 Приховування контекстного меню");
+    this.menuElement.classList.remove("visible");
     this.activeMenu = null;
     this.currentTarget = null;
 
-    loggers.ui.debug('Context menu hidden');
+    loggers.services.debug("✅ Контекстне меню приховано");
   }
 
   // Utility methods for common context menus
 
   showProgramCellMenu(cellElement, position) {
-    const program = stateManager.getState('program');
+    const program = stateManager.getState("program");
     const instruction = program ? program.getInstruction(position) : null;
 
     const items = [];
@@ -188,121 +223,134 @@ export class ContextMenuManager {
     if (instruction) {
       // Menu for occupied cells
       items.push({
-        label: 'Copy Action',
-        icon: '📋',
-        shortcut: 'Ctrl+C',
-        action: () => this.copyInstruction(instruction)
+        label: "Copy Action",
+        icon: "📋",
+        shortcut: "Ctrl+C",
+        action: () => this.copyInstruction(instruction),
       });
 
       items.push({
-        label: 'Move Action',
-        icon: '↗️',
+        label: "Move Action",
+        icon: "↗️",
         action: () => {
           // Enable drag mode
-          stateManager.setState({ dragMode: true, selectedInstruction: instruction });
-        }
+          stateManager.setState({
+            dragMode: true,
+            selectedInstruction: instruction,
+          });
+        },
       });
 
       items.push({
-        label: 'Clear Cell',
-        icon: '🗑️',
-        shortcut: 'Del',
-        action: () => this.clearCell(position)
+        label: "Clear Cell",
+        icon: "🗑️",
+        shortcut: "Del",
+        action: () => this.clearCell(position),
       });
 
       items.push({ separator: true });
 
       items.push({
-        label: 'Cell Info',
-        icon: 'ℹ️',
-        action: () => this.showCellInfo(position, instruction)
+        label: "Cell Info",
+        icon: "ℹ️",
+        action: () => this.showCellInfo(position, instruction),
       });
     } else {
       // Menu for empty cells
       items.push({
-        label: 'Paste Action',
-        icon: '📄',
-        shortcut: 'Ctrl+V',
-        action: () => this.pasteInstruction(position)
+        label: "Paste Action",
+        icon: "📄",
+        shortcut: "Ctrl+V",
+        action: () => this.pasteInstruction(position),
       });
 
       items.push({
-        label: 'Insert from Palette',
-        icon: '🎯',
+        label: "Insert from Palette",
+        icon: "🎯",
         action: () => {
           // Focus action palette and prepare for insertion
-          const actionPalette = document.querySelector('#action-palette');
+          const actionPalette = document.querySelector("#action-palette");
           if (actionPalette) {
             stateManager.setState({ insertTarget: position });
             // Could trigger palette focus here
           }
-        }
+        },
       });
     }
 
     // Always available actions
     items.push({ separator: true });
     items.push({
-      label: 'Select All',
-      icon: '☑️',
-      shortcut: 'Ctrl+A',
-      action: () => this.selectAllCells()
+      label: "Select All",
+      icon: "☑️",
+      shortcut: "Ctrl+A",
+      action: () => this.selectAllCells(),
     });
 
-    this.showMenu(event.clientX, event.clientY, items, { type: 'cell', position });
+    this.showMenu(event.clientX, event.clientY, items, {
+      type: "cell",
+      position,
+    });
   }
 
   showActionPaletteMenu(actionKey) {
     const items = [
       {
-        label: 'Add to Favorites',
-        icon: '⭐',
-        action: () => this.toggleFavorite(actionKey)
+        label: "Add to Favorites",
+        icon: "⭐",
+        action: () => this.toggleFavorite(actionKey),
       },
       {
-        label: 'Copy Action Key',
-        icon: '🔑',
-        action: () => this.copyToClipboard(actionKey)
+        label: "Copy Action Key",
+        icon: "🔑",
+        action: () => this.copyToClipboard(actionKey),
       },
       {
-        label: 'Action Info',
-        icon: 'ℹ️',
-        action: () => this.showActionInfo(actionKey)
-      }
+        label: "Action Info",
+        icon: "ℹ️",
+        action: () => this.showActionInfo(actionKey),
+      },
     ];
 
-    this.showMenu(event.clientX, event.clientY, items, { type: 'action', actionKey });
+    this.showMenu(event.clientX, event.clientY, items, {
+      type: "action",
+      actionKey,
+    });
   }
 
   // Action implementations
   copyInstruction(instruction) {
     stateManager.setState({
       clipboard: {
-        type: 'instruction',
-        data: instruction
-      }
+        type: "instruction",
+        data: instruction,
+      },
     });
-    loggers.ui.info(`Instruction copied: ${instruction.action}`);
+    loggers.services.info(
+      `📋 Інструкцію скопійовано в буфер: ${instruction.action} (позиція: [${instruction.x}, ${instruction.y}])`,
+    );
   }
 
   pasteInstruction(position) {
-    const clipboard = stateManager.getState('clipboard');
-    if (clipboard && clipboard.type === 'instruction') {
-      const program = stateManager.getState('program');
+    const clipboard = stateManager.getState("clipboard");
+    if (clipboard && clipboard.type === "instruction") {
+      const program = stateManager.getState("program");
       if (program) {
         program.setInstruction(position, clipboard.data);
         stateManager.setState({ program });
-        loggers.ui.info(`Instruction pasted at position ${position}`);
+        loggers.services.info(
+          `📌 Інструкцію вставлено на позицію ${position}: ${clipboard.data.action}`,
+        );
       }
     }
   }
 
   clearCell(position) {
-    const program = stateManager.getState('program');
+    const program = stateManager.getState("program");
     if (program) {
       program.setInstruction(position, null);
       stateManager.setState({ program });
-      loggers.ui.info(`Cell cleared at position ${position}`);
+      loggers.services.info(`🗑️ Ячейку очищено на позиції ${position}`);
     }
   }
 
@@ -312,11 +360,11 @@ export class ContextMenuManager {
       coordinates: this.positionToCoordinates(position),
       action: instruction.action,
       label: instruction.label,
-      value: instruction.value
+      value: instruction.value,
     };
 
     // Could show a dialog or tooltip with this info
-    console.log('Cell Info:', info);
+    console.log("Cell Info:", info);
   }
 
   positionToCoordinates(position) {
@@ -328,23 +376,27 @@ export class ContextMenuManager {
 
   toggleFavorite(actionKey) {
     // Implementation would depend on search/filter manager
-    loggers.ui.info(`Toggled favorite for action: ${actionKey}`);
+    loggers.services.info(
+      `⭐ Перемкнено статус обраного для дії: ${actionKey}`,
+    );
   }
 
   copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
-      loggers.ui.info(`Copied to clipboard: ${text}`);
+      loggers.services.info(
+        `📋 Текст скопійовано в буфер обміну (${text.length} символів)`,
+      );
     });
   }
 
   showActionInfo(actionKey) {
     // Could show detailed info about the action
-    loggers.ui.info(`Showing info for action: ${actionKey}`);
+    loggers.services.info(`Showing info for action: ${actionKey}`);
   }
 
   selectAllCells() {
     // Implementation for selecting all cells
-    loggers.ui.info('Selected all cells');
+    loggers.services.info("Selected all cells");
   }
 }
 

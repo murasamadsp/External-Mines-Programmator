@@ -2,25 +2,28 @@
 #snippets-panel {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  height: 100%;
+  gap: var(--space-3);
+  height: var(--program-grid-height);
+  max-height: var(--program-grid-height);
+  padding: var(--space-2);
+  flex: none;
 }
 
 #snippets-panel h3 {
-  margin: 0 0 8px;
-  font-size: 20px;
-  font-weight: 700;
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.5px;
   text-align: center;
   color: rgb(255 255 255);
-  padding-bottom: 16px;
-  text-shadow: 0 2px 4px rgb(0 0 0 / 20%);
-  border-bottom: 1px solid rgb(255 255 255 / 10%);
+  padding-bottom: var(--space-4);
+  border-bottom: var(--border);
 }
 
 .snippets-description {
-  margin: 0 0 16px;
-  font-size: 13px;
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
   font-style: italic;
   text-align: center;
   color: rgb(255 255 255 / 70%);
@@ -29,35 +32,34 @@
 .snippets-container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-2);
   overflow-y: auto;
   flex: 1;
+  max-height: 100%;
+  padding: var(--space-1);
 }
 
 .snippet-card {
   position: relative;
   display: flex;
   align-items: center;
-  padding: 14px;
-  background: rgb(255 255 255 / 5%);
+  padding: var(--space-5);
+  background: var(--hover-bg);
   border: var(--border);
-  border-radius: 12px;
-  transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+  border-radius: var(--radius-xl);
   cursor: pointer;
   overflow: hidden;
-  gap: 12px;
+  gap: var(--space-4);
 }
 
 .snippet-card:hover {
   background: rgb(255 255 255 / 12%);
   box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
-  transform: translateX(4px);
   border-color: #667eea;
 }
 
 .snippet-card:active {
   box-shadow: 0 2px 6px rgb(0 0 0 / 15%);
-  transform: translateX(2px);
 }
 
 .snippet-icon {
@@ -67,8 +69,8 @@
   width: 40px;
   height: 40px;
   font-size: 28px;
-  background: rgb(255 255 255 / 10%);
-  border-radius: 8px;
+  background: var(--surface-bg);
+  border-radius: var(--radius-lg);
   flex-shrink: 0;
 }
 
@@ -78,17 +80,17 @@
 }
 
 .snippet-name {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
   color: #fff;
-  margin-bottom: 4px;
+  margin-bottom: var(--space-2);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .snippet-description {
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   line-height: 1.4;
   color: rgb(255 255 255 / 70%);
 }
@@ -99,8 +101,8 @@
   bottom: 24px;
   z-index: 10000;
   padding: 12px 20px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
   color: #fff;
   background: linear-gradient(135deg, #28a745, #20c997);
   border-radius: 8px;
@@ -116,8 +118,8 @@
   margin-top: 0;
   margin-bottom: 15px;
   padding-bottom: 8px;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
   text-align: center;
   color: var(--color-text);
   border-bottom: 1px solid rgb(255 255 255 / 10%);
@@ -125,7 +127,7 @@
 
 .snippets-placeholder > p {
   margin-bottom: 20px;
-  font-size: 14px;
+  font-size: var(--font-size-md);
   text-align: center;
   color: #ccc;
 }
@@ -141,25 +143,23 @@
   background-color: rgb(255 255 255 / 5%);
   border: var(--border);
   border-radius: 8px;
-  transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
 .snippet-item:hover {
   background-color: rgb(255 255 255 / 8%);
   box-shadow: 0 4px 8px rgb(0 0 0 / 10%);
-  transform: translateY(-2px);
 }
 
 .snippet-item h4 {
   margin: 0 0 5px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
   color: #fafafa;
 }
 
 .snippet-item p {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   line-height: 1.4;
   color: #ccc;
 }

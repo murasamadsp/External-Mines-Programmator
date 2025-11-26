@@ -37,3 +37,4 @@ export class LZMACompressor {
     return lzma.decompress(data);
   }
 }
+
