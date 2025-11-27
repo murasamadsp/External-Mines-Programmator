@@ -36,37 +36,25 @@ export class PersistenceController {
         `Import text preview: ${importText.substring(0, 200)}...`,
       );
 
+      // Завантажуємо програму з рядка
       const newProgram = await Program.fromString(importText);
 
-      // CRITICAL: Update the reference in UIController's programGrid!
-      if (this.uiController.programGrid) {
-        this.uiController.programGrid.program = newProgram;
-      }
+      // Просто замінюємо посилання на програму
+      // Program.fromString вже правильно створює всі інструкції
+      this.program.instructions = newProgram.instructions;
 
-      // Оновлюємо основну програму
-      this.program.clear();
-      newProgram.instructions.forEach((instruction, index) => {
-        if (instruction && instruction.action !== undefined) {
-          const x = index % 16; // GRID_WIDTH
-          const y = Math.floor(index / 16) % 15; // GRID_HEIGHT
-          const page = Math.floor(index / (16 * 15)); // GRID_WIDTH * GRID_HEIGHT
-          this.program.setInstructionAt(
-            x,
-            y,
-            instruction.action,
-            instruction.param1,
-            instruction.param2,
-            page,
-          );
-        }
-      });
+      // Оновлюємо посилання в UI компонентах
+      if (this.uiController.programGrid) {
+        this.uiController.programGrid.program = this.program;
+      }
 
       const importTime = performance.now() - startTime;
       const instructionCount = this.program.instructions.length;
       const nonEmptyCount = this.program.instructions.filter(
-        inst => inst.action !== ProgAction.None,
+        (inst) => inst.action !== ProgAction.None,
       ).length;
 
+      // Оновлюємо відображення сітки
       this.uiController.updateGridDisplay();
       this.uiController.showFeedback(
         "✅ Програма імпортована успішно",
@@ -109,15 +97,15 @@ export class PersistenceController {
       let result;
       const instructionCount = this.program.instructions.length;
       const nonEmptyCount = this.program.instructions.filter(
-        inst => inst.action !== ProgAction.None,
+        (inst) => inst.action !== ProgAction.None,
       ).length;
 
       switch (format) {
         case "codes":
           const nonEmptyInstructions = this.program.instructions.filter(
-            inst => inst.action !== ProgAction.None,
+            (inst) => inst.action !== ProgAction.None,
           );
-          result = nonEmptyInstructions.map(inst => inst.action).join(" ");
+          result = nonEmptyInstructions.map((inst) => inst.action).join(" ");
           loggers.editor.debug(
             `📋 Експорт кодів: ${nonEmptyCount} інструкцій → ${result.length} символів`,
           );
@@ -157,7 +145,7 @@ export class PersistenceController {
     const startTime = performance.now();
     const instructionCount = this.program.instructions.length;
     const nonEmptyCount = this.program.instructions.filter(
-      inst => inst.action !== ProgAction.None,
+      (inst) => inst.action !== ProgAction.None,
     ).length;
 
     loggers.validation.info(
@@ -177,7 +165,7 @@ export class PersistenceController {
         validation.errors,
       );
       const errorMessages = validation.errors
-        .map(e => `• ${e.message}`)
+        .map((e) => `• ${e.message}`)
         .join("\n");
       this.uiController.showFeedback(
         `❌ Знайдено помилок: ${validation.errors.length}\n${errorMessages}`,
@@ -191,7 +179,7 @@ export class PersistenceController {
         validation.warnings,
       );
       const warningMessages = validation.warnings
-        .map(w => `• ${w.message}`)
+        .map((w) => `• ${w.message}`)
         .join("\n");
       this.uiController.showFeedback(
         `⚠️ Попередження: ${validation.warnings.length}\n${warningMessages}`,
@@ -214,7 +202,7 @@ export class PersistenceController {
     const startTime = performance.now();
     const instructionCount = this.program.instructions.length;
     const nonEmptyCount = this.program.instructions.filter(
-      inst => inst.action !== ProgAction.None,
+      (inst) => inst.action !== ProgAction.None,
     ).length;
 
     loggers.editor.debug(

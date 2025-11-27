@@ -280,16 +280,12 @@ class LZMANativeInterface extends LZMAInterface {
 async function createLZMAInterface() {
   try {
     if (isBrowserEnvironment) {
-      console.log("🔧 Initializing LZMA in browser (main thread)...");
       const lzmaInstance = await getBrowserLzmaInstance();
-      console.log("✅ LZMA browser ready (main thread)");
       return new LZMAWebInterface(lzmaInstance);
     }
 
     // For Node.js environments, use the lzma package
-    console.log("🔧 Initializing LZMA in Node.js...");
     const lzma = await import("lzma");
-    console.log("✅ LZMA Node.js package loaded");
     return new LZMANativeInterface(lzma);
   } catch (error) {
     console.error("❌ Failed to create LZMA interface:", error);

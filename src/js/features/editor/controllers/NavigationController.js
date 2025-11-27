@@ -12,29 +12,27 @@ export class NavigationController {
   }
 
   /**
-   * Перемикається на попередню сторінку
+   * Перемикається на попередню сторінку (циклічно)
    */
   switchToPrevPage() {
-    if (this.currentPage > 0) {
-      this.currentPage--;
-      this.uiController.setGridCurrentPage(this.currentPage);
-      this.uiController.updatePageDisplay(this.currentPage, MAX_PAGES);
-      this.uiController.updateGridDisplay();
-      loggers.editor.info(`📄 Переключено на сторінку ${this.currentPage}`);
-    }
+    this.currentPage =
+      this.currentPage > 0 ? this.currentPage - 1 : MAX_PAGES - 1;
+    this.uiController.setGridCurrentPage(this.currentPage);
+    this.uiController.updatePageDisplay(this.currentPage, MAX_PAGES);
+    this.uiController.updateGridDisplay();
+    loggers.editor.info(`📄 Переключено на сторінку ${this.currentPage}`);
   }
 
   /**
-   * Перемикається на наступну сторінку
+   * Перемикається на наступну сторінку (циклічно)
    */
   switchToNextPage() {
-    if (this.currentPage < MAX_PAGES - 1) {
-      this.currentPage++;
-      this.uiController.setGridCurrentPage(this.currentPage);
-      this.uiController.updatePageDisplay(this.currentPage, MAX_PAGES);
-      this.uiController.updateGridDisplay();
-      loggers.editor.info(`📄 Переключено на сторінку ${this.currentPage}`);
-    }
+    this.currentPage =
+      this.currentPage < MAX_PAGES - 1 ? this.currentPage + 1 : 0;
+    this.uiController.setGridCurrentPage(this.currentPage);
+    this.uiController.updatePageDisplay(this.currentPage, MAX_PAGES);
+    this.uiController.updateGridDisplay();
+    loggers.editor.info(`📄 Переключено на сторінку ${this.currentPage}`);
   }
 
   /**

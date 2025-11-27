@@ -18,7 +18,7 @@ export class ErrorBoundary {
   setupRecoveryStrategies() {
     // Стратегія відновлення для LZMA помилок
     this.recoveryStrategies.set("LZMA", {
-      canRecover: (error) => error.message.includes("LZMA"),
+      canRecover: error => error.message.includes("LZMA"),
       recover: async () => {
         loggers.error.warn("🔄 Спроба відновлення після LZMA помилки...");
         // Можна спробувати перезавантажити LZMA або показати повідомлення
@@ -31,7 +31,7 @@ export class ErrorBoundary {
 
     // Стратегія відновлення для мережевих помилок
     this.recoveryStrategies.set("NETWORK", {
-      canRecover: (error) =>
+      canRecover: error =>
         error.message.includes("fetch") || error.message.includes("network"),
       recover: async () => {
         loggers.error.warn(
@@ -47,7 +47,7 @@ export class ErrorBoundary {
 
     // Стратегія відновлення для помилок пам'яті
     this.recoveryStrategies.set("MEMORY", {
-      canRecover: (error) =>
+      canRecover: error =>
         error.message.includes("out of memory") || error.name === "RangeError",
       recover: async () => {
         loggers.error.warn(
@@ -143,7 +143,7 @@ export class ErrorBoundary {
     console.info("🛡️ Ініціалізація ErrorBoundary...");
 
     // Обробка необроблених помилок
-    const errorHandler = (event) => {
+    const errorHandler = event => {
       this.handleError(event.error, {
         message: event.message,
         filename: event.filename,
@@ -156,7 +156,7 @@ export class ErrorBoundary {
     this.eventListeners.push({ type: "error", handler: errorHandler });
 
     // Обробка необроблених відхилень промісів
-    const rejectionHandler = (event) => {
+    const rejectionHandler = event => {
       this.handleError(event.reason, {
         type: "unhandled_promise_rejection",
         promise: event.promise,
@@ -199,7 +199,7 @@ export class ErrorBoundary {
     this.attemptRecovery(error, errorInfo);
 
     // Викликаємо зареєстровані обробники
-    this.errorHandlers.forEach((handler) => {
+    this.errorHandlers.forEach(handler => {
       try {
         handler(errorInfo);
       } catch (handlerError) {

@@ -23,14 +23,14 @@ export default defineConfig(({ command, mode }) => ({
     minify: "terser",
     terserOptions: {
       compress: {
-        drop_console: mode === "production",
+        drop_console: mode === "production" ? ["log", "debug"] : false,
         drop_debugger: mode === "production",
       },
     },
     rollupOptions: {
       input: "index.html",
       output: {
-        manualChunks: (id) => {
+        manualChunks: id => {
           // Vendor chunk for node_modules
           if (id.includes("node_modules")) {
             return "vendor";
@@ -40,14 +40,14 @@ export default defineConfig(({ command, mode }) => ({
             return "ui";
           }
         },
-        entryFileNames: (chunkInfo) => {
+        entryFileNames: chunkInfo => {
           if (chunkInfo.name === "commonHelpers") {
             return "commonHelpers.js";
           }
           return "assets/[name]-[hash].js";
         },
         chunkFileNames: "assets/[name]-[hash].js",
-        assetFileNames: (assetInfo) => {
+        assetFileNames: assetInfo => {
           if (assetInfo.name && assetInfo.name.endsWith(".html")) {
             return "[name].[ext]";
           }

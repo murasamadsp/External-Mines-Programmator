@@ -623,7 +623,7 @@ export class ContextMenuManager {
     };
 
     // Could show a dialog or tooltip with this info
-    console.log("Cell Info:", info);
+    // TODO: Implement cell info display
   }
 
   positionToCoordinates(position) {

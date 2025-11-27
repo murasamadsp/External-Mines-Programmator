@@ -41,9 +41,18 @@ async function runTests() {
     console.log("PASS");
 
     // Test 4: Get action short code
-    console.log("Test 4: Get action short code");
-    assert.strictEqual(Program.getActionShortCode(ProgAction.MoveUp), "↑");
-    assert.strictEqual(Program.getActionShortCode(ProgAction.Dig), "⛏️");
+    console.log("Test 4: Get action label");
+    // Використовуємо повний label з ACTION_DATA (як в палитрі)
+    assert.ok(
+      Program.getActionShortCode(ProgAction.MoveUp).includes("Move Up"),
+    );
+    assert.ok(Program.getActionShortCode(ProgAction.Dig).includes("Dig"));
+    assert.ok(
+      Program.getActionShortCode(ProgAction.SetStart).includes("Set Start"),
+    );
+    assert.ok(
+      Program.getActionShortCode(ProgAction.Terminate).includes("Terminate"),
+    );
     assert.strictEqual(Program.getActionShortCode(999), "999"); // invalid action
     console.log("PASS");
 
@@ -117,6 +126,7 @@ async function runTests() {
 
     // Test 8: getActionShortCode edge cases
     console.log("Test 8: getActionShortCode edge cases");
+    // Invalid values will return string representation
     assert.strictEqual(Program.getActionShortCode(null), "null");
     assert.strictEqual(Program.getActionShortCode(undefined), "undefined");
     assert.strictEqual(Program.getActionShortCode(-1), "-1");

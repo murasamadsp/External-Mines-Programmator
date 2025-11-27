@@ -64,11 +64,13 @@ export class ProgramSerializer {
       throw new Error("Malformed program");
     }
     const operators = decompressed.slice(4, 4 + length);
+    // Follow C# logic: Split(':') - removed toUpperCase to preserve original case
     const labelsRaw = uint8ToAscii(decompressed.slice(4 + length)).split(":");
     const ret = new Array(length);
     for (let i = 0; i < length; i++) {
       const action = operators[i];
-      const labelInfo = parseLabelParts(labelsRaw[i] || "");
+      const labelStr = labelsRaw[i] || "";
+      const labelInfo = parseLabelParts(labelStr);
       ret[i] = new Instruction(action, labelInfo.label, labelInfo.value);
     }
     return ret;
@@ -97,9 +99,9 @@ export class ProgramSerializer {
       case ProgAction.NextLine:
         return ",";
       case ProgAction.SetStart:
-        return "#E";
-      case ProgAction.Terminate:
         return "#S";
+      case ProgAction.Terminate:
+        return "#E";
       case ProgAction.MoveUp:
         return "^W";
       case ProgAction.MoveLeft:
@@ -334,18 +336,26 @@ export class ProgramSerializer {
   }
 
   static formatLabel(label, value) {
-    const baseLabel = label || "0";
+    // Follow C# logic: x.label + (x.value.HasValue ? "@" + x.value : "")
+    // In C#, if label is null, null + "@" + value = "@value" (null converts to empty string)
+    // If label is null and value is null, null + "" = null (but string.Join converts null to "")
+    const labelStr = label ?? "";
     return value !== null && value !== undefined
-      ? `${baseLabel}@${value}`
-      : baseLabel;
+      ? `${labelStr}@${value}`
+      : labelStr;
   }
 
   static validateInstructions(instructions) {
     if (!Array.isArray(instructions)) {
       throw new Error("Instructions must be an array");
     }
+    // Note: C# EncodeV2 doesn't validate length, it just encodes what it receives
+    // But we keep a reasonable limit to prevent memory issues
     if (instructions.length > MAX_INSTRUCTIONS) {
       throw new Error("Instructions array is too long");
+    }
+    if (instructions.length === 0) {
+      throw new Error("Instructions array cannot be empty");
     }
     instructions.forEach((inst, index) => {
       // Allow empty instructions or instructions with valid action codes

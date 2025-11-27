@@ -34,6 +34,8 @@ export class Controls {
 
     this.programDecoder = new ProgramDecoder();
     this.programAnalyzer = new ProgramAnalyzer();
+    this.importButton = null;
+    this.exportButton = null;
 
     loggers.ui.debug("🏗️ Controls ініціалізовано");
   }
@@ -79,15 +81,27 @@ export class Controls {
     const buttonGroup = document.createElement("div");
     buttonGroup.className = "control-buttons";
 
-    const importButton = createButton({
+    this.importButton = createButton({
       id: "import-btn",
       text: "",
       icon: "📥",
-      onClick: async () => {
+      onClick: async function () {
+        loggers.ui.debug("📥 Import button clicked");
         try {
+          // Перевірка наявності необхідних властивостей
+          if (!this.importButton) {
+            throw new Error("Import button not found");
+          }
+          if (!this.callbacks || !this.callbacks.onImport) {
+            throw new Error("Import callback not found");
+          }
+
+          loggers.ui.debug("✅ Import validation passed");
+
           let text = "";
           try {
             text = await navigator.clipboard.readText();
+            loggers.ui.debug("📋 Clipboard read successful");
           } catch (clipboardError) {
             loggers.ui.warn(
               "⚠️ Clipboard access denied or failed, using fallback prompt",
@@ -100,43 +114,51 @@ export class Controls {
             text = prompt(
               "Please paste the program code here (starts with $):",
             );
+            loggers.ui.debug("💬 User provided text via prompt");
           }
 
-          if (text && this.callbacks.onImport) {
-            this.showLoading(importBtn, "Importing...");
+          if (text) {
+            loggers.ui.debug("🚀 Starting import process");
+            this.showLoading(this.importButton, "Importing...");
             await this.callbacks.onImport(text);
-            this.hideLoading(importBtn);
+            this.hideLoading(this.importButton);
             this.showFeedback("✓ Imported successfully", "success");
+            loggers.ui.debug("✅ Import completed successfully");
+          } else {
+            loggers.ui.debug("❌ No text provided for import");
           }
         } catch (error) {
-          this.hideLoading(importBtn);
           loggers.ui.error("❌ Import error:", error);
+          if (this.importButton) {
+            this.hideLoading(this.importButton);
+          }
           this.showFeedback("Import failed", "error");
         }
-      },
+      }.bind(this),
     });
-    buttonGroup.appendChild(importButton);
+    buttonGroup.appendChild(this.importButton);
 
-    const exportButton = createButton({
+    this.exportButton = createButton({
       id: "export-btn",
       text: "",
       icon: "📤",
       onClick: async () => {
         try {
           if (this.callbacks.onExport) {
-            this.showLoading(exportBtn, "Exporting...");
+            this.showLoading(this.exportButton, "Exporting...");
             const result = await this.callbacks.onExport("base64");
-            this.hideLoading(exportBtn);
+            this.hideLoading(this.exportButton);
             await navigator.clipboard.writeText(result);
             this.showFeedback("✓ Copied to clipboard", "success");
           }
         } catch (error) {
+          this.hideLoading(this.exportButton);
           loggers.ui.error("❌ Помилка запису в буфер обміну:", error);
           this.showFeedback("Failed to copy to clipboard", "error");
         }
       },
     });
-    buttonGroup.appendChild(exportButton);
+    buttonGroup.appendChild(this.exportButton);
 
     return buttonGroup;
   }
@@ -228,17 +250,8 @@ export class Controls {
         .replace("{total}", totalPages - 1);
     }
 
-    // Оновлюємо стан кнопок
-    const prevButton = this.controlsElement.querySelector("#prev-page");
-    const nextButton = this.controlsElement.querySelector("#next-page");
-
-    if (prevButton) {
-      prevButton.disabled = currentPage === 0;
-    }
-
-    if (nextButton) {
-      nextButton.disabled = currentPage >= totalPages - 1;
-    }
+    // Для циклічної навігації кнопки завжди активні
+    // (відключаємо перевірки границь)
   }
 
   /**

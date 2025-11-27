@@ -7,10 +7,8 @@ export class LZMACompressor {
   static async getInterface() {
     if (!this.#lzmaInterface) {
       try {
-        console.log("🔧 Loading LZMA interface...");
         const { createLZMAInterface } = await import("./lzma-js-polyfill.js");
         this.#lzmaInterface = await createLZMAInterface();
-        console.log("✅ LZMA interface loaded successfully");
       } catch (error) {
         console.error("❌ LZMA not available:", error.message);
         throw new Error(

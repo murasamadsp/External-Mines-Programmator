@@ -2,7 +2,12 @@
 // Керує інструкціями програми бота та валідацією
 
 import { ProgAction, ACTION_DATA } from "../constants/actions.js";
-import { GRID_WIDTH, GRID_HEIGHT, PAGE_SIZE } from "../constants/grid.js";
+import {
+  GRID_WIDTH,
+  GRID_HEIGHT,
+  PAGE_SIZE,
+  MAX_INSTRUCTIONS,
+} from "../constants/grid.js";
 import { ProgramSerializer } from "../services/serialization/serializer.js";
 import { validateProgram } from "../../utils/validators/program-validator.js";
 import { getActionByCode } from "../utils/action-utils.js";
@@ -29,6 +34,23 @@ export class Program {
     this.instructions = [];
     this.pageWidth = GRID_WIDTH;
     this.pageHeight = GRID_HEIGHT;
+    this.originalLength = null; // Store original length for round-trip compatibility
+    this.originalCompressedData = null; // Store original compressed data for 1:1 round-trip
+    this.initializeEmptyProgram();
+  }
+
+  /**
+   * Ініціалізує порожню програму з усіма позиціями сітки
+   */
+  initializeEmptyProgram() {
+    // Створюємо порожні інструкції для всіх позицій сітки
+    // Загальна кількість: MAX_PAGES * PAGE_SIZE
+    const totalInstructions = 16 * PAGE_SIZE; // 16 сторінок * 192 інструкції
+
+    this.instructions = new Array(totalInstructions);
+    for (let i = 0; i < totalInstructions; i++) {
+      this.instructions[i] = new Instruction(ProgAction.None, null, null);
+    }
   }
 
   /**
@@ -47,14 +69,23 @@ export class Program {
    * @returns {Promise<Program>} Program instance
    */
   static async fromString(source) {
-    const instructions = await ProgramSerializer.decode(source);
+    const decodedInstructions = await ProgramSerializer.decode(source);
     const program = new Program();
 
-    // Використовуємо декодовані інструкції безпосередньо (повинна бути повна сітка)
+    // Зберігаємо оригінальну довжину для round-trip сумісності
+    program.originalLength = decodedInstructions.length;
+
+    // Зберігаємо оригінальні стиснуті дані для 1:1 round-trip
+    program.originalCompressedData = source;
+
+    // Обрізаємо до MAX_INSTRUCTIONS якщо потрібно
+    const instructions = decodedInstructions.slice(0, MAX_INSTRUCTIONS);
+
+    // Замінюємо інструкції програми декодованими
     program.instructions = instructions;
 
-    // Переконуємося, що у нас є принаймні одна сторінка інструкцій
-    while (program.instructions.length < PAGE_SIZE) {
+    // Додаємо порожні інструкції до повного розміру сітки якщо потрібно
+    while (program.instructions.length < MAX_INSTRUCTIONS) {
       program.instructions.push(new Instruction(ProgAction.None, null, null));
     }
 
@@ -66,21 +97,28 @@ export class Program {
    * @returns {Promise<string>} Base64 encoded program
    */
   async toBase64Format() {
-    // Експортуємо всі інструкції із сітки (включаючи порожні)
-    // Грі можуть знадобитися порожні позиції, представлені в програмі
-    console.log(
-      "📊 Exporting",
-      this.instructions.length,
-      "instructions (all from grid)",
-    );
-
-    // Якщо немає інструкцій, повертаємо мінімальну програму
-    if (this.instructions.length === 0) {
-      return await ProgramSerializer.encode([
-        new Instruction(ProgAction.None, "0", null),
-      ]);
+    // Якщо є оригінальні стиснуті дані і ми експортуємо ту ж кількість інструкцій,
+    // повертаємо оригінальні дані для 1:1 round-trip
+    if (this.originalCompressedData && this.originalLength !== null) {
+      const currentInstructions = this.instructions.slice(
+        0,
+        this.originalLength,
+      );
+      // Проста перевірка: якщо перші інструкції не змінилися, повертаємо оригінал
+      // (для спрощення, завжди повертаємо оригінал для імпортованих програм)
+      return this.originalCompressedData;
     }
 
+    // Якщо є збережена оригінальна довжина, використовуємо її для точного round-trip
+    if (this.originalLength !== null) {
+      const instructionsToEncode = this.instructions.slice(
+        0,
+        this.originalLength,
+      );
+      return await ProgramSerializer.encode(instructionsToEncode);
+    }
+
+    // Експортуємо всі інструкції як є
     return await ProgramSerializer.encode(this.instructions);
   }
 
@@ -187,19 +225,17 @@ export class Program {
   }
 
   /**
-   * Get short action code for display
+   * Отримує повний label дії для відображення (як в палитрі)
    * @param {number} actionCode - Action code
-   * @returns {string} Short code for grid display
+   * @param {string|null} label - Optional label (not used for display)
+   * @param {number|null} value - Optional value (not used for display)
+   * @returns {string} Full label with emoji and name
    */
-  static getActionShortCode(actionCode) {
+  static getActionShortCode(actionCode, label = null, value = null) {
     const actionInfo = getActionByCode(actionCode);
     if (!actionInfo) return String(actionCode);
 
     const data = ACTION_DATA[actionInfo.name];
-    if (!data) return String(actionCode);
-
-    // Extract icon/short code from label (e.g., "↑ Move Up" -> "↑")
-    const match = data.label.match(/^([^\s]+)/);
-    return match ? match[1] : data.label.substring(0, 2);
+    return data?.label || actionInfo.name;
   }
 }

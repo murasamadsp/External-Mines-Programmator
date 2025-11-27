@@ -21,7 +21,6 @@ export class EditorController {
 
     // Індикатор ініціалізації
     document.body.setAttribute("data-programmator-init", "started");
-    console.log("🎯 Конструктор EditorController викликано");
 
     this.program = new Program();
     this.currentPage = 0; // Номер поточної сторінки (0-15)
@@ -55,7 +54,6 @@ export class EditorController {
       "✅ Знайдено лейаут програматора, продовжуємо ініціалізацію",
     );
     document.body.setAttribute("data-programmator-init", "layout-found");
-    console.log("📍 Layout containers found, calling initializeUI");
     this.initializeUI();
   }
 
@@ -67,13 +65,13 @@ export class EditorController {
 
     // Створюємо callbacks для зв'язку між контролерами
     const callbacks = {
-      onActionSelected: actionKey => this.onActionSelected(actionKey),
+      onActionSelected: (actionKey) => this.onActionSelected(actionKey),
       onCellClick: (x, y) => this.onCellClick(x, y),
-      onImport: text => this.onImport(text),
-      onExport: format => this.onExport(format),
+      onImport: (text) => this.onImport(text),
+      onExport: (format) => this.onExport(format),
       onValidate: () => this.onValidate(),
       onClear: () => this.onClear(),
-      onPageNavigation: direction => this.onPageNavigation(direction),
+      onPageNavigation: (direction) => this.onPageNavigation(direction),
     };
 
     // Ініціалізуємо контролери
@@ -114,7 +112,7 @@ export class EditorController {
         loggers.editor.debug("✅ Усі контролери ініціалізовано");
         return true;
       })
-      .catch(error => {
+      .catch((error) => {
         loggers.editor.error("❌ Помилка ініціалізації контролерів:", error);
         throw error;
       });
@@ -187,7 +185,9 @@ export class EditorController {
    */
   async onCellClick(x, y) {
     if (this.cellController) {
-      await this.cellController.onCellClick(x, y, this.currentPage);
+      const currentPage =
+        this.navigationController?.getCurrentPage() || this.currentPage;
+      await this.cellController.onCellClick(x, y, currentPage);
     }
   }
 

@@ -9,6 +9,7 @@ import {
   getActionByCode,
 } from "../../../core/constants/actions.js";
 import { contextMenuManager } from "../../../core/services/context-menu-manager.js";
+import { Instruction } from "../../../core/models/program.js";
 
 export class ProgramGrid {
   constructor(container, program, onCellClick) {
@@ -70,7 +71,7 @@ export class ProgramGrid {
 
     // Знаходимо sidebar'и і встановлюємо їм висоту
     const sidebars = document.querySelectorAll(".programmer-sidebar");
-    sidebars.forEach(sidebar => {
+    sidebars.forEach((sidebar) => {
       sidebar.style.height = `${totalHeight}px`;
       sidebar.style.maxHeight = `${totalHeight}px`;
     });
@@ -98,7 +99,7 @@ export class ProgramGrid {
     });
 
     // Додаємо обробник контекстного меню (правий клік)
-    cell.addEventListener("contextmenu", e => {
+    cell.addEventListener("contextmenu", (e) => {
       e.preventDefault();
       this.handleCellContextMenu(e, x, y);
     });
@@ -156,7 +157,7 @@ export class ProgramGrid {
         `📄 Page ${this.currentPage} has ${pageInstructions.length} instructions`,
       );
 
-      const nonEmpty = pageInstructions.filter(i => i.action !== 0).length;
+      const nonEmpty = pageInstructions.filter((i) => i.action !== 0).length;
       loggers.ui.debug(
         `📌 Non-empty instructions on page ${this.currentPage}: ${nonEmpty}`,
       );
@@ -195,7 +196,11 @@ export class ProgramGrid {
       cell.className = "program-cell"; // Fixed: changed from grid-cell to program-cell
 
       // Якщо інструкція порожня
-      if (!instruction || instruction.action === 0) {
+      if (
+        !instruction ||
+        instruction.action === ProgAction.None ||
+        instruction.action === 0
+      ) {
         cell.classList.add("empty");
         return;
       }
@@ -203,9 +208,11 @@ export class ProgramGrid {
       // Додаємо клас з дією
       cell.classList.add("has-action");
 
-      // Відображаємо короткий код дії
-      const shortCode = this.getActionShortCode(instruction.action);
-      cell.textContent = shortCode;
+      // Відображаємо повний label дії (як в палитрі)
+      const label = this.getActionShortCode(instruction);
+      if (label) {
+        cell.textContent = label;
+      }
 
       // Додаємо tooltip з повним описом
       const description = this.getActionDescription(instruction);
@@ -222,19 +229,28 @@ export class ProgramGrid {
   }
 
   /**
-   * Отримує короткий код дії для відображення
-   * @param action
+   * Отримує повний label дії для відображення (як в палитрі)
+   * @param instruction - Instruction object with action, label, value
    */
-  getActionShortCode(action) {
-    const actionInfo = getActionByCode(action);
-    if (!actionInfo) return action.toString();
+  getActionShortCode(instruction) {
+    if (!instruction) return "";
+
+    const actionCode =
+      instruction instanceof Instruction
+        ? instruction.action
+        : typeof instruction === "number"
+          ? instruction
+          : instruction.action;
+
+    if (!actionCode || actionCode === ProgAction.None || actionCode === 0) {
+      return "";
+    }
+
+    const actionInfo = getActionByCode(actionCode);
+    if (!actionInfo) return String(actionCode);
 
     const data = ACTION_DATA[actionInfo.name];
-    if (!data) return action.toString();
-
-    // Extract icon/short code from label (e.g., "↑ Move Up" -> "↑")
-    const match = data.label.match(/^([^\s]+)/);
-    return match ? match[1] : data.label.substring(0, 2);
+    return data?.label || actionInfo.name;
   }
 
   /**
@@ -288,7 +304,7 @@ export class ProgramGrid {
    * Очищає всі виділення
    */
   clearHighlights() {
-    this.gridCells.forEach(cell => {
+    this.gridCells.forEach((cell) => {
       cell.classList.remove("highlighted");
     });
   }

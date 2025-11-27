@@ -54,7 +54,7 @@ export class ActionPalette {
     this.updateFavoriteIndicator(button, actionKey);
 
     // Додаємо обробник контекстного меню
-    button.addEventListener("contextmenu", e => {
+    button.addEventListener("contextmenu", (e) => {
       e.preventDefault();
       contextMenuManager.showActionPaletteMenu(actionKey);
     });
@@ -92,7 +92,7 @@ export class ActionPalette {
   updateFavoriteIndicators() {
     // Update all action buttons
     const buttons = this.palette.querySelectorAll("button[data-action]");
-    buttons.forEach(button => {
+    buttons.forEach((button) => {
       const actionKey = button.getAttribute("data-action");
       this.updateFavoriteIndicator(button, actionKey);
     });
@@ -102,7 +102,7 @@ export class ActionPalette {
     if (!this.palette) return;
 
     const buttons = this.palette.querySelectorAll("button[data-action]");
-    buttons.forEach(button => {
+    buttons.forEach((button) => {
       const actionKey = button.getAttribute("data-action");
       this.actionButtons.set(actionKey, button);
 
@@ -171,21 +171,15 @@ export class ActionPalette {
 
     actionsList.innerHTML = "";
 
-    console.log("ACTION_CATEGORIES:", ACTION_CATEGORIES);
-
     // Групуємо дії за категоріями
     const categoriesOrder = Object.keys(ACTION_CATEGORIES);
-    console.log("categoriesOrder:", categoriesOrder);
 
     for (const category of categoriesOrder) {
       const categoryActions = ACTION_CATEGORIES[category];
-      console.log("category:", category, "actions:", categoryActions);
 
-      const categoryActionsFiltered = categoryActions.filter(actionKey =>
+      const categoryActionsFiltered = categoryActions.filter((actionKey) =>
         actionsToRender.has(actionKey),
       );
-
-      console.log("filtered actions:", categoryActionsFiltered);
 
       if (categoryActionsFiltered.length === 0) continue;
 
@@ -218,7 +212,7 @@ export class ActionPalette {
       // Додаємо обробник для заголовка та кнопки
       const toggleHandler = () => this.toggleCategory(category);
       categoryHeader.addEventListener("click", toggleHandler);
-      toggleButton.addEventListener("click", e => {
+      toggleButton.addEventListener("click", (e) => {
         e.stopPropagation();
         toggleHandler();
       });
@@ -226,7 +220,6 @@ export class ActionPalette {
       categoryHeader.appendChild(categoryTitle);
       categoryHeader.appendChild(toggleButton);
 
-      console.log("Creating header:", category);
       actionsList.appendChild(categoryHeader);
 
       // Створюємо контейнер для дій категорії

@@ -5,7 +5,6 @@ import { ProgAction } from "../../../core/constants/actions.js";
 import { getActionByCode } from "../../../core/constants/actions.js";
 import { getDefaultValueForAction as getDefaultValue } from "../../../core/utils/action-utils.js";
 import { loggers } from "../../../utils/logging/logger.js";
-import { rafDebounce } from "../../../utils/performance/performance-utils.js";
 
 export class CellController {
   constructor(program, dialogManager, uiController) {
@@ -13,11 +12,6 @@ export class CellController {
     this.dialogManager = dialogManager;
     this.uiController = uiController;
     this.selectedAction = null;
-
-    // Оптимізація: debounced UI updates для кращої продуктивності
-    this.debouncedUpdateCellDisplay = rafDebounce((x, y) => {
-      this.uiController.updateCellDisplay(x, y);
-    });
   }
 
   /**
@@ -70,7 +64,7 @@ export class CellController {
         null,
         currentPage,
       );
-      this.debouncedUpdateCellDisplay(x, y);
+      this.uiController.updateCellDisplay(x, y);
       loggers.editor.debug("✅ Інструкцію видалено, клітинка тепер порожня");
       return;
     }
@@ -175,7 +169,7 @@ export class CellController {
         value,
         currentPage,
       );
-      this.debouncedUpdateCellDisplay(x, y);
+      this.uiController.updateCellDisplay(x, y);
 
       const totalTime = performance.now() - startTime;
       const details = [];
