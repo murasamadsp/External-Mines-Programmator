@@ -24,3 +24,6 @@ export const ACTION_METADATA_SETTINGS = {
   DebugPause: { label: "⏸️ Debug Pause", tooltip: "Пауза відлагодження" },
   DebugShow: { label: "👁️ Debug Show", tooltip: "Показати відлагодження" },
 };
+
+
+

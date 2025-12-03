@@ -1,0 +1,44 @@
+@if (isVisible()) {
+<div
+  class="dialog-backdrop"
+  (click)="onBackdropClick($event)"
+  (keydown)="onEscapeKey($event)"
+  tabindex="0"
+  role="dialog"
+  [attr.aria-modal]="true"
+  [attr.aria-labelledby]="'decoder-dialog-title'"
+>
+  <div class="dialog-container">
+    <div class="dialog-header">
+      <h3 id="decoder-dialog-title">🔍 Декодер програм</h3>
+      <button type="button" class="close-btn" (click)="close()" aria-label="Закрити">✕</button>
+    </div>
+
+    <div class="dialog-content">
+      <p class="dialog-description">
+        Введіть Base64 LZMA код програми для декодування або завантаження
+      </p>
+
+      <div class="input-group">
+        <label for="program-code">Код програми:</label>
+        <textarea
+          id="program-code"
+          [(ngModel)]="programCode"
+          placeholder="XQAA..."
+          rows="4"
+        ></textarea>
+      </div>
+
+      <div class="result-message" [class]="resultType()">
+        {{ resultMessage() }}
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <button type="button" class="btn-secondary" (click)="close()">Закрити</button>
+      <button type="button" class="btn-primary" (click)="decodeProgram()">Декодувати</button>
+      <button type="button" class="btn-success" (click)="loadProgram()">Завантажити</button>
+    </div>
+  </div>
+</div>
+}

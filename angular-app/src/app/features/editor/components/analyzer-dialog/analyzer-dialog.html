@@ -1,0 +1,65 @@
+@if (isVisible()) {
+<div
+  class="dialog-backdrop"
+  (click)="onBackdropClick($event)"
+  (keydown)="onEscapeKey($event)"
+  tabindex="0"
+  role="dialog"
+  [attr.aria-modal]="true"
+  [attr.aria-labelledby]="'analyzer-dialog-title'"
+>
+  <div class="dialog-container">
+    <div class="dialog-header">
+      <h3 id="analyzer-dialog-title">📊 Аналізатор програм</h3>
+      <button type="button" class="close-btn" (click)="close()" aria-label="Закрити">✕</button>
+    </div>
+
+    <div class="dialog-content">
+      @if (analysisResult(); as result) {
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Всього інструкцій</div>
+          <div class="stat-value">{{ result.totalInstructions }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Непорожніх</div>
+          <div class="stat-value success">
+            {{ result.nonEmptyInstructions }}
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Порожніх</div>
+          <div class="stat-value muted">{{ result.emptyInstructions }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Унікальних дій</div>
+          <div class="stat-value">{{ result.uniqueActions }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Унікальних міток</div>
+          <div class="stat-value">{{ result.uniqueLabels }}</div>
+        </div>
+      </div>
+
+      @if (result.labels.length > 0) {
+      <div class="labels-section">
+        <h4>Мітки:</h4>
+        <div class="labels-list">
+          @for (label of result.labels; track label) {
+          <span class="label-tag">{{ label }}</span>
+          }
+        </div>
+      </div>
+      } }
+    </div>
+
+    <div class="dialog-footer">
+      <button type="button" class="btn-primary" (click)="close()">Закрити</button>
+    </div>
+  </div>
+</div>
+}

@@ -6,12 +6,13 @@
   /* Box model */
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: stretch;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  gap: var(--space-4);
+  justify-content: space-between; /* Рівномірний розподіл секцій */
+  align-items: center; /* Вирівнюємо по центру вертикально */
+  width: fit-content; /* Не ширше ніж потрібно */
+  max-width: 100%; /* Але не виходимо за межі */
+  padding: 0; /* Не розширюємо контейнер */
+  margin: 0 auto; /* Центруємо */
+  gap: var(--space-8); /* Збільшуємо відстань між секціями */
 
   /* Visual */
   background: transparent;
@@ -95,19 +96,24 @@
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 var(--space-6) 0 0;
+  padding: 0 var(--space-8) 0 0; /* Збільшуємо внутрішній padding */
   background: transparent;
   border: none;
-  gap: var(--space-4);
+  gap: var(--space-5); /* Збільшуємо відстань між кнопками в секції */
 }
 
 .controls-section:not(:last-child)::after {
   position: absolute;
   top: 50%;
-  right: var(--space-3);
-  width: 1px;
-  height: 60%;
-  background: var(--border-color);
+  right: var(--space-4); /* Зміщуємо роздільник */
+  width: 2px; /* Трохи товстіший роздільник */
+  height: 50%; /* Менша висота для елегантності */
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--border-color),
+    transparent
+  );
   transform: translateY(-50%);
   content: "";
 }
@@ -123,7 +129,7 @@
 .control-buttons {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-4); /* Збільшено відстань між кнопками */
 }
 
 /* Legacy Control Groups (keeping for compatibility if needed) */
@@ -259,16 +265,16 @@
 }
 
 #page-indicator {
-  min-width: 100px;
-  padding: var(--space-5) var(--space-6);
+  min-width: 120px; /* Трохи ширше для комфорту */
+  padding: var(--space-4) var(--space-7); /* Більше padding */
   font-family: "Google Sans Code", "Fira Code", monospace;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg); /* Трохи менший шрифт */
   font-weight: var(--font-weight-bold);
   text-align: center;
   color: rgb(255 255 255);
-  background: rgb(0 0 0 / 20%);
-  border: var(--border-width-thick) solid var(--border-color);
-  border-radius: var(--radius-lg);
+  background: rgba(0, 0, 0, 0.3); /* Трохи прозоріше */
+  border: var(--border-width) solid var(--border-color); /* Тонша рамка */
+  border-radius: var(--radius-xl); /* Більший radius */
   box-shadow: inset 0 2px 4px rgb(0 0 0 / 20%);
 }
 

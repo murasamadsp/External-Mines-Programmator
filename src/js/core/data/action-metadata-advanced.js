@@ -58,3 +58,6 @@ export const ACTION_METADATA_ADVANCED = {
   UseRem: { label: "🧪 Rem", tooltip: "Використати Rem" },
   ChargeGun: { label: "🔫 Charge", tooltip: "Зарядити рушницю" },
 };
+
+
+

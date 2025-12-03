@@ -1,0 +1,189 @@
+@layer components {
+  .dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal-backdrop);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .dialog-container {
+    background: var(--color-background-secondary);
+    border: var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    min-width: 500px;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6);
+    border-bottom: var(--border);
+
+    & h3 {
+      margin: 0;
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-text-primary);
+    }
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: var(--font-size-2xl);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+
+    &:hover {
+      background: var(--hover-bg);
+      color: var(--color-text);
+    }
+  }
+
+  .dialog-content {
+    padding: var(--space-6);
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .dialog-description {
+    margin: 0 0 var(--space-5);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  .input-group {
+    margin-bottom: var(--space-5);
+
+    & label {
+      display: block;
+      margin-bottom: var(--space-2);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text);
+    }
+
+    & textarea {
+      width: 100%;
+      padding: var(--space-4);
+      background: var(--color-background);
+      border: var(--border);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+      font-family: "JetBrains Mono", monospace;
+      font-size: var(--font-size-sm);
+      resize: vertical;
+
+      &:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+      }
+    }
+  }
+
+  .result-message {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-4);
+
+    &.info {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--color-primary);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    &.success {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--color-success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    &.error {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--color-danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+  }
+
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border-top: var(--border);
+
+    & button {
+      padding: var(--space-3) var(--space-6);
+      border-radius: var(--radius-lg);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    & .btn-secondary {
+      background: var(--surface-bg);
+      border: var(--border);
+      color: var(--color-text);
+
+      &:hover {
+        background: var(--hover-bg);
+      }
+    }
+
+    & .btn-primary {
+      background: var(--color-primary);
+      border: none;
+      color: white;
+
+      &:hover {
+        background: var(--color-primary-hover);
+      }
+    }
+
+    & .btn-success {
+      background: var(--color-success);
+      border: none;
+      color: white;
+
+      &:hover {
+        background: var(--color-success-hover);
+      }
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+}

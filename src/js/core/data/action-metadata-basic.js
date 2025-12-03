@@ -27,3 +27,6 @@ export const ACTION_METADATA_BASIC = {
   RotateRandom: { label: "🎲 Random", tooltip: "Випадковий поворот" },
   PlaySound: { label: "🔊 Sound", tooltip: "Програти звук" },
 };
+
+
+

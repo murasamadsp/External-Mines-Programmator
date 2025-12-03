@@ -36,29 +36,23 @@
   align-items: center;
   width: 100%;
   height: 100%;
-  padding: 2px;
-  box-sizing: border-box;
 
   /* Typography */
-  font-family: "JetBrains Mono", "Fira Code", monospace;
-  font-size: 10px;
-  font-weight: var(--font-weight-semibold);
+  font-family: "Google Sans Code", "Fira Code", monospace;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-secondary);
-  line-height: 1.1;
-  text-align: center;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
 
   /* Visual */
   background: var(--surface-bg);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
 
   /* Misc */
   cursor: pointer;
   user-select: none;
+  overflow: hidden;
   transition: all var(--transition-fast);
 }
 

@@ -1,0 +1,23 @@
+<div id="snippets-panel">
+  <h3>📝 Snippets</h3>
+  <p class="snippets-description">Quick patterns for common tasks</p>
+
+  <div class="snippets-container">
+    @for (snippet of snippets(); track snippet.name) {
+    <div
+      class="snippet-card"
+      (click)="onSnippetClick(snippet)"
+      (keydown)="onSnippetKeyDown($event, snippet)"
+      tabindex="0"
+      role="button"
+      [attr.aria-label]="snippet.name"
+    >
+      <div class="snippet-icon">{{ snippet.icon }}</div>
+      <div class="snippet-content">
+        <div class="snippet-name">{{ snippet.name }}</div>
+        <div class="snippet-description">{{ snippet.description }}</div>
+      </div>
+    </div>
+    }
+  </div>
+</div>

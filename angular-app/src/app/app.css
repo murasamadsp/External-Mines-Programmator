@@ -1,0 +1,7 @@
+/* Global app styles - minimal since routing handles layout */
+:host {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}

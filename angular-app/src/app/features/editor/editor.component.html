@@ -1,0 +1,52 @@
+<div class="editor-container" [appLoading]="isLoading()" loadingText="Loading Editor...">
+  <!-- Left Sidebar: Action Palette -->
+  <aside class="editor-sidebar editor-sidebar-left">
+    <app-action-palette></app-action-palette>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="editor-main">
+    <!-- Top Controls -->
+    <div class="editor-controls">
+      <app-controls></app-controls>
+    </div>
+
+    <!-- Feedback Message -->
+    @if (persistenceService.feedbackMessage(); as msg) {
+      <div class="feedback-container" [class]="msg.type">
+        <span class="feedback-icon">
+          {{ msg.type === 'success' ? '✅' : msg.type === 'error' ? '❌' : 'ℹ️' }}
+        </span>
+        <span class="feedback-text">{{ msg.text }}</span>
+      </div>
+    }
+
+    <!-- Program Grid -->
+    <div class="editor-grid-container">
+      <app-program-grid></app-program-grid>
+    </div>
+  </main>
+
+  <!-- Right Sidebar: Snippets Panel -->
+  <aside class="editor-sidebar editor-sidebar-right">
+    <app-snippets-panel></app-snippets-panel>
+  </aside>
+</div>
+
+<!-- Validation Panel (floating) -->
+<app-validation-panel></app-validation-panel>
+
+<!-- Theme Switcher (floating) -->
+
+<!-- Keyboard Shortcuts Dialog -->
+<app-shortcuts-dialog></app-shortcuts-dialog>
+
+<!-- Help Button -->
+<button
+  class="help-button"
+  (click)="showShortcuts()"
+  [attr.aria-label]="'Show keyboard shortcuts'"
+  title="Keyboard Shortcuts (Press ?)"
+>
+  <span class="help-icon">?</span>
+</button>

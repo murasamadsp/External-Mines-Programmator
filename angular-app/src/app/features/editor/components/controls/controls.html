@@ -1,0 +1,67 @@
+<div id="program-controls">
+  <!-- Transport Controls -->
+  <div class="controls-section">
+    <div class="control-buttons">
+      <button type="button" (click)="pasteFromClipboard()" title="Paste Program from Clipboard">
+        📋 Paste
+      </button>
+      <button type="button" (click)="exportProgram()" title="Export Program">📤 Export</button>
+      <button type="button" (click)="validateProgram()" title="Validate Program">
+        ✅ Validate
+      </button>
+      <button type="button" (click)="clearProgram()" title="Clear Program">🗑️ Clear</button>
+    </div>
+  </div>
+
+  <!-- Page Controls -->
+  <div class="controls-section">
+    <div class="page-controls">
+      <button type="button" (click)="prevPage()" [disabled]="programService.currentPage() === 0">
+        ◀
+      </button>
+      <div id="page-indicator">
+        <span class="page-number">{{ programService.currentPage() + 1 }}</span>
+        <span class="page-total">/16</span>
+      </div>
+      <button type="button" (click)="nextPage()" [disabled]="programService.currentPage() >= 15">
+        ▶
+      </button>
+    </div>
+  </div>
+
+  <!-- Extended Actions -->
+  <div class="controls-section">
+    <div class="dropdown">
+      <button
+        type="button"
+        id="extended-actions-btn"
+        (click)="toggleTools()"
+        [class.active]="isToolsOpen()"
+      >
+        🛠️ Tools
+      </button>
+      <div class="dropdown-content" [class.show]="isToolsOpen()">
+        <button type="button" class="dropdown-item" (click)="copyToClipboard()">
+          <span class="icon">📋</span> Copy to Clipboard
+        </button>
+
+        <button type="button" class="dropdown-item" (click)="openDecoder()">
+          <span class="icon">🔍</span> Open Decoder
+        </button>
+        <button type="button" class="dropdown-item" (click)="openAnalyzer()">
+          <span class="icon">📊</span> Open Analyzer
+        </button>
+
+        <div class="dropdown-divider"></div>
+
+        <button type="button" class="dropdown-item" (click)="openSettings()">
+          <span class="icon">⚙️</span> Settings
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<app-decoder-dialog></app-decoder-dialog>
+<app-analyzer-dialog></app-analyzer-dialog>

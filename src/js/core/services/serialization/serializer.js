@@ -3,7 +3,7 @@
 // defined in docs-to-do/code/ProgramSerializer.cs
 
 import { ProgramFormatVersion } from "../../constants/formats.js";
-import { Instruction } from "../../models/program.js";
+import { Instruction } from "../../types/instruction.js";
 import { ProgAction } from "../../constants/actions.js";
 import { MAX_INSTRUCTIONS } from "../../constants/grid.js";
 import { LZMACompressor } from "../lzma-compressor.js";
@@ -64,8 +64,10 @@ export class ProgramSerializer {
       throw new Error("Malformed program");
     }
     const operators = decompressed.slice(4, 4 + length);
-    // Follow C# logic: Split(':') - removed toUpperCase to preserve original case
-    const labelsRaw = uint8ToAscii(decompressed.slice(4 + length)).split(":");
+    // Follow C# logic: ToUpper().Split(':')
+    const labelsRaw = uint8ToAscii(decompressed.slice(4 + length))
+      .toUpperCase()
+      .split(":");
     const ret = new Array(length);
     for (let i = 0; i < length; i++) {
       const action = operators[i];
@@ -79,7 +81,7 @@ export class ProgramSerializer {
   static async encodeV2(program) {
     this.validateInstructions(program);
     const labels = program
-      .map((inst) => this.formatLabel(inst.label, inst.value))
+      .map(inst => this.formatLabel(inst.label, inst.value))
       .join(":");
     const labelBytes = asciiToUint8(labels);
     const buffer = new Uint8Array(4 + program.length + labelBytes.length);

@@ -51,7 +51,7 @@ export class PersistenceController {
       const importTime = performance.now() - startTime;
       const instructionCount = this.program.instructions.length;
       const nonEmptyCount = this.program.instructions.filter(
-        (inst) => inst.action !== ProgAction.None,
+        inst => inst.action !== ProgAction.None,
       ).length;
 
       // Оновлюємо відображення сітки
@@ -97,15 +97,15 @@ export class PersistenceController {
       let result;
       const instructionCount = this.program.instructions.length;
       const nonEmptyCount = this.program.instructions.filter(
-        (inst) => inst.action !== ProgAction.None,
+        inst => inst.action !== ProgAction.None,
       ).length;
 
       switch (format) {
         case "codes":
           const nonEmptyInstructions = this.program.instructions.filter(
-            (inst) => inst.action !== ProgAction.None,
+            inst => inst.action !== ProgAction.None,
           );
-          result = nonEmptyInstructions.map((inst) => inst.action).join(" ");
+          result = nonEmptyInstructions.map(inst => inst.action).join(" ");
           loggers.editor.debug(
             `📋 Експорт кодів: ${nonEmptyCount} інструкцій → ${result.length} символів`,
           );
@@ -145,7 +145,7 @@ export class PersistenceController {
     const startTime = performance.now();
     const instructionCount = this.program.instructions.length;
     const nonEmptyCount = this.program.instructions.filter(
-      (inst) => inst.action !== ProgAction.None,
+      inst => inst.action !== ProgAction.None,
     ).length;
 
     loggers.validation.info(
@@ -165,7 +165,7 @@ export class PersistenceController {
         validation.errors,
       );
       const errorMessages = validation.errors
-        .map((e) => `• ${e.message}`)
+        .map(e => `• ${e.message}`)
         .join("\n");
       this.uiController.showFeedback(
         `❌ Знайдено помилок: ${validation.errors.length}\n${errorMessages}`,
@@ -179,7 +179,7 @@ export class PersistenceController {
         validation.warnings,
       );
       const warningMessages = validation.warnings
-        .map((w) => `• ${w.message}`)
+        .map(w => `• ${w.message}`)
         .join("\n");
       this.uiController.showFeedback(
         `⚠️ Попередження: ${validation.warnings.length}\n${warningMessages}`,
@@ -202,7 +202,7 @@ export class PersistenceController {
     const startTime = performance.now();
     const instructionCount = this.program.instructions.length;
     const nonEmptyCount = this.program.instructions.filter(
-      (inst) => inst.action !== ProgAction.None,
+      inst => inst.action !== ProgAction.None,
     ).length;
 
     loggers.editor.debug(

@@ -1,5 +1,5 @@
 import { ProgramSerializer } from "../serializer.js";
-import { Instruction } from "../../../models/program.js";
+import { Instruction } from "../../../types/instruction.js";
 import { ProgAction } from "../../../constants/actions.js";
 import { LZMACompressor } from "../../lzma-compressor.js";
 

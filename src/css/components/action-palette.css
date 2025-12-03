@@ -12,7 +12,7 @@
   flex: none;
 
   /* Misc */
-  overflow: visible;
+  overflow: visible; /* Дозволяємо тіням від кнопок виходити за межі */
 }
 
 #action-palette h3 {

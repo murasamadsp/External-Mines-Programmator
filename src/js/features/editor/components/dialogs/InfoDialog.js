@@ -34,3 +34,6 @@ export class InfoDialog extends BaseDialog {
     this.setFooter(footer);
   }
 }
+
+
+

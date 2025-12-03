@@ -1,7 +1,7 @@
 /* eslint-env node */
 import assert from "assert";
 import { Program } from "../program.js";
-import { Instruction } from "../program.js";
+import { Instruction } from "../../types/instruction.js";
 import { ProgAction } from "../../constants/actions.js";
 import { ProgramSerializer } from "../../services/serialization/serializer.js";
 

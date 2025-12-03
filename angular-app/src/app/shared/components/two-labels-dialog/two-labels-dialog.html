@@ -1,0 +1,49 @@
+<div
+  class="dialog-overlay"
+  [class.visible]="visible()"
+  (click)="onOverlayClick($event)"
+  (keydown)="onKeyDown($event)"
+  tabindex="0"
+  role="dialog"
+  [attr.aria-modal]="true"
+  [attr.aria-labelledby]="'two-labels-dialog-title'"
+>
+  <div class="dialog-content" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="-1">
+    <h3 id="two-labels-dialog-title">{{ title }}</h3>
+    <div class="dialog-body">
+      <div class="labels-inputs">
+        <div class="input-group">
+          <label for="label-1">Variable 1:</label>
+          <input
+            id="label-1"
+            type="text"
+            class="dialog-input"
+            [value]="label1()"
+            (input)="onLabel1Change($event)"
+            (keydown)="onKeyDown($event)"
+            placeholder="Enter first label"
+          />
+        </div>
+        <div class="input-group">
+          <label for="label-2">Variable 2:</label>
+          <input
+            id="label-2"
+            type="text"
+            class="dialog-input"
+            [value]="label2()"
+            (input)="onLabel2Change($event)"
+            (keydown)="onKeyDown($event)"
+            placeholder="Enter second label"
+          />
+        </div>
+      </div>
+      @if (errorMessage()) {
+      <div class="dialog-error">{{ errorMessage() }}</div>
+      }
+    </div>
+    <div class="dialog-buttons">
+      <button type="button" class="btn-secondary" (click)="cancel()">Cancel</button>
+      <button type="button" class="btn-primary" (click)="submit()">Save</button>
+    </div>
+  </div>
+</div>

@@ -9,7 +9,7 @@ import {
   getActionByCode,
 } from "../../../core/constants/actions.js";
 import { contextMenuManager } from "../../../core/services/context-menu-manager.js";
-import { Instruction } from "../../../core/models/program.js";
+import { Instruction } from "../../../core/types/instruction.js";
 
 export class ProgramGrid {
   constructor(container, program, onCellClick) {
@@ -20,27 +20,22 @@ export class ProgramGrid {
     this.gridCells = new Map(); // Map для швидкого доступу до клітинок
     this.cursorPosition = null; // Linear index of the active cell
 
+    // Grid dimensions
+    this.gridWidth = GRID_WIDTH;
+    this.gridHeight = GRID_HEIGHT;
+
     loggers.ui.debug("🏗️ ProgramGrid ініціалізовано");
   }
 
   /**
-   * Створює сітку програми (16x12)
+   * Створює сітку програми
+   * Ініціалізує DOM структуру та рендерить початковий стан
    */
   create() {
     try {
-      const grid = document.createElement("div");
-      grid.id = "program-grid";
-      grid.className = "program-grid";
-
-      // Створюємо сітку клітинок
-      for (let y = 0; y < GRID_HEIGHT; y++) {
-        for (let x = 0; x < GRID_WIDTH; x++) {
-          const cell = this.createCell(x, y);
-          grid.appendChild(cell);
-        }
-      }
-
-      this.container.appendChild(grid);
+      this.gridContainer = this.createGridContainer();
+      this.container.appendChild(this.gridContainer);
+      this.renderGrid();
 
       // Встановлюємо висоту sidebar'ів після повного рендерингу
       requestAnimationFrame(() => {
@@ -52,7 +47,19 @@ export class ProgramGrid {
       loggers.ui.info("✅ Сітка програми створена");
     } catch (error) {
       loggers.ui.error("❌ Помилка створення сітки програми:", error);
+      throw error;
     }
+  }
+
+  /**
+   * Створює контейнер сітки
+   * @returns {HTMLElement} DOM елемент сітки
+   */
+  createGridContainer() {
+    const grid = document.createElement("div");
+    grid.id = "program-grid";
+    grid.className = "program-grid";
+    return grid;
   }
 
   /**
@@ -71,7 +78,7 @@ export class ProgramGrid {
 
     // Знаходимо sidebar'и і встановлюємо їм висоту
     const sidebars = document.querySelectorAll(".programmer-sidebar");
-    sidebars.forEach((sidebar) => {
+    sidebars.forEach(sidebar => {
       sidebar.style.height = `${totalHeight}px`;
       sidebar.style.maxHeight = `${totalHeight}px`;
     });
@@ -99,16 +106,67 @@ export class ProgramGrid {
     });
 
     // Додаємо обробник контекстного меню (правий клік)
-    cell.addEventListener("contextmenu", (e) => {
+    cell.addEventListener("contextmenu", e => {
       e.preventDefault();
       this.handleCellContextMenu(e, x, y);
     });
+
+    // Drag & Drop handlers
+    cell.addEventListener("dragover", e => this.handleDragOver(e, x, y));
+    cell.addEventListener("dragleave", e => this.handleDragLeave(e, x, y));
+    cell.addEventListener("drop", e => this.handleDrop(e, x, y));
 
     // Зберігаємо посилання на клітинку
     const key = `${x}-${y}`;
     this.gridCells.set(key, cell);
 
     return cell;
+  }
+
+  handleDragOver(e, x, y) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
+    const cell = this.getCellElement(x, y);
+    if (cell) cell.classList.add("drop-target");
+  }
+
+  handleDragLeave(e, x, y) {
+    const cell = this.getCellElement(x, y);
+    if (cell) cell.classList.remove("drop-target");
+  }
+
+  handleDrop(e, x, y) {
+    e.preventDefault();
+    const cell = this.getCellElement(x, y);
+    if (cell) cell.classList.remove("drop-target");
+
+    try {
+      const data = e.dataTransfer.getData("application/json");
+      if (!data) return;
+
+      const payload = JSON.parse(data);
+      // Handle drop from palette (action code) or internal move (if implemented later)
+      if (payload.action !== undefined) {
+        // It's an instruction object or action code
+        const actionCode = payload.action;
+        // Call the external handler if provided, or update directly if we had access to controller
+        // Since ProgramGrid is view-only, we should trigger a callback or event
+        // But for now, let's assume we need to notify the controller via a custom event or callback
+        // The current architecture seems to rely on onCellClick.
+        // We might need to extend the constructor to accept onDrop or similar.
+        // For now, let's dispatch a custom event on the container
+
+        const dropEvent = new CustomEvent("program-grid-drop", {
+          detail: { x, y, action: actionCode, payload },
+          bubbles: true,
+        });
+        this.container.dispatchEvent(dropEvent);
+
+        loggers.ui.debug(`📥 Dropped action ${actionCode} at [${x}, ${y}]`);
+      }
+    } catch (err) {
+      loggers.ui.error("❌ Drop handling error:", err);
+    }
   }
 
   /**
@@ -139,6 +197,95 @@ export class ProgramGrid {
   }
 
   /**
+   * Рендерить всю сітку з оптимізацією
+   * Використовує batch updates для покращення продуктивності
+   */
+  renderGrid() {
+    if (!this.gridContainer) {
+      loggers.ui.error("❌ Grid container не знайдено!");
+      return;
+    }
+
+    // Використовуємо requestAnimationFrame для плавності
+    requestAnimationFrame(() => {
+      const startTime = performance.now();
+
+      // Очищаємо існуючу сітку
+      this.gridContainer.innerHTML = "";
+      this.gridCells.clear();
+
+      // Створюємо DocumentFragment для batch updates
+      const fragment = document.createDocumentFragment();
+
+      // Створюємо всі клітинки
+      for (let y = 0; y < this.gridHeight; y++) {
+        for (let x = 0; x < this.gridWidth; x++) {
+          const cell = this.createCellElement(x, y);
+          fragment.appendChild(cell);
+        }
+      }
+
+      // Додаємо всі клітинки одним batch update
+      this.gridContainer.appendChild(fragment);
+
+      // Тепер оновлюємо вміст клітинок
+      for (let y = 0; y < this.gridHeight; y++) {
+        for (let x = 0; x < this.gridWidth; x++) {
+          this.updateCellDisplay(x, y);
+        }
+      }
+
+      const renderTime = performance.now() - startTime;
+      loggers.ui.debug(`🎨 Grid відрендерено за ${renderTime.toFixed(2)}ms`);
+
+      // Логуємо попередження якщо рендер занадто повільний
+      if (renderTime > 16) {
+        // 16ms = 60fps
+        loggers.ui.warn(
+          `⚠️ Повільний рендер сітки: ${renderTime.toFixed(2)}ms (target: <16ms)`,
+        );
+      }
+
+      this.adjustSidebarHeights();
+    });
+  }
+
+  /**
+   * Створює DOM елемент клітинки
+   * @param {number} x - X координата
+   * @param {number} y - Y координата
+   * @returns {HTMLElement} DOM елемент клітинки
+   */
+  createCellElement(x, y) {
+    const cell = document.createElement("div");
+    cell.className = "program-cell";
+    cell.setAttribute("data-x", x);
+    cell.setAttribute("data-y", y);
+
+    // Додаємо обробник кліку
+    cell.addEventListener("click", () => {
+      this.handleCellClick(x, y);
+    });
+
+    // Додаємо обробник контекстного меню
+    cell.addEventListener("contextmenu", e => {
+      e.preventDefault();
+      this.handleCellContextMenu(e, x, y);
+    });
+
+    // Drag & Drop handlers
+    cell.addEventListener("dragover", e => this.handleDragOver(e, x, y));
+    cell.addEventListener("dragleave", e => this.handleDragLeave(e, x, y));
+    cell.addEventListener("drop", e => this.handleDrop(e, x, y));
+
+    // Зберігаємо посилання на клітинку
+    const key = `${x}-${y}`;
+    this.gridCells.set(key, cell);
+
+    return cell;
+  }
+
+  /**
    * Оновлює відображення всієї сітки
    */
   updateDisplay() {
@@ -157,7 +304,7 @@ export class ProgramGrid {
         `📄 Page ${this.currentPage} has ${pageInstructions.length} instructions`,
       );
 
-      const nonEmpty = pageInstructions.filter((i) => i.action !== 0).length;
+      const nonEmpty = pageInstructions.filter(i => i.action !== 0).length;
       loggers.ui.debug(
         `📌 Non-empty instructions on page ${this.currentPage}: ${nonEmpty}`,
       );
@@ -182,6 +329,12 @@ export class ProgramGrid {
    * @param x
    * @param y
    */
+  /**
+   * Оновлює відображення клітинки з оптимізацією
+   * Використовує dirty-checking для мінімізації DOM операцій
+   * @param {number} x - X координата
+   * @param {number} y - Y координата
+   */
   updateCellDisplay(x, y) {
     try {
       const key = `${x}-${y}`;
@@ -191,9 +344,21 @@ export class ProgramGrid {
 
       const instruction = this.program.getInstructionAt(x, y, this.currentPage);
 
+      // Отримуємо поточний стан клітинки
+      const currentState = cell.dataset.state || "";
+      const newState = this.getCellState(instruction);
+
+      // Dirty-checking: оновлюємо тільки якщо стан змінився
+      if (currentState === newState) {
+        return; // Немає змін, пропускаємо оновлення
+      }
+
+      // Зберігаємо новий стан
+      cell.dataset.state = newState;
+
       // Очищаємо клітинку
       cell.textContent = "";
-      cell.className = "program-cell"; // Fixed: changed from grid-cell to program-cell
+      cell.className = "program-cell"; // Reset classes
 
       // Якщо інструкція порожня
       if (
@@ -208,11 +373,80 @@ export class ProgramGrid {
       // Додаємо клас з дією
       cell.classList.add("has-action");
 
-      // Відображаємо повний label дії (як в палитрі)
-      const label = this.getActionShortCode(instruction);
-      if (label) {
-        cell.textContent = label;
+      // Add action code as data attribute for specific styling
+      cell.setAttribute("data-action", instruction.action);
+
+      // Get metadata
+      const actionInfo = getActionByCode(instruction.action);
+      const data = actionInfo ? ACTION_DATA[actionInfo.name] : null;
+
+      // Create content container (cube face)
+      const content = document.createElement("div");
+      content.className = "cell-content";
+
+      // 1. Icon (Emoji)
+      const iconSpan = document.createElement("div");
+      iconSpan.className = "action-icon";
+
+      // Extract emoji from label if possible, otherwise use default
+      let labelText =
+        data?.label || actionInfo?.name || String(instruction.action);
+      let emoji = "";
+      let name = labelText;
+
+      // Simple heuristic: if label starts with emoji (non-ascii or specific chars), split it
+      // The metadata format is usually "EMOJI Name"
+      // Fixed regex: removed nested brackets and pipes which caused SyntaxError
+      const match = labelText.match(
+        /^([\u{1F300}-\u{1F9FF}\u2700-\u27BF\u2600-\u26FF\u2000-\u3300\u{1F000}-\u{1FAFF}↑↓←→↖↗↘↙↺↻]+)\s*(.*)/u,
+      );
+
+      if (match) {
+        emoji = match[1];
+        name = match[2];
+      } else {
+        // Fallback if no emoji found or different format
+        emoji = "";
+        name = labelText;
       }
+
+      iconSpan.textContent = emoji;
+      content.appendChild(iconSpan);
+
+      // 2. Name (Text)
+      const nameSpan = document.createElement("div");
+      nameSpan.className = "action-name";
+      nameSpan.textContent = name;
+      content.appendChild(nameSpan);
+
+      // 3. Value/Label (if any)
+      if (
+        instruction.label ||
+        (instruction.value !== null && instruction.value !== undefined)
+      ) {
+        const valueSpan = document.createElement("div");
+        valueSpan.className = "action-value";
+
+        let valueText = "";
+        if (instruction.label) {
+          // Handle variable format "A:B"
+          if (instruction.label.includes(":")) {
+            valueText = instruction.label.replace(":", "→");
+          } else {
+            valueText = instruction.label;
+          }
+        }
+
+        if (instruction.value !== null && instruction.value !== undefined) {
+          valueText += (valueText ? "=" : "") + instruction.value;
+        }
+
+        valueSpan.textContent = valueText;
+        content.appendChild(valueSpan);
+        cell.classList.add("has-value");
+      }
+
+      cell.appendChild(content);
 
       // Додаємо tooltip з повним описом
       const description = this.getActionDescription(instruction);
@@ -226,6 +460,22 @@ export class ProgramGrid {
         cell.title = `Error: ${error.message}`;
       }
     }
+  }
+
+  /**
+   * Генерує стан клітинки для dirty-checking
+   * @param {Instruction} instruction - Інструкція
+   * @returns {string} Серіалізований стан клітинки
+   */
+  getCellState(instruction) {
+    if (
+      !instruction ||
+      instruction.action === ProgAction.None ||
+      instruction.action === 0
+    ) {
+      return "empty";
+    }
+    return `${instruction.action}|${instruction.label || ""}|${instruction.value || ""}`;
   }
 
   /**
@@ -282,6 +532,32 @@ export class ProgramGrid {
   }
 
   /**
+   * Встановлює висоту sidebar'ів рівну висоті центральної області (панель управління + сітка)
+   */
+  adjustSidebarHeights() {
+    // Знаходимо центральну область (.programmer-main)
+    const programmerMain = document.querySelector(".programmer-main");
+    if (!programmerMain) {
+      loggers.ui.warn("❌ .programmer-main не знайдено");
+      return;
+    }
+
+    // Отримуємо повну висоту центральної області (панель управління + сітка)
+    const totalHeight = programmerMain.offsetHeight;
+
+    // Знаходимо sidebar'и і встановлюємо їм висоту
+    const sidebars = document.querySelectorAll(".programmer-sidebar");
+    sidebars.forEach(sidebar => {
+      sidebar.style.height = `${totalHeight}px`;
+      sidebar.style.maxHeight = `${totalHeight}px`;
+    });
+
+    loggers.ui.debug(
+      `✅ Висота sidebar'ів встановлена: ${totalHeight}px (= панель управління + сітка)`,
+    );
+  }
+
+  /**
    * Виділяє клітинку
    * @param x
    * @param y
@@ -304,7 +580,7 @@ export class ProgramGrid {
    * Очищає всі виділення
    */
   clearHighlights() {
-    this.gridCells.forEach((cell) => {
+    this.gridCells.forEach(cell => {
       cell.classList.remove("highlighted");
     });
   }

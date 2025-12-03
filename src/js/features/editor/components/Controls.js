@@ -85,23 +85,11 @@ export class Controls {
       id: "import-btn",
       text: "",
       icon: "📥",
-      onClick: async function () {
-        loggers.ui.debug("📥 Import button clicked");
+      onClick: async () => {
         try {
-          // Перевірка наявності необхідних властивостей
-          if (!this.importButton) {
-            throw new Error("Import button not found");
-          }
-          if (!this.callbacks || !this.callbacks.onImport) {
-            throw new Error("Import callback not found");
-          }
-
-          loggers.ui.debug("✅ Import validation passed");
-
           let text = "";
           try {
             text = await navigator.clipboard.readText();
-            loggers.ui.debug("📋 Clipboard read successful");
           } catch (clipboardError) {
             loggers.ui.warn(
               "⚠️ Clipboard access denied or failed, using fallback prompt",
@@ -114,28 +102,27 @@ export class Controls {
             text = prompt(
               "Please paste the program code here (starts with $):",
             );
-            loggers.ui.debug("💬 User provided text via prompt");
           }
 
-          if (text) {
-            loggers.ui.debug("🚀 Starting import process");
+          if (text && this.callbacks.onImport) {
             this.showLoading(this.importButton, "Importing...");
             await this.callbacks.onImport(text);
             this.hideLoading(this.importButton);
             this.showFeedback("✓ Imported successfully", "success");
-            loggers.ui.debug("✅ Import completed successfully");
-          } else {
-            loggers.ui.debug("❌ No text provided for import");
           }
         } catch (error) {
+          this.hideLoading(this.importButton);
           loggers.ui.error("❌ Import error:", error);
-          if (this.importButton) {
-            this.hideLoading(this.importButton);
-          }
           this.showFeedback("Import failed", "error");
         }
-      }.bind(this),
+      },
     });
+
+    // Ensure the button click handler is properly bound
+    this.importButton.addEventListener(
+      "click",
+      this.importButton.onclick || (() => {}),
+    );
     buttonGroup.appendChild(this.importButton);
 
     this.exportButton = createButton({
@@ -297,13 +284,13 @@ export class Controls {
       // Додаємо обробники для закриття модального вікна
       const closeModal = () => this.toggleProgramDecoder(container);
 
-      decoderUI.addEventListener("click", (e) => {
+      decoderUI.addEventListener("click", e => {
         if (e.target === decoderUI) {
           closeModal();
         }
       });
 
-      const handleEscape = (e) => {
+      const handleEscape = e => {
         if (e.key === "Escape") {
           closeModal();
           document.removeEventListener("keydown", handleEscape);
@@ -366,13 +353,13 @@ export class Controls {
       // Додаємо обробники для закриття модального вікна
       const closeModal = () => this.toggleProgramAnalyzer(container);
 
-      analyzerUI.addEventListener("click", (e) => {
+      analyzerUI.addEventListener("click", e => {
         if (e.target === analyzerUI) {
           closeModal();
         }
       });
 
-      const handleEscape = (e) => {
+      const handleEscape = e => {
         if (e.key === "Escape") {
           closeModal();
           document.removeEventListener("keydown", handleEscape);

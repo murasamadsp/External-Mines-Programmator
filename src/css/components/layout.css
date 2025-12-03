@@ -36,7 +36,7 @@
   flex: 1;
 
   /* Misc */
-  overflow: hidden;
+  overflow: visible; /* Дозволяємо тіням виходити за межі */
 }
 
 /* ==========================================================================
@@ -64,6 +64,10 @@
    ========================================================================== */
 
 .programmer-sidebar {
+  /* Positioning */
+  position: relative;
+  z-index: 1;
+
   /* Box model */
   display: flex;
   flex-direction: column;
@@ -77,7 +81,7 @@
   box-shadow: var(--shadow-lg);
 
   /* Misc */
-  overflow: hidden;
+  overflow: visible; /* Змінено з hidden - дозволяємо тіням виходити за межі */
 }
 
 .programmer-sidebar-left {
@@ -94,6 +98,8 @@
 
 .programmer-main {
   /* Positioning */
+  position: relative;
+  z-index: 2;
   grid-column: 2;
 
   /* Box model */

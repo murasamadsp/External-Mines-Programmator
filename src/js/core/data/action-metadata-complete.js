@@ -107,6 +107,8 @@ const SPECIAL_DESC = {
 
 /**
  * Конвертує CamelCase в читабельний формат
+ * @param {string} name - Назва для форматування
+ * @returns {string} Відформатована назва
  */
 function formatName(name) {
   return name
@@ -114,13 +116,15 @@ function formatName(name) {
     .replace(/([A-Z]+)/g, " $1")
     .trim()
     .split(/\s+/)
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
     .join(" ");
 }
 
 /**
  * Знаходить напрямок в назві дії
  * Перевіряє складніші напрямки спочатку (UpLeft перед Up)
+ * @param {string} actionName - Назва дії
+ * @returns {object|null} Інформація про напрямок або null
  */
 function findDirection(actionName) {
   // Сортуємо за довжиною (довші спочатку) для правильного пошуку
@@ -138,6 +142,8 @@ function findDirection(actionName) {
 
 /**
  * Знаходить тип дії в назві
+ * @param {string} actionName - Назва дії
+ * @returns {object|null} Інформація про тип дії або null
  */
 function findActionType(actionName) {
   for (const [type, data] of Object.entries(ACTION_TYPE_MAP)) {
@@ -149,7 +155,111 @@ function findActionType(actionName) {
 }
 
 /**
+ * Генерує метадані для дії з напрямком
+ * @param {string} actionName - Назва дії
+ * @param {object} direction - Інформація про напрямок
+ * @param {object} actionType - Інформація про тип дії
+ * @returns {object} Метадані дії
+ */
+function generateDirectionalActionMetadata(actionName, direction, actionType) {
+  let finalEmoji, finalName, finalDesc;
+
+  // Для Cell дій використовуємо формат [emoji]
+  if (actionType.bracketFormat) {
+    finalEmoji = `[${direction.emoji}]`;
+  } else {
+    finalEmoji = direction.emoji;
+  }
+
+  finalName = `${actionType.name} ${direction.name}`;
+  finalDesc = `${actionType.desc} ${direction.desc}`;
+
+  return { finalEmoji, finalName, finalDesc };
+}
+
+/**
+ * Генерує опис для дії з типом
+ * @param {string} actionName - Назва дії
+ * @param {object} actionType - Інформація про тип дії
+ * @param {object} direction - Інформація про напрямок
+ * @returns {string} Опис дії
+ */
+function generateActionTypeDescription(actionName, actionType, direction) {
+  const rest = actionName
+    .replace(new RegExp(`^${actionType.name}`, "i"), "")
+    .trim();
+
+  if (!rest) {
+    return actionType.desc;
+  }
+
+  // Для Enable/Disable дій
+  if (actionType.name === "Enable" || actionType.name === "Disable") {
+    const feature = formatName(rest).toLowerCase();
+    return actionType.name === "Enable"
+      ? `Увімкнути ${feature}`
+      : `Вимкнути ${feature}`;
+  }
+
+  // Для Var дій
+  if (actionType.name === "Var") {
+    const operation = formatName(rest).toLowerCase();
+    return `Операція змінної: ${operation}`;
+  }
+
+  // Для Inventory дій
+  if (actionType.name === "Inventory" && direction) {
+    return `Інвентар ${direction.desc}`;
+  }
+
+  // Для Box дій
+  if (actionType.name === "Box") {
+    const boxType = formatName(rest).toLowerCase();
+    return `Коробка: ${boxType}`;
+  }
+
+  // Загальний випадок
+  const restFormatted = formatName(rest).toLowerCase();
+  return `${actionType.desc} ${restFormatted}`;
+}
+
+/**
+ * Генерує метадані для спеціальних випадків (UNUSED, UNKNOWN)
+ * @param {string} actionName - Назва дії
+ * @returns {object} Метадані дії
+ */
+function generateSpecialActionMetadata(actionName) {
+  let finalEmoji, finalName, finalDesc;
+
+  if (actionName.startsWith("UNUSED_")) {
+    finalEmoji = "🚫";
+    finalName = `Unused ${actionName.replace("UNUSED_", "")}`;
+    finalDesc = `Невикористовувана дія ${actionName.replace("UNUSED_", "")}`;
+  } else if (
+    actionName.startsWith("UNKNOWN_") ||
+    actionName.startsWith("Var_UNK_")
+  ) {
+    finalEmoji = "❓";
+    const num = actionName.replace(/^(UNKNOWN_|Var_UNK_)/, "");
+    finalName = actionName.startsWith("Var_")
+      ? `Var Unknown ${num}`
+      : `Unknown ${num}`;
+    finalDesc = actionName.startsWith("Var_")
+      ? `Невідома операція змінної ${num}`
+      : `Невідома дія ${num}`;
+  } else {
+    finalEmoji = "🔧";
+    finalDesc = formatName(actionName);
+    finalName = formatName(actionName);
+  }
+
+  return { finalEmoji, finalName, finalDesc };
+}
+
+/**
  * Генерує метадані для однієї дії
+ * @param {string} actionName - Назва дії
+ * @returns {object} Метадані з label та tooltip
  */
 function generateMetadataForAction(actionName) {
   // Знаходимо напрямок та тип
@@ -166,21 +276,21 @@ function generateMetadataForAction(actionName) {
 
   // Якщо є напрямок та тип - генеруємо автоматично
   if (direction && actionType && !finalEmoji) {
-    // Для Cell дій використовуємо формат [emoji]
-    if (actionType.bracketFormat) {
-      finalEmoji = `[${direction.emoji}]`;
-    } else {
-      finalEmoji = direction.emoji;
-    }
-    finalName = `${actionType.name} ${direction.name}`;
-    finalDesc = `${actionType.desc} ${direction.desc}`;
+    const metadata = generateDirectionalActionMetadata(
+      actionName,
+      direction,
+      actionType,
+    );
+    finalEmoji = metadata.finalEmoji;
+    finalName = metadata.finalName;
+    finalDesc = metadata.finalDesc;
   } else if (actionType) {
     // Якщо немає емодзі, використовуємо емодзі типу
     if (!finalEmoji) {
       finalEmoji = actionType.emoji;
     }
 
-    // Видаляємо тип з назви та форматуємо решту
+    // Форматуємо назву
     const rest = actionName
       .replace(new RegExp(`^${actionType.name}`, "i"), "")
       .trim();
@@ -188,64 +298,20 @@ function generateMetadataForAction(actionName) {
       ? `${actionType.name} ${formatName(rest)}`
       : actionType.name;
 
-    // Генеруємо опис на основі типу та решти (якщо немає спеціального)
-    if (rest && !finalDesc) {
-      // Для Enable/Disable дій
-      if (actionType.name === "Enable" || actionType.name === "Disable") {
-        const feature = formatName(rest).toLowerCase();
-        finalDesc =
-          actionType.name === "Enable"
-            ? `Увімкнути ${feature}`
-            : `Вимкнути ${feature}`;
-      }
-      // Для Var дій
-      else if (actionType.name === "Var") {
-        const operation = formatName(rest).toLowerCase();
-        finalDesc = `Операція змінної: ${operation}`;
-      }
-      // Для Inventory дій
-      else if (actionType.name === "Inventory" && direction) {
-        finalDesc = `Інвентар ${direction.desc}`;
-      }
-      // Для Box дій
-      else if (actionType.name === "Box") {
-        const boxType = formatName(rest).toLowerCase();
-        finalDesc = `Коробка: ${boxType}`;
-      }
-      // Загальний випадок
-      else {
-        const restFormatted = formatName(rest).toLowerCase();
-        finalDesc = `${actionType.desc} ${restFormatted}`;
-      }
-    } else if (!finalDesc) {
-      finalDesc = actionType.desc;
+    // Генеруємо опис
+    if (!finalDesc) {
+      finalDesc = generateActionTypeDescription(
+        actionName,
+        actionType,
+        direction,
+      );
     }
   } else if (!finalEmoji) {
-    // Fallback для UNUSED
-    if (actionName.startsWith("UNUSED_")) {
-      finalEmoji = "🚫";
-      finalName = `Unused ${actionName.replace("UNUSED_", "")}`;
-      finalDesc = `Невикористовувана дія ${actionName.replace("UNUSED_", "")}`;
-    }
-    // Fallback для UNKNOWN
-    else if (
-      actionName.startsWith("UNKNOWN_") ||
-      actionName.startsWith("Var_UNK_")
-    ) {
-      finalEmoji = "❓";
-      const num = actionName.replace(/^(UNKNOWN_|Var_UNK_)/, "");
-      finalName = actionName.startsWith("Var_")
-        ? `Var Unknown ${num}`
-        : `Unknown ${num}`;
-      finalDesc = actionName.startsWith("Var_")
-        ? `Невідома операція змінної ${num}`
-        : `Невідома дія ${num}`;
-    }
-    // Загальний fallback
-    else {
-      finalEmoji = "🔧";
-      finalDesc = finalDesc || formatName(actionName);
-    }
+    // Спеціальні випадки
+    const metadata = generateSpecialActionMetadata(actionName);
+    finalEmoji = metadata.finalEmoji;
+    finalName = metadata.finalName;
+    finalDesc = metadata.finalDesc;
   }
 
   // Якщо опис не встановлено, використовуємо назву

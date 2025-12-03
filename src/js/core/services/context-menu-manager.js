@@ -264,12 +264,12 @@ export class ContextMenuManager {
     document.body.appendChild(this.menuElement);
 
     // Prevent context menu on the menu itself
-    this.menuElement.addEventListener("contextmenu", (e) => e.preventDefault());
+    this.menuElement.addEventListener("contextmenu", e => e.preventDefault());
   }
 
   bindGlobalEvents() {
     // Track mouse position globally
-    document.addEventListener("mousemove", (e) => {
+    document.addEventListener("mousemove", e => {
       window.lastMouseEvent = {
         clientX: e.clientX,
         clientY: e.clientY,
@@ -277,21 +277,21 @@ export class ContextMenuManager {
     });
 
     // Hide menu on left click anywhere
-    document.addEventListener("click", (e) => {
+    document.addEventListener("click", e => {
       if (!this.menuElement.contains(e.target)) {
         this.hideMenu();
       }
     });
 
     // Hide menu on escape
-    document.addEventListener("keydown", (e) => {
+    document.addEventListener("keydown", e => {
       if (e.key === "Escape") {
         this.hideMenu();
       }
     });
 
     // Prevent default context menu globally (we'll show our custom one)
-    document.addEventListener("contextmenu", (e) => {
+    document.addEventListener("contextmenu", e => {
       // Only prevent default if we're not already showing a menu
       // This allows nested context menus if needed
       if (!this.activeMenu) {
@@ -321,7 +321,7 @@ export class ContextMenuManager {
     this.menuElement.focus();
 
     loggers.services.debug(
-      `📋 Context menu показаний на позиції (${x}, ${y}) з ${items.length} елементами: ${items.map((item) => item.name || "анонімний").join(", ")}`,
+      `📋 Context menu показаний на позиції (${x}, ${y}) з ${items.length} елементами: ${items.map(item => item.name || "анонімний").join(", ")}`,
     );
   }
 
@@ -362,7 +362,7 @@ export class ContextMenuManager {
     );
     itemsContainer.innerHTML = "";
 
-    items.forEach((item, index) => {
+    items.forEach(item => {
       const itemElement = document.createElement("div");
       itemElement.className = "context-menu-item";
 
@@ -401,7 +401,7 @@ export class ContextMenuManager {
             // Remove hover from other items
             itemsContainer
               .querySelectorAll(".context-menu-item")
-              .forEach((el) => {
+              .forEach(el => {
                 el.classList.remove("hover");
               });
             itemElement.classList.add("hover");
@@ -614,16 +614,9 @@ export class ContextMenuManager {
   }
 
   showCellInfo(position, instruction) {
-    const info = {
-      position,
-      coordinates: this.positionToCoordinates(position),
-      action: instruction.action,
-      label: instruction.label,
-      value: instruction.value,
-    };
-
     // Could show a dialog or tooltip with this info
     // TODO: Implement cell info display
+    // Info: position, coordinates, action, label, value
   }
 
   positionToCoordinates(position) {
@@ -639,7 +632,7 @@ export class ContextMenuManager {
 
     if (isFavorite) {
       // Remove from favorites
-      const newFavorites = favorites.filter((fav) => fav !== actionKey);
+      const newFavorites = favorites.filter(fav => fav !== actionKey);
       this.saveFavorites(newFavorites);
       loggers.services.info(`⭐ Видалено з обраних: ${actionKey}`);
     } else {

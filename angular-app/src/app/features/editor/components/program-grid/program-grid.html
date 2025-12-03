@@ -1,0 +1,28 @@
+<div id="program-grid">
+  @for (instruction of pageInstructions(); track $index; let i = $index) {
+    <div
+      class="program-cell"
+      [class.empty]="!instruction || instruction.action === 0"
+      [class.has-action]="instruction && instruction.action !== 0"
+      [attr.data-action]="instruction?.action"
+      (click)="onCellClick(i)"
+      (keydown)="onCellKeyDown($event, i)"
+      (dragover)="onDragOver($event, i)"
+      (drop)="onDrop($event, i)"
+      [title]="getCellData(instruction)?.tooltip || ''"
+      tabindex="0"
+      role="button"
+      [attr.aria-label]="getCellData(instruction)?.tooltip || 'Empty cell'"
+    >
+      @if (getCellData(instruction); as data) {
+        <div class="cell-content">
+          <div class="action-icon">{{ data.emoji }}</div>
+          <div class="action-name">{{ data.name }}</div>
+          @if (data.value) {
+            <div class="action-value">{{ data.value }}</div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

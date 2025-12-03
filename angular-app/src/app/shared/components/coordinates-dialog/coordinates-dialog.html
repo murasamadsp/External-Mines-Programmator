@@ -1,0 +1,51 @@
+<div
+  class="dialog-overlay"
+  [class.visible]="visible()"
+  (click)="onOverlayClick($event)"
+  (keydown)="onKeyDown($event)"
+  tabindex="0"
+  role="dialog"
+  [attr.aria-modal]="true"
+  [attr.aria-labelledby]="'coordinates-dialog-title'"
+>
+  <div class="dialog-content" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="-1">
+    <h3 id="coordinates-dialog-title">{{ title }}</h3>
+    <div class="dialog-body">
+      <div class="coordinates-inputs">
+        <div class="input-group">
+          <label for="coord-x">X:</label>
+          <input
+            id="coord-x"
+            type="number"
+            class="dialog-input"
+            [value]="x()"
+            min="0"
+            max="15"
+            (input)="onXChange($event)"
+            (keydown)="onKeyDown($event)"
+          />
+        </div>
+        <div class="input-group">
+          <label for="coord-y">Y:</label>
+          <input
+            id="coord-y"
+            type="number"
+            class="dialog-input"
+            [value]="y()"
+            min="0"
+            max="15"
+            (input)="onYChange($event)"
+            (keydown)="onKeyDown($event)"
+          />
+        </div>
+      </div>
+      @if (errorMessage()) {
+      <div class="dialog-error">{{ errorMessage() }}</div>
+      }
+    </div>
+    <div class="dialog-buttons">
+      <button type="button" class="btn-secondary" (click)="cancel()">Cancel</button>
+      <button type="button" class="btn-primary" (click)="submit()">Save</button>
+    </div>
+  </div>
+</div>

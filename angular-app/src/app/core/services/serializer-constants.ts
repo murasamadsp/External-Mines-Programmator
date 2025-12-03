@@ -1,0 +1,6 @@
+export const MODERN_PAGE_WIDTH = 16;
+export const MODERN_PAGE_HEIGHT = 12;
+export const MODERN_PAGE_SIZE = MODERN_PAGE_WIDTH * MODERN_PAGE_HEIGHT;
+
+export const ALPHABET =
+  "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";

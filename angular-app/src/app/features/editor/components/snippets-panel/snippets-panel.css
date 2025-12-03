@@ -1,0 +1,181 @@
+/* ============================================================================
+   Snippets Panel - Consistent List Design
+   ============================================================================ */
+
+#snippets-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--md-sys-spacing-2);
+}
+
+#snippets-panel h3 {
+  margin: 0 0 var(--md-sys-spacing-2);
+  padding: 0 0 var(--md-sys-spacing-2);
+  font-size: var(--md-sys-typescale-headline);
+  font-weight: var(--md-sys-font-weight-medium);
+  text-align: center;
+  color: var(--md-sys-color-on-surface);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.snippets-description {
+  margin: 0 0 var(--md-sys-spacing-2);
+  padding: 0;
+  font-size: var(--md-sys-typescale-label);
+  text-align: center;
+  color: var(--md-sys-color-on-surface-variant);
+  line-height: 1.4;
+}
+
+/* ============================================================================
+   Snippets Container - Scrollable List
+   ============================================================================ */
+.snippets-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-1);
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--md-sys-spacing-1);
+}
+
+/* ============================================================================
+   Snippet Card - Consistent Height Cards
+   ============================================================================ */
+.snippet-card {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-1);
+  min-height: 72px;
+  padding: var(--md-sys-spacing-1) var(--md-sys-spacing-2);
+  background-color: var(--md-sys-color-surface-variant);
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-corner-sm);
+  cursor: grab;
+  transition: all var(--md-sys-transition);
+}
+
+.snippet-card:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+  border-color: var(--md-sys-color-primary);
+  box-shadow: var(--md-sys-shadow-sm);
+  transform: translateY(-2px);
+}
+
+.snippet-card:active {
+  cursor: grabbing;
+  transform: translateY(0);
+}
+
+.snippet-card:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.snippet-card.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+/* ============================================================================
+   Snippet Icon - Consistent Circle
+   ============================================================================ */
+.snippet-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: var(--md-sys-corner-md);
+  box-shadow: var(--md-sys-shadow-sm);
+}
+
+.snippet-card:hover .snippet-icon {
+  box-shadow: var(--md-sys-shadow);
+}
+
+/* ============================================================================
+   Snippet Content - Text Layout
+   ============================================================================ */
+.snippet-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.snippet-name {
+  font-size: var(--md-sys-typescale-body);
+  font-weight: var(--md-sys-font-weight-medium);
+  color: var(--md-sys-color-on-surface);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.snippet-description {
+  font-size: var(--md-sys-typescale-label);
+  color: var(--md-sys-color-on-surface-variant);
+  line-height: 1.4;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================================================
+   Empty State
+   ============================================================================ */
+.snippets-container:empty::after {
+  content: 'No snippets available';
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--md-sys-spacing-4);
+  font-size: var(--md-sys-typescale-body);
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.6;
+  text-align: center;
+}
+
+/* ============================================================================
+   Category Divider
+   ============================================================================ */
+.snippet-divider {
+  height: 1px;
+  margin: var(--md-sys-spacing-2) 0;
+  background-color: var(--md-sys-color-outline-variant);
+  border: none;
+}
+
+.snippet-category-title {
+  padding: var(--md-sys-spacing-1);
+  font-size: var(--md-sys-typescale-label);
+  font-weight: var(--md-sys-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--md-sys-color-primary);
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+@media (max-width: 1200px) {
+  .snippet-card {
+    min-height: 64px;
+    padding: var(--md-sys-spacing-1);
+  }
+
+  .snippet-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+}

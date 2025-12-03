@@ -21,3 +21,6 @@ export const ACTION_METADATA_CONTROL = {
   NoYesTerminate: { label: "⏹️ No⏹️", tooltip: "Якщо ні → завершити" },
   Flip: { label: "🔄 Flip", tooltip: "Перевернути умову" },
 };
+
+
+
