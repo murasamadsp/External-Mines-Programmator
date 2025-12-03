@@ -50,6 +50,7 @@
     "vite-plugin-full-reload": "^1.2.0"
   },
   "dependencies": {
+    "@panzoom/panzoom": "^4.6.1",
     "lzma": "^2.3.2"
   }
 }

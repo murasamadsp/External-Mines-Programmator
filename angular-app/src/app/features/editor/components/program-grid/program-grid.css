@@ -1,138 +1,69 @@
-/* ============================================================================
-   Program Grid - Technical Blueprint Style
-   ============================================================================ */
-
 #program-grid {
   display: grid;
-  grid-template-columns: repeat(16, 48px); /* Fixed 48px cells */
-  grid-template-rows: repeat(12, 48px);
-  gap: 1px; /* 1px gap for grid lines */
-  background-color: var(--md-sys-color-outline); /* Grid line color */
-  border: 1px solid var(--md-sys-color-outline);
-  box-shadow: var(--md-sys-shadow-md);
-  margin: 24px auto;
+  grid-template-columns: repeat(16, 64px);
+  grid-template-rows: repeat(12, 64px);
+  gap: 4px;
+  padding: 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: grab;
 }
 
-/* Cell Style */
 .program-cell {
   position: relative;
-  width: 100%;
-  height: 100%;
-  background-color: var(--md-sys-color-surface-container); /* Dark background */
-  cursor: pointer;
-  transition: background-color 0.1s ease;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
-/* Hover Effect */
 .program-cell:hover {
-  background-color: var(--md-sys-color-surface-variant);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Active/Cursor */
 .program-cell.active-cursor {
-  box-shadow: inset 0 0 0 2px var(--md-sys-color-warning);
+  box-shadow: 0 0 0 2px var(--primary-color);
   z-index: 2;
 }
 
-/* Drop Target */
-.program-cell.drop-target {
-  background-color: rgba(59, 130, 246, 0.2); /* Blue tint */
-  box-shadow: inset 0 0 0 2px var(--md-sys-color-primary);
-  z-index: 3;
-}
-
-/* Content Layout */
 .cell-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
-  padding: 2px;
-}
-
-/* Action Icon */
-.action-icon {
-  font-size: 18px;
-  margin-bottom: 2px;
-  color: var(--md-sys-color-on-surface);
-}
-
-/* Action Name */
-.action-name {
-  font-size: 9px;
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  color: var(--md-sys-color-on-surface-variant);
+  padding: 4px;
   text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
 }
 
-/* Action Value (Argument) */
-.action-value {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  font-size: 8px;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--md-sys-color-primary);
-  background-color: rgba(59, 130, 246, 0.1);
-  padding: 1px 3px;
-  border-radius: 2px;
+.action-icon {
+  font-size: 24px;
+  color: var(--text-color);
 }
 
-/* Filled Cell State */
-.program-cell.has-action {
-  background-color: var(--md-sys-color-surface);
+.action-name {
+  font-size: 11px;
+  color: var(--text-color);
+  opacity: 0.8;
+  line-height: 1.2;
 }
 
-.program-cell.has-action:hover {
-  background-color: var(--md-sys-color-surface-variant);
-}
-
-/* Color Indicators (Bottom Border) */
-.program-cell[data-action]::after {
+.program-cell.has-action::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  opacity: 0.8;
+  bottom: 4px;
+  left: 10%;
+  width: 80%;
+  height: 3px;
+  border-radius: 2px;
+  opacity: 0.7;
 }
 
-/* Movement - Blue */
-.program-cell[data-action="4"]::after,
-.program-cell[data-action="5"]::after,
-.program-cell[data-action="6"]::after,
-.program-cell[data-action="7"]::after {
-  background-color: var(--md-sys-color-primary);
-}
-
-/* Combat - Red */
-.program-cell[data-action="8"]::after,
-.program-cell[data-action="141"]::after {
-  background-color: var(--md-sys-color-error);
-}
-
-/* Special - Green */
-.program-cell[data-action="17"]::after,
-.program-cell[data-action="142"]::after {
-  background-color: var(--md-sys-color-success);
-}
-
-/* Responsive Scaling */
-@media (max-width: 1000px) {
-  #program-grid {
-    grid-template-columns: repeat(16, 40px);
-    grid-template-rows: repeat(12, 40px);
-  }
-  
-  .action-icon { font-size: 16px; }
-  .action-name { font-size: 8px; }
-}
+/* Category Colors */
+.program-cell[data-category="Movement"]::after { background-color: #4b89ff; }
+.program-cell[data-category="Combat"]::after { background-color: #ff4b4b; }
+.program-cell[data-category="Interaction"]::after { background-color: #ffb44b; }
+.program-cell[data-category="Logic"]::after { background-color: #4bffff; }
+.program-cell[data-category="Sensing"]::after { background-color: #b44bff; }
+.program-cell[data-category="Inventory"]::after { background-color: #4bff4b; }

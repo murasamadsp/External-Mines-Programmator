@@ -1,5 +1,8 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatButtonModule } from '@angular/material/button';
 import { ACTION_METADATA } from '../../../../core/data/action-metadata';
 import { ACTION_CATEGORIES } from '../../../../core/data/action-categories';
 import { getActionCode } from '../../../../core/utils/action-utils';
@@ -13,7 +16,12 @@ interface CategoryState {
 @Component({
   selector: 'app-action-palette',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatExpansionModule,
+    MatButtonModule,
+  ],
   templateUrl: './action-palette.html',
   styleUrls: ['./action-palette.css'],
 })

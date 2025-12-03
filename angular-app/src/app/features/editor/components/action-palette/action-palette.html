@@ -1,53 +1,34 @@
-<div id="action-palette" class="action-palette">
-  <h3>Дії</h3>
+<mat-card class="action-palette">
+  <mat-card-header>
+    <mat-card-title>Дії</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="actions-list">
+    <mat-accordion multi="true">
+      @for (category of categoryKeys; track category) {
+        <mat-expansion-panel [expanded]="!isCategoryCollapsed(category)">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ category }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
 
-  <div class="actions-list">
-    @for (category of categoryKeys; track category) {
-      <div>
-        <!-- Category Header -->
-        <div
-          class="category-header"
-          (click)="toggleCategory(category)"
-          (keydown)="onCategoryKeyDown($event, category)"
-          tabindex="0"
-          role="button"
-          [attr.aria-expanded]="!isCategoryCollapsed(category)"
-          [attr.aria-label]="category"
-        >
-          <span>{{ category }}</span>
-          <button
-            type="button"
-            class="category-toggle"
-            [attr.data-toggle]="category"
-            (click)="toggleCategory(category); $event.stopPropagation()"
-          >
-            {{ getCategoryToggleIcon(category) }}
-          </button>
-        </div>
-
-        <!-- Category Actions -->
-        <div
-          class="category-actions"
-          [attr.data-category]="category"
-          [style.max-height]="isCategoryCollapsed(category) ? '0px' : null"
-          [style.opacity]="isCategoryCollapsed(category) ? '0' : '1'"
-          [style.overflow]="isCategoryCollapsed(category) ? 'hidden' : 'visible'"
-        >
-          @for (actionKey of getCategoryActions(category); track actionKey) {
-            <button
-              type="button"
-              [attr.data-action]="actionKey"
-              [class.selected]="isSelected(actionKey)"
-              [title]="getActionData(actionKey).tooltip"
-              draggable="true"
-              (click)="selectAction(actionKey)"
-              (dragstart)="onDragStart($event, actionKey)"
-            >
-              {{ getActionData(actionKey).label }}
-            </button>
-          }
-        </div>
-      </div>
-    }
-  </div>
-</div>
+          <div class="category-actions">
+            @for (actionKey of getCategoryActions(category); track actionKey) {
+              <button
+                mat-button
+                class="action-button"
+                [class.selected]="isSelected(actionKey)"
+                [title]="getActionData(actionKey).tooltip"
+                draggable="true"
+                (click)="selectAction(actionKey)"
+                (dragstart)="onDragStart($event, actionKey)"
+              >
+                {{ getActionData(actionKey).label }}
+              </button>
+            }
+          </div>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  </mat-card-content>
+</mat-card>

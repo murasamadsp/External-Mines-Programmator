@@ -1,6 +1,11 @@
 import { Component, signal, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 import { ProgramService } from '../../../../core/services/program.service';
 import { PersistenceService } from '../../../../core/services/persistence.service';
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -10,7 +15,16 @@ import { AnalyzerDialogComponent } from '../analyzer-dialog/analyzer-dialog';
 @Component({
   selector: 'app-controls',
   standalone: true,
-  imports: [CommonModule, DecoderDialogComponent, AnalyzerDialogComponent],
+  imports: [
+    CommonModule,
+    DecoderDialogComponent,
+    AnalyzerDialogComponent,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    MatDividerModule,
+  ],
   templateUrl: './controls.html',
   styleUrls: ['./controls.css'],
 })
@@ -18,9 +32,11 @@ export class ControlsComponent {
   @ViewChild(DecoderDialogComponent) decoderDialog!: DecoderDialogComponent;
   @ViewChild(AnalyzerDialogComponent) analyzerDialog!: AnalyzerDialogComponent;
   isToolsOpen = signal(false);
+  isDarkMode = signal(true);
 
   constructor() {
     this.logger.lifecycle('Controls', 'Component initialized');
+    this.updateTheme();
   }
 
   public readonly programService = inject(ProgramService);
@@ -177,5 +193,20 @@ export class ControlsComponent {
     this.logger.action('Controls', 'Navigating to settings page');
     this.router.navigate(['/settings']);
     this.closeTools();
+  }
+
+  toggleTheme() {
+    this.isDarkMode.set(!this.isDarkMode());
+    this.updateTheme();
+  }
+
+  private updateTheme() {
+    if (this.isDarkMode()) {
+      document.body.classList.remove('light-theme');
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+      document.body.classList.add('light-theme');
+    }
   }
 }

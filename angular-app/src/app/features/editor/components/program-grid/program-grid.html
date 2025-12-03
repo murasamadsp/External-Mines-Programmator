@@ -1,14 +1,13 @@
-<div id="program-grid">
+<div id="program-grid" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
   @for (instruction of pageInstructions(); track $index; let i = $index) {
     <div
       class="program-cell"
       [class.empty]="!instruction || instruction.action === 0"
       [class.has-action]="instruction && instruction.action !== 0"
       [attr.data-action]="instruction?.action"
+      [attr.data-category]="getCellData(instruction)?.category"
       (click)="onCellClick(i)"
       (keydown)="onCellKeyDown($event, i)"
-      (dragover)="onDragOver($event, i)"
-      (drop)="onDrop($event, i)"
       [title]="getCellData(instruction)?.tooltip || ''"
       tabindex="0"
       role="button"

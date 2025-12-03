@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
 
 interface Snippet {
   name: string;
@@ -11,7 +12,7 @@ interface Snippet {
 @Component({
   selector: 'app-snippets-panel',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatCardModule],
   templateUrl: './snippets-panel.html',
   styleUrls: ['./snippets-panel.css'],
 })
