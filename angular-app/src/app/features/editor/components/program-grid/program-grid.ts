@@ -1,5 +1,6 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { PanzoomObject } from '@panzoom/panzoom';
 import { ProgramService } from '../../../../core/services/program.service';
 import { CellInteractionService } from '../../../../core/services/cell-interaction.service';
 import { Instruction, ProgAction } from '../../../../core/models/program.model';
@@ -13,6 +14,8 @@ import { getActionByCode, getActionMetadata } from '../../../../core/utils/actio
   styleUrls: ['./program-grid.css'],
 })
 export class ProgramGridComponent {
+  @Input() panzoomInstance!: PanzoomObject;
+
   // Use the current page from ProgramService
   currentPage = computed(() => this.programService.currentPage());
 
@@ -48,8 +51,7 @@ export class ProgramGridComponent {
   /**
    * Drag and drop handlers
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onDragOver(event: DragEvent, _index: number) {
+  onDragOver(event: DragEvent) {
     event.preventDefault();
     if (event.dataTransfer) {
       event.dataTransfer.dropEffect = 'copy';
@@ -59,7 +61,7 @@ export class ProgramGridComponent {
   /**
    * Handle drop - uses CellInteractionService for action placement
    */
-  async onDrop(event: DragEvent, index: number) {
+  async onDrop(event: DragEvent) {
     event.preventDefault();
 
     try {
@@ -68,12 +70,30 @@ export class ProgramGridComponent {
 
       const payload = JSON.parse(data);
       if (payload.action !== undefined) {
-        const x = index % 16;
-        const y = Math.floor(index / 16);
-        const page = this.currentPage();
+        const gridElement = (event.currentTarget as HTMLElement);
+        const rect = gridElement.getBoundingClientRect();
+        const scale = this.panzoomInstance.getScale();
 
-        // Use CellInteractionService to place action with proper dialogs
-        await this.cellInteractionService.placeActionAt(x, y, payload.action, page);
+        // Adjust for panzoom's transform
+        const pan = this.panzoomInstance.getPan();
+        const x = (event.clientX - rect.left - pan.x) / scale;
+        const y = (event.clientY - rect.top - pan.y) / scale;
+
+        // Calculate cell index from DOM
+        const firstCell = gridElement.querySelector('.program-cell');
+        if (!firstCell) return;
+        const cellWidth = firstCell.offsetWidth;
+        const cellHeight = firstCell.offsetHeight;
+        const gap = 4; // from CSS
+
+        const col = Math.floor(x / (cellWidth + gap));
+        const row = Math.floor(y / (cellHeight + gap));
+
+        if (col >= 0 && col < 16 && row >= 0 && row < 12) {
+          const page = this.currentPage();
+          // Use CellInteractionService to place action with proper dialogs
+          await this.cellInteractionService.placeActionAt(col, row, payload.action, page);
+        }
       }
     } catch (error) {
       console.error('Drop handling error:', error);
@@ -128,6 +148,7 @@ export class ProgramGridComponent {
       value: valueText,
       tooltip: metadata?.tooltip || actionInfo.name,
       actionCode: instruction.action,
+      category: metadata?.category || 'Unknown',
     };
   }
 }

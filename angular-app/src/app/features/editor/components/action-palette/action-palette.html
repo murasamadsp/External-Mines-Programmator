@@ -1,10 +1,9 @@
-<div id="action-palette" class="action-palette">
-  <h3>Дії</h3>
+<div class="action-palette">
+  <div class="palette-header">Дії</div>
 
   <div class="actions-list">
     @for (category of categoryKeys; track category) {
-      <div>
-        <!-- Category Header -->
+      <div class="category-container">
         <div
           class="category-header"
           (click)="toggleCategory(category)"
@@ -12,32 +11,27 @@
           tabindex="0"
           role="button"
           [attr.aria-expanded]="!isCategoryCollapsed(category)"
-          [attr.aria-label]="category"
         >
           <span>{{ category }}</span>
-          <button
-            type="button"
+          <span
             class="category-toggle"
-            [attr.data-toggle]="category"
-            (click)="toggleCategory(category); $event.stopPropagation()"
+            [class.collapsed]="isCategoryCollapsed(category)"
           >
-            {{ getCategoryToggleIcon(category) }}
-          </button>
+            ▼
+          </span>
         </div>
 
-        <!-- Category Actions -->
         <div
           class="category-actions"
-          [attr.data-category]="category"
+          [class.collapsed]="isCategoryCollapsed(category)"
           [style.max-height]="isCategoryCollapsed(category) ? '0px' : null"
-          [style.opacity]="isCategoryCollapsed(category) ? '0' : '1'"
-          [style.overflow]="isCategoryCollapsed(category) ? 'hidden' : 'visible'"
         >
           @for (actionKey of getCategoryActions(category); track actionKey) {
             <button
               type="button"
-              [attr.data-action]="actionKey"
+              class="action-button"
               [class.selected]="isSelected(actionKey)"
+              [class.dragging]="isDragging(actionKey)"
               [title]="getActionData(actionKey).tooltip"
               draggable="true"
               (click)="selectAction(actionKey)"
