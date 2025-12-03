@@ -1,122 +1,82 @@
 /* ============================================================================
-   Transport Panel (Controls) - Modern DAW Style
+   Controls - Material Design 3
    ============================================================================ */
 
-#program-controls {
+.controls-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  height: 48px; /* Slightly taller for transport feel */
-  padding: 0 var(--md-sys-spacing-3);
+  height: 64px;
+  padding: 0 var(--md-sys-spacing-2);
   background-color: var(--md-sys-color-surface);
-  border-bottom: 1px solid var(--md-sys-color-outline);
-  box-shadow: var(--md-sys-shadow-sm);
-  z-index: 10;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
 }
 
-/* ============================================================================
-   Sections
-   ============================================================================ */
-.controls-section {
+.controls-group {
   display: flex;
   align-items: center;
   gap: var(--md-sys-spacing-2);
-  height: 100%;
 }
 
-/* Vertical Divider */
-.controls-divider {
-  width: 1px;
-  height: 24px;
-  background-color: var(--md-sys-color-outline);
-  margin: 0 var(--md-sys-spacing-2);
+.page-navigation {
+  flex-grow: 1;
+  justify-content: center;
 }
 
 /* ============================================================================
-   Transport Buttons
+   Control Buttons
    ============================================================================ */
-.control-buttons button {
-  height: 32px;
-  padding: 0 var(--md-sys-spacing-3);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--md-sys-color-on-surface-variant);
-  background-color: transparent;
-  border: 1px solid var(--md-sys-color-outline);
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-.control-buttons button:hover {
-  color: var(--md-sys-color-on-surface);
-  border-color: var(--md-sys-color-secondary);
-  background-color: var(--md-sys-color-surface-variant);
-}
-
-.control-buttons button.primary {
-  background-color: var(--md-sys-color-primary);
-  border-color: var(--md-sys-color-primary);
-  color: white;
-}
-
-.control-buttons button.primary:hover {
-  background-color: var(--md-sys-color-primary-hover);
-}
-
-/* ============================================================================
-   Page Indicator - LCD Style
-   ============================================================================ */
-#page-indicator {
-  display: flex;
+.control-button {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  height: 32px;
-  padding: 0 12px;
-  background-color: #000000;
-  border: 1px solid var(--md-sys-color-outline);
-  border-radius: 4px;
-  font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
-  color: var(--md-sys-color-primary); /* Electric Blue Text */
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background-color: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  border: none;
+  border-radius: var(--md-sys-corner-full);
+  cursor: pointer;
+  transition: all var(--md-sys-transition-short);
+}
+
+.control-button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--md-sys-color-on-surface);
+}
+
+.control-button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.control-button.danger:hover {
+  background-color: rgba(255, 180, 171, 0.1); /* Error container color with alpha */
+  color: var(--md-sys-color-error);
+}
+
+.material-icons {
+  font-size: 24px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ============================================================================
+   Page Indicator
+   ============================================================================ */
+.page-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-2);
+  padding: 0 var(--md-sys-spacing-4);
+  font-family: var(--md-sys-font-family);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typescale-body-large);
 }
 
 .page-number {
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.page-total {
-  font-size: 12px;
-  opacity: 0.6;
-}
-
-/* ============================================================================
-   Page Navigation Buttons
-   ============================================================================ */
-.page-controls button {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--md-sys-color-surface-variant);
-  border: none;
-  border-radius: 4px;
+  font-weight: var(--md-sys-font-weight-medium);
   color: var(--md-sys-color-on-surface);
-}
-
-.page-controls button:hover {
-  background-color: var(--md-sys-color-secondary);
-  color: white;
-}
-
-.page-controls button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
 }
 
 /* ============================================================================
@@ -126,46 +86,54 @@
   position: relative;
 }
 
-.dropdown-content {
+.dropdown-menu {
   display: none;
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + var(--md-sys-spacing-2));
   right: 0;
-  min-width: 180px;
-  padding: 4px;
-  background-color: var(--md-sys-color-surface);
-  border: 1px solid var(--md-sys-color-outline);
-  border-radius: 6px;
-  box-shadow: var(--md-sys-shadow-md);
+  min-width: 200px;
+  padding: var(--md-sys-spacing-2);
+  background-color: var(--md-sys-color-surface-variant);
+  border-radius: var(--md-sys-corner-sm);
+  box-shadow: var(--md-sys-elevation-2);
   z-index: 100;
+  animation: fadeIn var(--md-sys-transition-short) ease-out;
 }
 
-.dropdown-content.show {
+.dropdown-menu.show {
   display: block;
-  animation: slideDown 0.15s ease-out;
 }
 
 .dropdown-item {
   display: flex;
   align-items: center;
+  gap: var(--md-sys-spacing-4);
   width: 100%;
-  height: 32px;
-  padding: 0 12px;
-  font-size: 13px;
-  color: var(--md-sys-color-on-surface);
+  height: 48px;
+  padding: 0 var(--md-sys-spacing-4);
+  font-size: var(--md-sys-typescale-body-large);
+  color: var(--md-sys-color-on-surface-variant);
   background: none;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--md-sys-corner-xs);
   text-align: left;
   cursor: pointer;
+  transition: background-color var(--md-sys-transition-short);
 }
 
 .dropdown-item:hover {
-  background-color: var(--md-sys-color-primary);
-  color: white;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--md-sys-color-on-surface);
 }
 
-@keyframes slideDown {
+.dropdown-divider {
+  height: 1px;
+  margin: var(--md-sys-spacing-2) 0;
+  background-color: var(--md-sys-color-outline-variant);
+  border: none;
+}
+
+@keyframes fadeIn {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
 }

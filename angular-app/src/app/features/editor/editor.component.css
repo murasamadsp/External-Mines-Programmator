@@ -62,10 +62,8 @@
 .editor-grid-container {
   flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--md-sys-spacing-3);
-  overflow: auto;
+  padding: 0;
+  overflow: hidden;
   /* Grid Background */
   background-size: 40px 40px;
   background-image:

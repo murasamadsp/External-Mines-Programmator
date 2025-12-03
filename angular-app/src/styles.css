@@ -1,82 +1,103 @@
 /* ============================================================================
-   External Mines Programmator - Modern Tech Design
-   Clean, Professional, Slate/Blue Theme
+   External Mines Programmator - Material Design 3 Theme
    ============================================================================ */
 
+/* Import Roboto Flex font */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap');
+
 :root {
-  /* === Colors - Modern Slate/Blue Palette === */
-  /* Primary - Electric Blue */
-  --md-sys-color-primary: #3B82F6;
-  --md-sys-color-primary-hover: #2563EB;
-  --md-sys-color-primary-container: #1D4ED8;
-  --md-sys-color-on-primary: #FFFFFF;
+  /* === Colors - Material Design 3 (Dark Theme) === */
+  /* Generated from #3B82F6 */
+  --md-sys-color-primary: #a3c7ff;
+  --md-sys-color-on-primary: #003062;
+  --md-sys-color-primary-container: #00468a;
+  --md-sys-color-on-primary-container: #d3e4ff;
+  --md-sys-color-secondary: #bdc7d8;
+  --md-sys-color-on-secondary: #283141;
+  --md-sys-color-secondary-container: #3e4758;
+  --md-sys-color-on-secondary-container: #dae3f5;
+  --md-sys-color-tertiary: #d9bde2;
+  --md-sys-color-on-tertiary: #3b2947;
+  --md-sys-color-tertiary-container: #523f5f;
+  --md-sys-color-on-tertiary-container: #f6d9ff;
+  --md-sys-color-error: #ffb4ab;
+  --md-sys-color-on-error: #690005;
+  --md-sys-color-error-container: #93000a;
+  --md-sys-color-on-error-container: #ffdad6;
+  --md-sys-color-background: #1a1c1e;
+  --md-sys-color-on-background: #e3e2e6;
+  --md-sys-color-surface: #1a1c1e;
+  --md-sys-color-on-surface: #e3e2e6;
+  --md-sys-color-surface-variant: #44474e;
+  --md-sys-color-on-surface-variant: #c4c6d0;
+  --md-sys-color-outline: #8e9099;
+  --md-sys-color-outline-variant: #44474e;
+  --md-sys-color-shadow: #000000;
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-inverse-surface: #e3e2e6;
+  --md-sys-color-inverse-on-surface: #2f3033;
+  --md-sys-color-inverse-primary: #005eb1;
+  --md-sys-color-primary-hover: #b8d4ff; /* Custom hover */
   
-  /* Secondary - Cool Gray */
-  --md-sys-color-secondary: #64748B;
-  --md-sys-color-secondary-hover: #475569;
-  --md-sys-color-on-secondary: #FFFFFF;
+  /* Status (Custom) */
+  --md-sys-color-success: #70e1a4;
+  --md-sys-color-warning: #f5b749;
+  --md-sys-color-info: #61d4ff;
+
+  /* === Shadows - Material Design 3 Elevations === */
+  --md-sys-elevation-1: 0 1px 3px 1px rgba(0,0,0,.15), 0 1px 2px 0 rgba(0,0,0,.3);
+  --md-sys-elevation-2: 0 2px 6px 2px rgba(0,0,0,.15), 0 1px 2px 0 rgba(0,0,0,.3);
+  --md-sys-elevation-3: 0 4px 8px 3px rgba(0,0,0,.15), 0 1px 3px 0 rgba(0,0,0,.3);
+  --md-sys-elevation-4: 0 6px 10px 4px rgba(0,0,0,.15), 0 2px 3px 0 rgba(0,0,0,.3);
+  --md-sys-elevation-5: 0 8px 12px 6px rgba(0,0,0,.15), 0 4px 4px 0 rgba(0,0,0,.3);
+
+  /* === Typography - Material Design 3 Scale === */
+  --md-sys-font-family: 'Roboto Flex', sans-serif;
   
-  /* Backgrounds - Deep Matte */
-  --md-sys-color-background: #0F172A; /* Slate 900 */
-  --md-sys-color-surface: #1E293B;     /* Slate 800 */
-  --md-sys-color-surface-variant: #334155; /* Slate 700 */
-  --md-sys-color-surface-container: #020617; /* Slate 950 */
-  
-  /* Text - High Contrast & Legibility */
-  --md-sys-color-on-surface: #F8FAFC;  /* Slate 50 */
-  --md-sys-color-on-surface-variant: #94A3B8; /* Slate 400 */
-  
-  /* Borders - Subtle */
-  --md-sys-color-outline: #334155;
-  --md-sys-color-outline-variant: #1E293B;
-  
-  /* Status */
-  --md-sys-color-error: #EF4444;
-  --md-sys-color-success: #10B981;
-  --md-sys-color-warning: #F59E0B;
-  --md-sys-color-info: #0EA5E9;
-  
-  /* === Shadows - Soft & Modern === */
-  --md-sys-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --md-sys-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
-  --md-sys-shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
-  --md-sys-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.15);
-  
-  /* === Typography - Clean & Readable === */
-  --md-sys-font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
-  
-  --md-sys-typescale-display: 24px;
-  --md-sys-typescale-headline: 18px;
-  --md-sys-typescale-title: 16px;
-  --md-sys-typescale-body: 13px; /* Slightly smaller for density */
-  --md-sys-typescale-label: 12px;
-  --md-sys-typescale-caption: 11px;
+  --md-sys-typescale-display-large: 57px;
+  --md-sys-typescale-display-medium: 45px;
+  --md-sys-typescale-display-small: 36px;
+  --md-sys-typescale-headline-large: 32px;
+  --md-sys-typescale-headline-medium: 28px;
+  --md-sys-typescale-headline-small: 24px;
+  --md-sys-typescale-title-large: 22px;
+  --md-sys-typescale-title-medium: 16px;
+  --md-sys-typescale-title-small: 14px;
+  --md-sys-typescale-body-large: 16px;
+  --md-sys-typescale-body-medium: 14px;
+  --md-sys-typescale-body-small: 12px;
+  --md-sys-typescale-label-large: 14px;
+  --md-sys-typescale-label-medium: 12px;
+  --md-sys-typescale-label-small: 11px;
   
   --md-sys-font-weight-regular: 400;
   --md-sys-font-weight-medium: 500;
-  --md-sys-font-weight-semibold: 600;
   --md-sys-font-weight-bold: 700;
   
-  /* === Spacing - Compact === */
+  /* === Spacing - Material Design 3 Grid === */
   --md-sys-spacing-1: 4px;
   --md-sys-spacing-2: 8px;
-  --md-sys-spacing-3: 16px;
-  --md-sys-spacing-4: 24px;
-  --md-sys-spacing-5: 32px;
+  --md-sys-spacing-3: 12px;
+  --md-sys-spacing-4: 16px;
+  --md-sys-spacing-5: 24px;
+  --md-sys-spacing-6: 32px;
   
-  /* === Shapes - Modern Radius === */
+  /* === Shapes - Material Design 3 Corner Radius === */
+  --md-sys-corner-none: 0;
   --md-sys-corner-xs: 4px;
-  --md-sys-corner-sm: 6px;
-  --md-sys-corner-md: 8px;
-  --md-sys-corner-lg: 12px;
+  --md-sys-corner-sm: 8px;
+  --md-sys-corner-md: 12px;
+  --md-sys-corner-lg: 16px;
+  --md-sys-corner-xl: 28px;
   --md-sys-corner-full: 9999px;
   
   /* === Transitions === */
-  --md-sys-transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  
+  --md-sys-transition-short: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --md-sys-transition-medium: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
   /* === Components === */
-  --md-sys-height-button: 36px; /* Compact buttons */
-  --md-sys-height-input: 36px;
+  --md-sys-height-button: 40px;
+  --md-sys-height-input: 56px;
 }
 
 /* ============================================================================
@@ -89,11 +110,12 @@
 body {
   margin: 0;
   font-family: var(--md-sys-font-family);
-  font-size: var(--md-sys-typescale-body);
+  font-size: var(--md-sys-typescale-body-medium);
   line-height: 1.5;
   background-color: var(--md-sys-color-background);
   color: var(--md-sys-color-on-surface);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ============================================================================
@@ -105,14 +127,19 @@ body {
   white-space: nowrap;
 }
 
+h1 { font-size: var(--md-sys-typescale-headline-large); }
+h2 { font-size: var(--md-sys-typescale-headline-medium); }
+h3 { font-size: var(--md-sys-typescale-title-large); }
+h4 { font-size: var(--md-sys-typescale-title-medium); }
+
 h1, h2, h3, h4 {
   margin: 0;
-  font-weight: var(--md-sys-font-weight-semibold);
+  font-weight: var(--md-sys-font-weight-bold);
   color: var(--md-sys-color-on-surface);
 }
 
 /* ============================================================================
-   Modern Buttons
+   Modern Buttons (Base styles, will be customized per component)
    ============================================================================ */
 button {
   display: inline-flex;
@@ -120,51 +147,24 @@ button {
   justify-content: center;
   gap: var(--md-sys-spacing-2);
   height: var(--md-sys-height-button);
-  padding: 0 var(--md-sys-spacing-3);
+  padding: 0 var(--md-sys-spacing-4);
   font-family: inherit;
-  font-size: var(--md-sys-typescale-label);
+  font-size: var(--md-sys-typescale-label-large);
   font-weight: var(--md-sys-font-weight-medium);
-  border-radius: var(--md-sys-corner-sm);
+  border-radius: var(--md-sys-corner-full);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all var(--md-sys-transition);
-  background: transparent;
-  color: var(--md-sys-color-on-surface);
+  transition: all var(--md-sys-transition-short);
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
 }
 
 button:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  filter: brightness(1.1);
 }
 
 button:active {
-  transform: translateY(1px);
-}
-
-button.primary {
-  background-color: var(--md-sys-color-primary);
-  color: var(--md-sys-color-on-primary);
-  box-shadow: var(--md-sys-shadow-sm);
-}
-
-button.primary:hover {
-  background-color: var(--md-sys-color-primary-hover);
-  box-shadow: var(--md-sys-shadow);
-}
-
-button.outline {
-  border-color: var(--md-sys-color-outline);
-  color: var(--md-sys-color-on-surface-variant);
-}
-
-button.outline:hover {
-  border-color: var(--md-sys-color-on-surface-variant);
-  color: var(--md-sys-color-on-surface);
-  background-color: var(--md-sys-color-surface);
-}
-
-button.icon-only {
-  width: var(--md-sys-height-button);
-  padding: 0;
+  filter: brightness(0.9);
 }
 
 /* ============================================================================
@@ -188,13 +188,3 @@ button.icon-only {
   background: var(--md-sys-color-secondary);
 }
 
-/* ============================================================================
-   Grid Background Pattern
-   ============================================================================ */
-.grid-pattern {
-  background-image: 
-    linear-gradient(var(--md-sys-color-outline-variant) 1px, transparent 1px),
-    linear-gradient(90deg, var(--md-sys-color-outline-variant) 1px, transparent 1px);
-  background-size: 20px 20px;
-  background-position: center center;
-}

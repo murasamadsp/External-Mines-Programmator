@@ -1,61 +1,56 @@
-<div id="program-controls">
-  <!-- Transport Controls -->
-  <div class="controls-section">
-    <div class="control-buttons">
-      <button type="button" (click)="pasteFromClipboard()" title="Paste Program from Clipboard">
-        📋 Paste
-      </button>
-      <button type="button" (click)="exportProgram()" title="Export Program">📤 Export</button>
-      <button type="button" (click)="validateProgram()" title="Validate Program">
-        ✅ Validate
-      </button>
-      <button type="button" (click)="clearProgram()" title="Clear Program">🗑️ Clear</button>
-    </div>
+<div class="controls-container">
+  <!-- Left Section: Main Actions -->
+  <div class="controls-group">
+    <button class="control-button" (click)="pasteFromClipboard()" title="Paste Program from Clipboard">
+      <span class="material-icons">content_paste</span>
+    </button>
+    <button class="control-button" (click)="exportProgram()" title="Export Program">
+      <span class="material-icons">save</span>
+    </button>
+    <button class="control-button" (click)="validateProgram()" title="Validate Program">
+      <span class="material-icons">spellcheck</span>
+    </button>
+    <button class="control-button danger" (click)="clearProgram()" title="Clear Program">
+      <span class="material-icons">delete_sweep</span>
+    </button>
   </div>
 
-  <!-- Page Controls -->
-  <div class="controls-section">
-    <div class="page-controls">
-      <button type="button" (click)="prevPage()" [disabled]="programService.currentPage() === 0">
-        ◀
-      </button>
-      <div id="page-indicator">
-        <span class="page-number">{{ programService.currentPage() + 1 }}</span>
-        <span class="page-total">/16</span>
-      </div>
-      <button type="button" (click)="nextPage()" [disabled]="programService.currentPage() >= 15">
-        ▶
-      </button>
+  <!-- Center Section: Page Navigation -->
+  <div class="controls-group page-navigation">
+    <button class="control-button" (click)="prevPage()" [disabled]="programService.currentPage() === 0">
+      <span class="material-icons">chevron_left</span>
+    </button>
+    <div class="page-indicator">
+      <span>Page</span>
+      <span class="page-number">{{ programService.currentPage() + 1 }}</span>
     </div>
+    <button class="control-button" (click)="nextPage()" [disabled]="programService.currentPage() >= 15">
+      <span class="material-icons">chevron_right</span>
+    </button>
   </div>
 
-  <!-- Extended Actions -->
-  <div class="controls-section">
+  <!-- Right Section: Tools and Menu -->
+  <div class="controls-group">
+    <button class="control-button" (click)="copyToClipboard()" title="Copy to Clipboard">
+      <span class="material-icons">content_copy</span>
+    </button>
     <div class="dropdown">
-      <button
-        type="button"
-        id="extended-actions-btn"
-        (click)="toggleTools()"
-        [class.active]="isToolsOpen()"
-      >
-        🛠️ Tools
+      <button class="control-button" (click)="toggleTools()" [class.active]="isToolsOpen()">
+        <span class="material-icons">more_vert</span>
       </button>
-      <div class="dropdown-content" [class.show]="isToolsOpen()">
-        <button type="button" class="dropdown-item" (click)="copyToClipboard()">
-          <span class="icon">📋</span> Copy to Clipboard
+      <div class="dropdown-menu" [class.show]="isToolsOpen()">
+        <button class="dropdown-item" (click)="openDecoder()">
+          <span class="material-icons">code</span>
+          <span>Decoder</span>
         </button>
-
-        <button type="button" class="dropdown-item" (click)="openDecoder()">
-          <span class="icon">🔍</span> Open Decoder
+        <button class="dropdown-item" (click)="openAnalyzer()">
+          <span class="material-icons">analytics</span>
+          <span>Analyzer</span>
         </button>
-        <button type="button" class="dropdown-item" (click)="openAnalyzer()">
-          <span class="icon">📊</span> Open Analyzer
-        </button>
-
         <div class="dropdown-divider"></div>
-
-        <button type="button" class="dropdown-item" (click)="openSettings()">
-          <span class="icon">⚙️</span> Settings
+        <button class="dropdown-item" (click)="openSettings()">
+          <span class="material-icons">settings</span>
+          <span>Settings</span>
         </button>
       </div>
     </div>

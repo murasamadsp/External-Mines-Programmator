@@ -6,6 +6,8 @@ import {
   signal,
   ViewChild,
   HostListener,
+  ElementRef,
+  AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProgramService } from '../../core/services/program.service';
@@ -18,6 +20,7 @@ import { SnippetsPanelComponent } from './components/snippets-panel/snippets-pan
 import { ValidationPanelComponent } from '../../shared/components/validation-panel/validation-panel.component';
 import { ShortcutsDialogComponent } from '../../shared/components/shortcuts-dialog/shortcuts-dialog.component';
 import { LoadingDirective } from '../../shared/directives/loading.directive';
+import Panzoom, { PanzoomObject } from '@panzoom/panzoom';
 
 @Component({
   selector: 'app-editor',
@@ -35,13 +38,16 @@ import { LoadingDirective } from '../../shared/directives/loading.directive';
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.css'],
 })
-export class EditorComponent implements OnInit, OnDestroy {
+export class EditorComponent implements OnInit, OnDestroy, AfterViewInit {
   private readonly programService = inject(ProgramService);
   public readonly persistenceService = inject(PersistenceService);
   private readonly toastService = inject(ToastService);
 
+  @ViewChild('gridContainer') gridContainer!: ElementRef;
   @ViewChild(ValidationPanelComponent) validationPanel?: ValidationPanelComponent;
   @ViewChild(ShortcutsDialogComponent) shortcutsDialog?: ShortcutsDialogComponent;
+
+  panzoomInstance!: PanzoomObject;
 
   // Loading state
   readonly isLoading = signal(true);
@@ -86,9 +92,47 @@ export class EditorComponent implements OnInit, OnDestroy {
     window.addEventListener('resize', this.handleResize);
   }
 
+  ngAfterViewInit(): void {
+    const gridElement =
+      this.gridContainer.nativeElement.querySelector('#program-grid');
+
+    if (gridElement) {
+      this.panzoomInstance = Panzoom(gridElement, {
+        canvas: true,
+        disableZoom: false,
+        minScale: 0.5,
+        maxScale: 2,
+        step: 0.1,
+        focal: {
+          x: 0.5,
+          y: 0.5,
+        },
+      });
+
+      // Add wheel listener for zooming
+      this.gridContainer.nativeElement.addEventListener(
+        'wheel',
+        this.panzoomInstance.zoomWithWheel
+      );
+
+      // Change cursor during panning
+      gridElement.addEventListener('panzoomstart', () => {
+        gridElement.style.cursor = 'grabbing';
+      });
+      gridElement.addEventListener('panzoomend', () => {
+        gridElement.style.cursor = 'grab';
+      });
+    }
+  }
+
   ngOnDestroy(): void {
     console.log('🧹 Editor cleanup');
 
+    this.gridContainer.nativeElement.removeEventListener(
+      'wheel',
+      this.panzoomInstance.zoomWithWheel
+    );
+    this.panzoomInstance?.destroy();
     // Stop autosave
     this.persistenceService.stopAutosave();
 

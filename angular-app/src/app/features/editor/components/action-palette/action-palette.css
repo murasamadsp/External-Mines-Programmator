@@ -1,124 +1,103 @@
 /* ============================================================================
-   Action Palette - Modern Grid
+   Action Palette - Material Design 3
    ============================================================================ */
 
-#action-palette {
+.action-palette {
   display: flex;
   flex-direction: column;
   height: 100%;
   background-color: var(--md-sys-color-surface);
-  border-right: 1px solid var(--md-sys-color-outline);
+  border-right: 1px solid var(--md-sys-color-outline-variant);
 }
 
-/* Header */
-#action-palette h3 {
-  padding: 16px;
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--md-sys-color-secondary);
-  border-bottom: 1px solid var(--md-sys-color-outline);
-  margin: 0;
-  background-color: var(--md-sys-color-surface-container);
+.palette-header {
+  padding: var(--md-sys-spacing-4);
+  font-size: var(--md-sys-typescale-title-large);
+  font-weight: var(--md-sys-font-weight-bold);
+  color: var(--md-sys-color-on-surface);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
 }
 
-/* List Container */
 .actions-list {
   flex: 1;
   overflow-y: auto;
-  padding: 12px;
+  padding: var(--md-sys-spacing-2);
 }
 
-/* Category Header */
 .category-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 4px;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--md-sys-color-primary);
+  padding: var(--md-sys-spacing-3) var(--md-sys-spacing-2);
+  margin-top: var(--md-sys-spacing-2);
+  font-size: var(--md-sys-typescale-title-small);
+  font-weight: var(--md-sys-font-weight-medium);
+  color: var(--md-sys-color-on-surface-variant);
   cursor: pointer;
   user-select: none;
-}
-
-.category-header:first-child {
-  margin-top: 0;
+  border-radius: var(--md-sys-corner-sm);
+  transition: background-color var(--md-sys-transition-short);
 }
 
 .category-header:hover {
-  color: var(--md-sys-color-primary-hover);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Grid Layout */
+.category-toggle {
+  transition: transform var(--md-sys-transition-short);
+}
+
+.category-toggle.collapsed {
+  transform: rotate(-90deg);
+}
+
 .category-actions {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 Columns fixed */
-  gap: 8px;
-  margin-bottom: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: var(--md-sys-spacing-2);
+  padding: var(--md-sys-spacing-2);
+  transition: all var(--md-sys-transition-medium);
 }
 
 .category-actions.collapsed {
-  display: none;
+  padding: 0;
+  overflow: hidden;
 }
 
-/* Action Card */
-#action-palette button[data-action] {
-  position: relative;
+.action-button {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  aspect-ratio: 1; /* Square */
-  padding: 4px;
+  min-height: 80px;
+  padding: var(--md-sys-spacing-2);
   background-color: var(--md-sys-color-surface-variant);
-  border: 1px solid transparent;
-  border-radius: 6px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-corner-md);
   cursor: grab;
-  transition: all 0.15s ease;
-  overflow: hidden; /* Prevent overflow */
-}
-
-/* Hover State */
-#action-palette button[data-action]:hover {
-  background-color: var(--md-sys-color-secondary);
-  border-color: var(--md-sys-color-on-secondary);
-  transform: translateY(-1px);
-  box-shadow: var(--md-sys-shadow-sm);
-}
-
-/* Text Styling - Prevent Overflow */
-#action-palette button[data-action] {
-  font-size: 10px;
-  line-height: 1.2;
+  transition: all var(--md-sys-transition-short);
+  font-size: var(--md-sys-typescale-label-small);
   text-align: center;
-  color: var(--md-sys-color-on-surface);
-  word-break: break-word; /* Wrap long words if needed */
-  hyphens: auto;
+  color: var(--md-sys-color-on-surface-variant);
+  word-break: break-word;
 }
 
-/* Selected State */
-#action-palette button[data-action].selected {
-  background-color: var(--md-sys-color-primary);
-  color: white;
-  border-color: var(--md-sys-color-primary-container);
-  box-shadow: var(--md-sys-shadow);
+.action-button:hover {
+  background-color: var(--md-sys-color-secondary-container);
+  border-color: var(--md-sys-color-secondary);
+  color: var(--md-sys-color-on-secondary-container);
+  transform: translateY(-2px);
+  box-shadow: var(--md-sys-elevation-1);
 }
 
-/* Dragging State */
-#action-palette button[data-action].dragging {
+.action-button.selected {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: var(--md-sys-color-primary);
+  box-shadow: var(--md-sys-elevation-2);
+}
+
+.action-button.dragging {
   opacity: 0.4;
   transform: scale(0.9);
-}
-
-/* Responsive */
-@media (max-width: 1200px) {
-  .category-actions {
-    grid-template-columns: repeat(2, 1fr); /* 2 Columns on smaller screens */
-  }
 }

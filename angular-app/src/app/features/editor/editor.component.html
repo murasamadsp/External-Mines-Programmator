@@ -22,8 +22,8 @@
     }
 
     <!-- Program Grid -->
-    <div class="editor-grid-container">
-      <app-program-grid></app-program-grid>
+    <div class="editor-grid-container" #gridContainer>
+      <app-program-grid [panzoomInstance]="panzoomInstance"></app-program-grid>
     </div>
   </main>
 
