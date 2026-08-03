@@ -15,10 +15,11 @@ import {
 import { loggers } from "../../../utils/logging/logger.js";
 
 export class PersistenceController {
-  constructor(program, uiController, dialogController) {
+  constructor(program, uiController, dialogController, navigationController) {
     this.program = program;
     this.uiController = uiController;
     this.dialogController = dialogController;
+    this.navigationController = navigationController;
 
     // Автозбереження
     this.autosaveTimer = null;
@@ -53,6 +54,8 @@ export class PersistenceController {
       if (this.uiController.programGrid) {
         this.uiController.programGrid.program = this.program;
       }
+
+      this.navigationController?.switchToPage(0);
 
       const importTime = performance.now() - startTime;
       const instructionCount = this.program.instructions.length;
@@ -384,6 +387,7 @@ export class PersistenceController {
             }
           });
 
+          this.navigationController?.switchToPage(0);
           this.uiController.updatePageDisplay(0, MAX_PAGES);
           this.uiController.updateGridDisplay();
 
@@ -440,6 +444,7 @@ export class PersistenceController {
     this.program = null;
     this.uiController = null;
     this.dialogController = null;
+    this.navigationController = null;
     loggers.editor.debug("✅ PersistenceController очищено");
   }
 }

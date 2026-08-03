@@ -119,14 +119,15 @@ export class EditorController {
       if (this.pendingAction !== null) {
         this.cellController.setSelectedAction(this.pendingAction);
       }
+      this.navigationController = new NavigationController(
+        this.program,
+        this.uiController,
+      );
       this.persistenceController = new PersistenceController(
         this.program,
         this.uiController,
         this.dialogController,
-      );
-      this.navigationController = new NavigationController(
-        this.program,
-        this.uiController,
+        this.navigationController,
       );
       this.settingsController = new SettingsController(
         this.persistenceController,
