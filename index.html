@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="External Mines Programmator - visual program editor for the Mines game"
+    />
+    <meta
+      name="keywords"
+      content="mines, programmator, programming, game, visual editor"
+    />
+    <meta name="author" content="Murasama" />
+
+    <title>EMP</title>
+
+    <!-- Preconnect to Google Fonts for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+    />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+
+    <!-- CSS Files -->
+    <style>
+      @layer reset, base, theme, components, utilities;
+    </style>
+    <script type="module" crossorigin src="/External-Mines-Programmator/assets/index-Cyl2honi.js"></script>
+    <link rel="modulepreload" crossorigin href="/External-Mines-Programmator/assets/ui-DHS7ZPda.js">
+    <link rel="stylesheet" crossorigin href="/External-Mines-Programmator/assets/css/index-BiN8N5VX.css">
+    <script type="module">import.meta.url;import("_").catch(()=>1);(async function*(){})().next();window.__vite_is_modern_browser=true</script>
+    <script type="module">!function(){if(window.__vite_is_modern_browser)return;console.warn("vite: loading legacy chunks, syntax error above and the same error below should be ignored");var e=document.getElementById("vite-legacy-polyfill"),n=document.createElement("script");n.src=e.src,n.onload=function(){System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))},document.body.appendChild(n)}();</script>
+  </head>
+  <body>
+    <!-- Mobile Block Overlay -->
+    <div class="mobile-block-overlay" id="mobile-block-overlay">
+      <div class="mobile-block-content">
+        <div class="mobile-block-icon">📱</div>
+        <h1 class="mobile-block-title">К сожалению!</h1>
+        <p class="mobile-block-message">
+          Это приложение не поддерживает мобильные устройства.<br />
+          Пожалуйста, используйте компьютер или планшет.
+        </p>
+        <div class="mobile-block-devices">
+          <span class="mobile-device-icon">💻</span>
+          <span class="mobile-device-icon">🖥️</span>
+          <span class="mobile-device-icon">📺</span>
+        </div>
+        <p class="mobile-block-footer">
+          Программатор шахт работает только на стационарных устройствах
+        </p>
+      </div>
+    </div>
+
+    <!-- Global Dialog Overlay (Static) -->
+    <div class="dialog-overlay" id="global-dialog-overlay">
+      <div class="dialog-content">
+        <h3 id="dialog-title">Dialog Title</h3>
+        <div class="dialog-body" id="dialog-body">
+          <!-- Dynamic Content Goes Here -->
+        </div>
+        <div class="dialog-buttons">
+          <button class="expert-btn-primary" id="dialog-ok-btn">✅ OK</button>
+          <button class="expert-btn-secondary" id="dialog-cancel-btn">
+            ❌ Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Site header -->
+    <header class="visually-hidden">
+      <div class="container">
+        <div class="header-content">
+          <h1 class="site-title">EMP</h1>
+          <p class="site-subtitle">External Mines Programmator</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main>
+      <div class="container">
+        <section class="section programmer-section">
+          <div class="programmer-layout">
+            <!-- Left Panel: Action Palette -->
+            <div class="programmer-sidebar programmer-sidebar-left">
+              <!-- Action palette will be created here by JavaScript -->
+            </div>
+
+            <!-- Program Grid -->
+            <div class="programmer-main">
+              <!-- Transport Panel -->
+              <div
+                id="transport-panel-container"
+                class="transport-panel-container"
+              >
+                <!-- Controls will be injected here -->
+              </div>
+
+              <!-- Program grid will be created here by JavaScript -->
+            </div>
+
+            <!-- Right Panel: Snippets -->
+            <div class="programmer-sidebar programmer-sidebar-right">
+              <!-- Snippets panel will be created here by JavaScript -->
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Site footer -->
+    <footer class="visually-hidden">
+      <div class="container">
+        <div class="footer-content">
+          <p>
+            &copy; 2025 External Mines Programmator. Made with ❤️ by Murasama
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Simple JS check -->
+    <script>
+      window.JS_LOADED = true;
+      document.body.setAttribute("data-js-loaded", "true");
+      console.log("🔥 HTML: JavaScript is working");
+    </script>
+
+    <!-- Main Application Entry Point -->
+    <script nomodule>!function(){var e=document,t=e.createElement("script");if(!("noModule"in t)&&"onbeforeload"in t){var n=!1;e.addEventListener("beforeload",(function(e){if(e.target===t)n=!0;else if(!e.target.hasAttribute("nomodule")||!n)return;e.preventDefault()}),!0),t.type="module",t.src=".",e.head.appendChild(t),t.remove()}}();</script>
+    <script nomodule crossorigin id="vite-legacy-polyfill" src="/External-Mines-Programmator/assets/polyfills-legacy-TCzTzxPF.js"></script>
+    <script nomodule crossorigin id="vite-legacy-entry" data-src="/External-Mines-Programmator/assets/index-legacy-PIHgpKoA.js">System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))</script>
+  </body>
+</html>
