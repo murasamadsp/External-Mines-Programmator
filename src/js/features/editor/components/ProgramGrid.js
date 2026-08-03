@@ -116,7 +116,7 @@ export class ProgramGrid {
 
       const payload = JSON.parse(data);
       if (payload.action !== undefined && this.onCellDrop) {
-        Promise.resolve(this.onCellDrop(x, y, payload)).catch(error => {
+        Promise.resolve(this.onCellDrop(x, y, payload)).catch((error) => {
           loggers.ui.error("❌ Action drop handling error:", error);
         });
         loggers.ui.debug(`📥 Dropped action ${payload.action} at [${x}, ${y}]`);
@@ -367,6 +367,8 @@ export class ProgramGrid {
         name = labelText;
       }
 
+      name = this.getCompactActionName(actionInfo?.name || name);
+
       iconSpan.textContent = emoji;
       content.appendChild(iconSpan);
 
@@ -458,6 +460,16 @@ export class ProgramGrid {
 
     const data = ACTION_DATA[actionInfo.name];
     return data?.label || actionInfo.name;
+  }
+
+  getCompactActionName(actionName) {
+    const words = String(actionName || "Action")
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .split(/\s+/)
+      .filter(Boolean);
+
+    if (words.length <= 1) return words[0] || "Action";
+    return `${words[0]}\n${words.slice(1).join(" ")}`;
   }
 
   /**

@@ -166,6 +166,7 @@
 
 .cell-content {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -192,6 +193,7 @@
   line-height: 1.1;
   text-overflow: ellipsis;
   overflow-wrap: anywhere;
+  white-space: pre-line;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }

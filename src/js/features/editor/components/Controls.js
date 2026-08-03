@@ -85,7 +85,7 @@ export class Controls {
 
     this.importButton = createButton({
       id: "import-btn",
-      text: "",
+      text: "Імпорт",
       icon: "📥",
       title: "Импортировать программу",
       onClick: async () => {
@@ -133,7 +133,7 @@ export class Controls {
 
     this.exportButton = createButton({
       id: "export-btn",
-      text: "",
+      text: "Експорт",
       icon: "📤",
       title: "Экспортировать программу",
       onClick: async () => {
@@ -170,7 +170,7 @@ export class Controls {
 
     const validateBtn = createButton({
       id: "validate-program",
-      text: "",
+      text: "Перевірити",
       icon: "✅",
       title: "Проверить программу",
       onClick: () => this.callbacks.onValidate?.(),
@@ -179,7 +179,7 @@ export class Controls {
 
     const clearBtn = createButton({
       id: "clear-program",
-      text: "",
+      text: "Очистити",
       icon: "🗑️",
       title: "Очистить программу",
       onClick: () => {
@@ -202,7 +202,7 @@ export class Controls {
 
     const prevBtn = createButton({
       id: "prev-page",
-      text: "",
+      text: "Назад",
       icon: "⬅️",
       title: "Предыдущая страница",
       onClick: () => {
@@ -222,7 +222,7 @@ export class Controls {
 
     const nextBtn = createButton({
       id: "next-page",
-      text: "",
+      text: "Далі",
       icon: "➡️",
       title: "Следующая страница",
       onClick: () => {

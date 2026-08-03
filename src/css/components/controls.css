@@ -68,6 +68,15 @@
   overflow: hidden;
 }
 
+#program-controls .btn-text {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+#program-controls .btn-icon {
+  flex: 0 0 auto;
+}
+
 #program-controls button::before {
   /* Misc */
   display: block;
