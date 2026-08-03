@@ -30,9 +30,6 @@ export class EditorController {
       `⏱️ Конструктор EditorController виконано за ${constructorTime.toFixed(2)}ms`,
     );
 
-    // Ініціалізація контролерів
-    this.initializeControllers();
-
     // Синхронізація висоти при зміні розміру вікна
     this.resizeHandler = () => {
       if (this.uiController) {
@@ -40,6 +37,23 @@ export class EditorController {
       }
     };
     window.addEventListener("resize", this.resizeHandler);
+
+    // UI-модулі створюються асинхронно, тому чекаємо їх завершення перед
+    // запуском залежних контролерів та першою синхронізацією інтерфейсу.
+    this.initialize()
+      .then(() => {
+        loggers.editor.info("✅ EditorController вдало започатковано");
+      })
+      .catch(error => {
+        loggers.editor.error("❌ Не вдалося започаткувати Programmator:", error);
+      });
+  }
+
+  /**
+   * Повністю ініціалізує контролери та інтерфейс у правильному порядку.
+   */
+  async initialize() {
+    await this.initializeControllers();
 
     // Перевірка контейнерів лейаута
     const layoutContainer = document.querySelector(".programmer-layout");
@@ -60,7 +74,7 @@ export class EditorController {
   /**
    * Ініціалізація всіх контролерів
    */
-  initializeControllers() {
+  async initializeControllers() {
     loggers.editor.debug("🎮 Ініціалізація контролерів...");
 
     // Створюємо callbacks для зв'язку між контролерами
@@ -78,44 +92,39 @@ export class EditorController {
     this.uiController = new UIController(this.program, callbacks);
 
     // Асинхронна ініціалізація UI (буде оброблена окремо)
-    this.uiController
-      .initialize()
-      .then(() => {
-        const { dialogManager } = this.uiController;
+    try {
+      await this.uiController.initialize();
+      const { dialogManager } = this.uiController;
 
-        // Створюємо контролери в правильному порядку залежностей
-        this.dialogController = new DialogController(dialogManager);
-        this.cellController = new CellController(
-          this.program,
-          dialogManager,
-          this.uiController,
-        );
-        this.persistenceController = new PersistenceController(
-          this.program,
-          this.uiController,
-          this.dialogController,
-        );
-        this.navigationController = new NavigationController(
-          this.program,
-          this.uiController,
-        );
-        this.settingsController = new SettingsController(
-          this.persistenceController,
-          this.dialogController,
-        );
+      // Створюємо контролери в правильному порядку залежностей
+      this.dialogController = new DialogController(dialogManager);
+      this.cellController = new CellController(
+        this.program,
+        dialogManager,
+        this.uiController,
+      );
+      this.persistenceController = new PersistenceController(
+        this.program,
+        this.uiController,
+        this.dialogController,
+      );
+      this.navigationController = new NavigationController(
+        this.program,
+        this.uiController,
+      );
+      this.settingsController = new SettingsController(
+        this.persistenceController,
+        this.dialogController,
+      );
 
-        // Ініціалізуємо Drag & Drop
-        this.dragDropManager = new DragDropManager(
-          this.uiController.programGrid,
-        );
+      // Ініціалізуємо Drag & Drop після створення сітки
+      this.dragDropManager = new DragDropManager(this.uiController.programGrid);
 
-        loggers.editor.debug("✅ Усі контролери ініціалізовано");
-        return true;
-      })
-      .catch(error => {
-        loggers.editor.error("❌ Помилка ініціалізації контролерів:", error);
-        throw error;
-      });
+      loggers.editor.debug("✅ Усі контролери ініціалізовано");
+    } catch (error) {
+      loggers.editor.error("❌ Помилка ініціалізації контролерів:", error);
+      throw error;
+    }
   }
 
   /**
@@ -126,14 +135,6 @@ export class EditorController {
     loggers.editor.info("🔧 Початок ініціалізації UI інтерфейсу...");
 
     try {
-      // Ініціалізація Drag & Drop
-      loggers.editor.debug("🎮 Ініціалізація Drag & Drop менеджера...");
-      if (this.uiController.programGrid) {
-        this.dragDropManager = new DragDropManager(
-          this.uiController.programGrid,
-        );
-      }
-
       // Ініціалізуємо Context Menu Manager
       if (!contextMenuManager) {
         loggers.editor.error(
