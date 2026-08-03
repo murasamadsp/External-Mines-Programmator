@@ -5,6 +5,7 @@
 import { loggers } from "../../utils/logging/logger.js";
 import { stateManager } from "./state-manager.js";
 import { getActionByCode } from "../constants/actions.js";
+import { GRID_WIDTH, GRID_HEIGHT, MAX_PAGES } from "../constants/grid.js";
 
 export class DragDropManager {
   constructor(programGrid) {
@@ -47,27 +48,29 @@ export class DragDropManager {
     const grid = this.programGrid.container;
 
     // Unified Pointer Events
-    grid.addEventListener("pointerdown", e => this.handlePointerDown(e));
-    document.addEventListener("pointermove", e => this.handlePointerMove(e));
-    document.addEventListener("pointerup", e => this.handlePointerUp(e));
-    document.addEventListener("pointercancel", e => this.cancelDrag());
+    this.boundPointerDown = (e) => this.handlePointerDown(e);
+    this.boundPointerMove = (e) => this.handlePointerMove(e);
+    this.boundPointerUp = (e) => this.handlePointerUp(e);
+    this.boundPointerCancel = () => this.cancelDrag();
+    this.boundClick = (e) => {
+      if (this.wasDragging) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.wasDragging = false;
+        loggers.services.debug("🚫 Click suppressed after drag");
+      }
+    };
+
+    grid.addEventListener("pointerdown", this.boundPointerDown);
+    document.addEventListener("pointermove", this.boundPointerMove);
+    document.addEventListener("pointerup", this.boundPointerUp);
+    document.addEventListener("pointercancel", this.boundPointerCancel);
 
     // Prevent default touch actions to allow dragging
     grid.style.touchAction = "none";
 
     // Suppress click event after dragging
-    grid.addEventListener(
-      "click",
-      e => {
-        if (this.wasDragging) {
-          e.preventDefault();
-          e.stopPropagation();
-          this.wasDragging = false;
-          loggers.services.debug("🚫 Click suppressed after drag");
-        }
-      },
-      true,
-    ); // Capture phase to intercept before ProgramGrid
+    grid.addEventListener("click", this.boundClick, true);
   }
 
   handlePointerDown(e) {
@@ -80,7 +83,7 @@ export class DragDropManager {
     const position = this.getCellPosition(cell);
     if (position === null) return;
 
-    const instruction = this.programGrid.program.getInstruction(position);
+    const instruction = this.getInstructionAtPosition(position);
     if (!instruction || instruction.action === 0) return;
 
     // Start tracking potential drag
@@ -178,9 +181,11 @@ export class DragDropManager {
     const cell = target?.closest(".program-cell");
 
     // Clear previous highlights
-    this.programGrid.container.querySelectorAll(".drop-target").forEach(el => {
-      el.classList.remove("drop-target");
-    });
+    this.programGrid.container
+      .querySelectorAll(".drop-target")
+      .forEach((el) => {
+        el.classList.remove("drop-target");
+      });
 
     if (cell) {
       cell.classList.add("drop-target");
@@ -209,8 +214,11 @@ export class DragDropManager {
 
   moveInstruction(from, to) {
     const { program } = this.programGrid;
-    const fromInst = program.getInstruction(from);
-    const toInst = program.getInstruction(to);
+    const page = this.getCurrentPage();
+    const fromInst = this.getInstructionAtPosition(from);
+    const toInst = this.getInstructionAtPosition(to);
+    const fromCoordinates = this.positionToCoordinates(from);
+    const toCoordinates = this.positionToCoordinates(to);
 
     // Create copies to avoid reference issues
     const fromInstCopy = new fromInst.constructor(
@@ -225,12 +233,26 @@ export class DragDropManager {
     );
 
     // Move from -> to
-    program.setInstruction(to, fromInstCopy);
+    program.setInstructionAt(
+      toCoordinates.x,
+      toCoordinates.y,
+      fromInstCopy.action,
+      fromInstCopy.label,
+      fromInstCopy.value,
+      page,
+    );
 
     // Move to -> from (swap) or clear from (move)
     // If toInst was None, we are just moving, so from becomes None.
     // If toInst was an action, we are swapping, so from becomes toInst.
-    program.setInstruction(from, toInstCopy);
+    program.setInstructionAt(
+      fromCoordinates.x,
+      fromCoordinates.y,
+      toInstCopy.action,
+      toInstCopy.label,
+      toInstCopy.value,
+      page,
+    );
 
     // Update UI
     this.programGrid.updateCell(from, program.getInstruction(from));
@@ -244,9 +266,11 @@ export class DragDropManager {
 
   endDrag() {
     document.body.style.cursor = "";
-    this.programGrid.container.querySelectorAll(".drop-target").forEach(el => {
-      el.classList.remove("drop-target");
-    });
+    this.programGrid.container
+      .querySelectorAll(".drop-target")
+      .forEach((el) => {
+        el.classList.remove("drop-target");
+      });
 
     stateManager.setState({
       dragState: {
@@ -273,6 +297,44 @@ export class DragDropManager {
     const x = parseInt(cell.getAttribute("data-x"));
     const y = parseInt(cell.getAttribute("data-y"));
     if (isNaN(x) || isNaN(y)) return null;
-    return y * 16 + x; // Assuming GRID_WIDTH is 16, but better to import it
+    if (x < 0 || x >= GRID_WIDTH || y < 0 || y >= GRID_HEIGHT) return null;
+    return y * GRID_WIDTH + x;
+  }
+
+  getCurrentPage() {
+    const page = stateManager.getState("currentPage");
+    return Number.isInteger(page) && page >= 0 && page < MAX_PAGES ? page : 0;
+  }
+
+  positionToCoordinates(position) {
+    return {
+      x: position % GRID_WIDTH,
+      y: Math.floor(position / GRID_WIDTH),
+    };
+  }
+
+  getInstructionAtPosition(position) {
+    const { x, y } = this.positionToCoordinates(position);
+    return this.programGrid.program.getInstructionAt(
+      x,
+      y,
+      this.getCurrentPage(),
+    );
+  }
+
+  destroy() {
+    const grid = this.programGrid?.container;
+    if (grid) {
+      grid.removeEventListener("pointerdown", this.boundPointerDown);
+      grid.removeEventListener("click", this.boundClick, true);
+    }
+    document.removeEventListener("pointermove", this.boundPointerMove);
+    document.removeEventListener("pointerup", this.boundPointerUp);
+    document.removeEventListener("pointercancel", this.boundPointerCancel);
+    this.cancelDrag();
+    this.dragOverlay?.remove();
+    this.programGrid = null;
+    this.dragOverlay = null;
+    this.dragElement = null;
   }
 }

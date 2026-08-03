@@ -4,6 +4,7 @@
 import { loggers } from "../../utils/logging/logger.js";
 import { stateManager } from "./state-manager.js";
 import { ProgAction } from "../constants/actions.js";
+import { GRID_WIDTH } from "../constants/grid.js";
 
 // Action descriptions from documentation
 const ACTION_INFO = {
@@ -655,7 +656,6 @@ export class ContextMenuManager {
   }
 
   positionToCoordinates(position) {
-    const GRID_WIDTH = 16; // Should import from constants
     const x = position % GRID_WIDTH;
     const y = Math.floor(position / GRID_WIDTH);
     return { x, y };

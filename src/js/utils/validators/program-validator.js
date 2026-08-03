@@ -48,10 +48,8 @@ export function validateInstruction(instruction) {
   if (instruction.value !== null && instruction.value !== undefined) {
     if (typeof instruction.value !== "number") {
       errors.push("Value must be a number");
-    } else if (!Number.isFinite(instruction.value)) {
-      warnings.push("Value should be an integer");
-    } else if (!Number.isInteger(instruction.value)) {
-      warnings.push("Value should be an integer");
+    } else if (!Number.isSafeInteger(instruction.value)) {
+      errors.push("Value must be a safe integer");
     }
   }
 
@@ -90,7 +88,7 @@ export function validateProgram(instructions) {
 
   // Check for start instruction
   const hasStart = instructions.some(
-    inst =>
+    (inst) =>
       inst && typeof inst === "object" && inst.action === ProgAction.SetStart,
   );
   if (!hasStart) {
@@ -105,10 +103,10 @@ export function validateProgram(instructions) {
     // Validate individual instruction
     const instValidation = validateInstruction(inst);
     errors.push(
-      ...instValidation.errors.map(err => `Instruction ${index}: ${err}`),
+      ...instValidation.errors.map((err) => `Instruction ${index}: ${err}`),
     );
     warnings.push(
-      ...instValidation.warnings.map(warn => `Instruction ${index}: ${warn}`),
+      ...instValidation.warnings.map((warn) => `Instruction ${index}: ${warn}`),
     );
 
     // Do not inspect fields on malformed entries after reporting the error.
@@ -142,7 +140,7 @@ export function validateProgram(instructions) {
   });
 
   // Check for undefined labels
-  jumps.forEach(label => {
+  jumps.forEach((label) => {
     if (!labels.has(label)) {
       warnings.push(`Undefined label "${label}" referenced in jump/call`);
     }

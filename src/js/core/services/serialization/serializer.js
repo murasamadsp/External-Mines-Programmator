@@ -81,7 +81,7 @@ export class ProgramSerializer {
   static async encodeV2(program) {
     this.validateInstructions(program);
     const labels = program
-      .map(inst => this.formatLabel(inst.label, inst.value))
+      .map((inst) => this.formatLabel(inst.label, inst.value))
       .join(":");
     const labelBytes = asciiToUint8(labels);
     const buffer = new Uint8Array(4 + program.length + labelBytes.length);
@@ -384,9 +384,7 @@ export class ProgramSerializer {
       if (
         inst.value !== null &&
         inst.value !== undefined &&
-        (!Number.isInteger(inst.value) ||
-          inst.value < -2147483648 ||
-          inst.value > 2147483647)
+        !Number.isSafeInteger(inst.value)
       ) {
         throw new Error(`Invalid instruction value at index ${index}`);
       }

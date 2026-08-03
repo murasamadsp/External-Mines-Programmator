@@ -7,7 +7,11 @@ import {
   SettingsStorage,
 } from "../../../utils/helpers/storage.js";
 import { ProgAction } from "../../../core/constants/actions.js";
-import { GRID_HEIGHT, GRID_WIDTH } from "../../../core/constants/grid.js";
+import {
+  GRID_HEIGHT,
+  GRID_WIDTH,
+  MAX_PAGES,
+} from "../../../core/constants/grid.js";
 import { loggers } from "../../../utils/logging/logger.js";
 
 export class PersistenceController {
@@ -53,7 +57,7 @@ export class PersistenceController {
       const importTime = performance.now() - startTime;
       const instructionCount = this.program.instructions.length;
       const nonEmptyCount = this.program.instructions.filter(
-        inst => inst.action !== ProgAction.None,
+        (inst) => inst.action !== ProgAction.None,
       ).length;
 
       // Оновлюємо відображення сітки
@@ -99,15 +103,15 @@ export class PersistenceController {
       let result;
       const instructionCount = this.program.instructions.length;
       const nonEmptyCount = this.program.instructions.filter(
-        inst => inst.action !== ProgAction.None,
+        (inst) => inst.action !== ProgAction.None,
       ).length;
 
       switch (format) {
         case "codes":
           const nonEmptyInstructions = this.program.instructions.filter(
-            inst => inst.action !== ProgAction.None,
+            (inst) => inst.action !== ProgAction.None,
           );
-          result = nonEmptyInstructions.map(inst => inst.action).join(" ");
+          result = nonEmptyInstructions.map((inst) => inst.action).join(" ");
           loggers.editor.debug(
             `📋 Експорт кодів: ${nonEmptyCount} інструкцій → ${result.length} символів`,
           );
@@ -147,7 +151,7 @@ export class PersistenceController {
     const startTime = performance.now();
     const instructionCount = this.program.instructions.length;
     const nonEmptyCount = this.program.instructions.filter(
-      inst => inst.action !== ProgAction.None,
+      (inst) => inst.action !== ProgAction.None,
     ).length;
 
     loggers.validation.info(
@@ -166,7 +170,7 @@ export class PersistenceController {
         `❌ Знайдено ${validation.errors.length} помилок валідації:`,
         validation.errors,
       );
-      const errorMessages = validation.errors.map(e => `• ${e}`).join("\n");
+      const errorMessages = validation.errors.map((e) => `• ${e}`).join("\n");
       this.uiController.showFeedback(
         `❌ Знайдено помилок: ${validation.errors.length}\n${errorMessages}`,
         "error",
@@ -178,7 +182,9 @@ export class PersistenceController {
         `⚠️ Знайдено ${validation.warnings.length} попереджень валідації:`,
         validation.warnings,
       );
-      const warningMessages = validation.warnings.map(w => `• ${w}`).join("\n");
+      const warningMessages = validation.warnings
+        .map((w) => `• ${w}`)
+        .join("\n");
       this.uiController.showFeedback(
         `⚠️ Попередження: ${validation.warnings.length}\n${warningMessages}`,
         "info",
@@ -200,7 +206,7 @@ export class PersistenceController {
     const startTime = performance.now();
     const instructionCount = this.program.instructions.length;
     const nonEmptyCount = this.program.instructions.filter(
-      inst => inst.action !== ProgAction.None,
+      (inst) => inst.action !== ProgAction.None,
     ).length;
 
     loggers.editor.debug(
@@ -378,7 +384,7 @@ export class PersistenceController {
             }
           });
 
-          this.uiController.updatePageDisplay(0, 16); // MAX_PAGES
+          this.uiController.updatePageDisplay(0, MAX_PAGES);
           this.uiController.updateGridDisplay();
 
           loggers.editor.info(

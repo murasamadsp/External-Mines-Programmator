@@ -8,14 +8,19 @@ import {
   ACTION_DATA,
   getActionByCode,
 } from "../../../core/constants/actions.js";
-import { contextMenuManager } from "../../../core/services/context-menu-manager.js";
 import { Instruction } from "../../../core/types/instruction.js";
 
 export class ProgramGrid {
-  constructor(container, program, onCellClick) {
+  constructor(container, program, handlers = {}) {
+    if (typeof handlers === "function") {
+      handlers = { onCellClick: handlers };
+    }
+    const { onCellClick, onCellContextMenu, onCellDrop } = handlers;
     this.container = container;
     this.program = program;
     this.onCellClick = onCellClick;
+    this.onCellContextMenu = onCellContextMenu;
+    this.onCellDrop = onCellDrop;
     this.currentPage = 0; // Current page being displayed
     this.gridCells = new Map(); // Map для швидкого доступу до клітинок
     this.cursorPosition = null; // Linear index of the active cell
@@ -78,7 +83,7 @@ export class ProgramGrid {
 
     // Знаходимо sidebar'и і встановлюємо їм висоту
     const sidebars = document.querySelectorAll(".programmer-sidebar");
-    sidebars.forEach(sidebar => {
+    sidebars.forEach((sidebar) => {
       sidebar.style.height = `${totalHeight}px`;
       sidebar.style.maxHeight = `${totalHeight}px`;
     });
@@ -86,41 +91,6 @@ export class ProgramGrid {
     loggers.ui.debug(
       `✅ Висота sidebar'ів встановлена: ${totalHeight}px (= панель управління + сітка)`,
     );
-  }
-
-  /**
-   * Створює окрему клітинку
-   * @param x
-   * @param y
-   */
-  createCell(x, y) {
-    const cell = document.createElement("div");
-    cell.className = "program-cell"; // Fixed: changed from grid-cell to program-cell
-    cell.setAttribute("data-x", x);
-    cell.setAttribute("data-y", y);
-    // cell.textContent = `${x},${y}`; // Debug: coordinates removed
-
-    // Додаємо обробник кліку
-    cell.addEventListener("click", () => {
-      this.handleCellClick(x, y);
-    });
-
-    // Додаємо обробник контекстного меню (правий клік)
-    cell.addEventListener("contextmenu", e => {
-      e.preventDefault();
-      this.handleCellContextMenu(e, x, y);
-    });
-
-    // Drag & Drop handlers
-    cell.addEventListener("dragover", e => this.handleDragOver(e, x, y));
-    cell.addEventListener("dragleave", e => this.handleDragLeave(e, x, y));
-    cell.addEventListener("drop", e => this.handleDrop(e, x, y));
-
-    // Зберігаємо посилання на клітинку
-    const key = `${x}-${y}`;
-    this.gridCells.set(key, cell);
-
-    return cell;
   }
 
   handleDragOver(e, x, y) {
@@ -145,24 +115,11 @@ export class ProgramGrid {
       if (!data) return;
 
       const payload = JSON.parse(data);
-      // Handle drop from palette (action code) or internal move (if implemented later)
-      if (payload.action !== undefined) {
-        // It's an instruction object or action code
-        const actionCode = payload.action;
-        // Call the external handler if provided, or update directly if we had access to controller
-        // Since ProgramGrid is view-only, we should trigger a callback or event
-        // But for now, let's assume we need to notify the controller via a custom event or callback
-        // The current architecture seems to rely on onCellClick.
-        // We might need to extend the constructor to accept onDrop or similar.
-        // For now, let's dispatch a custom event on the container
-
-        const dropEvent = new CustomEvent("program-grid-drop", {
-          detail: { x, y, action: actionCode, payload },
-          bubbles: true,
+      if (payload.action !== undefined && this.onCellDrop) {
+        Promise.resolve(this.onCellDrop(x, y, payload)).catch(error => {
+          loggers.ui.error("❌ Action drop handling error:", error);
         });
-        this.container.dispatchEvent(dropEvent);
-
-        loggers.ui.debug(`📥 Dropped action ${actionCode} at [${x}, ${y}]`);
+        loggers.ui.debug(`📥 Dropped action ${payload.action} at [${x}, ${y}]`);
       }
     } catch (err) {
       loggers.ui.error("❌ Drop handling error:", err);
@@ -193,7 +150,7 @@ export class ProgramGrid {
     const position = y * GRID_WIDTH + x; // Convert x,y to linear position
     const cellElement = e.target.closest(".program-cell");
 
-    contextMenuManager.showProgramCellMenu(cellElement, position);
+    this.onCellContextMenu?.(cellElement, position);
   }
 
   /**
@@ -268,15 +225,15 @@ export class ProgramGrid {
     });
 
     // Додаємо обробник контекстного меню
-    cell.addEventListener("contextmenu", e => {
+    cell.addEventListener("contextmenu", (e) => {
       e.preventDefault();
       this.handleCellContextMenu(e, x, y);
     });
 
     // Drag & Drop handlers
-    cell.addEventListener("dragover", e => this.handleDragOver(e, x, y));
-    cell.addEventListener("dragleave", e => this.handleDragLeave(e, x, y));
-    cell.addEventListener("drop", e => this.handleDrop(e, x, y));
+    cell.addEventListener("dragover", (e) => this.handleDragOver(e, x, y));
+    cell.addEventListener("dragleave", (e) => this.handleDragLeave(e, x, y));
+    cell.addEventListener("drop", (e) => this.handleDrop(e, x, y));
 
     // Зберігаємо посилання на клітинку
     const key = `${x}-${y}`;
@@ -304,7 +261,7 @@ export class ProgramGrid {
         `📄 Page ${this.currentPage} has ${pageInstructions.length} instructions`,
       );
 
-      const nonEmpty = pageInstructions.filter(i => i.action !== 0).length;
+      const nonEmpty = pageInstructions.filter((i) => i.action !== 0).length;
       loggers.ui.debug(
         `📌 Non-empty instructions on page ${this.currentPage}: ${nonEmpty}`,
       );
@@ -475,7 +432,7 @@ export class ProgramGrid {
     ) {
       return "empty";
     }
-    return `${instruction.action}|${instruction.label || ""}|${instruction.value || ""}`;
+    return `${instruction.action}|${instruction.label ?? ""}|${instruction.value ?? ""}`;
   }
 
   /**
@@ -547,7 +504,7 @@ export class ProgramGrid {
 
     // Знаходимо sidebar'и і встановлюємо їм висоту
     const sidebars = document.querySelectorAll(".programmer-sidebar");
-    sidebars.forEach(sidebar => {
+    sidebars.forEach((sidebar) => {
       sidebar.style.height = `${totalHeight}px`;
       sidebar.style.maxHeight = `${totalHeight}px`;
     });
@@ -580,7 +537,7 @@ export class ProgramGrid {
    * Очищає всі виділення
    */
   clearHighlights() {
-    this.gridCells.forEach(cell => {
+    this.gridCells.forEach((cell) => {
       cell.classList.remove("highlighted");
     });
   }

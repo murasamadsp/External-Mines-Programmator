@@ -7,6 +7,7 @@ import {
   GRID_HEIGHT,
   PAGE_SIZE,
   MAX_INSTRUCTIONS,
+  MAX_PAGES,
 } from "../constants/grid.js";
 import { ProgramSerializer } from "../services/serialization/serializer.js";
 import { validateProgram } from "../../utils/validators/program-validator.js";
@@ -34,7 +35,7 @@ export class Program {
   initializeEmptyProgram() {
     // Створюємо порожні інструкції для всіх позицій сітки
     // Загальна кількість: MAX_PAGES * PAGE_SIZE
-    const totalInstructions = 16 * PAGE_SIZE; // 16 сторінок * 192 інструкції
+    const totalInstructions = MAX_PAGES * PAGE_SIZE;
 
     this.instructions = new Array(totalInstructions);
     for (let i = 0; i < totalInstructions; i++) {
@@ -125,11 +126,11 @@ export class Program {
    * @returns {Instruction} Instruction object
    */
   getInstructionAt(x, y, page = 0) {
-    const pageOffset = page * PAGE_SIZE;
-    const index = pageOffset + y * this.pageWidth + x;
-    return (
-      this.instructions[index] || new Instruction(ProgAction.None, null, null)
-    );
+    try {
+      return this.getInstruction(this.getIndex(x, y, page));
+    } catch {
+      return new Instruction(ProgAction.None, null, null);
+    }
   }
 
   /**
@@ -142,8 +143,7 @@ export class Program {
    * @param {number} page - Page number (0-15, default: 0)
    */
   setInstructionAt(x, y, action, label = null, value = null, page = 0) {
-    const pageOffset = page * PAGE_SIZE;
-    const index = pageOffset + y * this.pageWidth + x;
+    const index = this.getIndex(x, y, page);
 
     // Переконуємося, що масив має достатньо місця
     while (this.instructions.length <= index) {
@@ -171,13 +171,21 @@ export class Program {
    * @param {Instruction|null} instruction - Instruction object or null to clear
    */
   setInstruction(index, instruction) {
+    if (!Number.isInteger(index) || index < 0 || index >= MAX_INSTRUCTIONS) {
+      throw new RangeError(`Instruction index out of range: ${index}`);
+    }
+
     // Ensure array is large enough
     while (this.instructions.length <= index) {
       this.instructions.push(new Instruction(ProgAction.None, null, null));
     }
 
     if (instruction) {
-      this.instructions[index] = instruction;
+      this.instructions[index] = new Instruction(
+        instruction.action,
+        instruction.label ?? null,
+        instruction.value ?? null,
+      );
     } else {
       this.instructions[index] = new Instruction(ProgAction.None, null, null);
     }
@@ -212,6 +220,24 @@ export class Program {
   clear() {
     this.instructions = [];
     this.serializedLength = 0;
+  }
+
+  getIndex(x, y, page = 0) {
+    if (
+      !Number.isInteger(x) ||
+      !Number.isInteger(y) ||
+      !Number.isInteger(page) ||
+      x < 0 ||
+      x >= this.pageWidth ||
+      y < 0 ||
+      y >= this.pageHeight ||
+      page < 0 ||
+      page >= MAX_PAGES
+    ) {
+      throw new RangeError(`Invalid program position: (${x}, ${y}, ${page})`);
+    }
+
+    return page * PAGE_SIZE + y * this.pageWidth + x;
   }
 
   /**

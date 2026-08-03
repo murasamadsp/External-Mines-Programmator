@@ -4,6 +4,7 @@ import {
   UI_TIMEOUTS,
   UI_MESSAGES,
 } from "../../../core/constants/ui-constants.js";
+import { MAX_PAGES } from "../../../core/constants/grid.js";
 import { loggers } from "../../../utils/logging/logger.js";
 import {
   createButton,
@@ -28,6 +29,7 @@ export class Controls {
     this.callbacks = {
       onImport,
       onExport,
+      onValidate,
       onClear,
       onPageNavigation,
     };
@@ -164,6 +166,14 @@ export class Controls {
     const controlButtons = document.createElement("div");
     controlButtons.className = "control-buttons";
 
+    const validateBtn = createButton({
+      id: "validate-program",
+      text: "",
+      icon: "✅",
+      onClick: () => this.callbacks.onValidate?.(),
+    });
+    controlButtons.appendChild(validateBtn);
+
     const clearBtn = createButton({
       id: "clear-program",
       text: "",
@@ -202,7 +212,7 @@ export class Controls {
     pageIndicator.id = "page-indicator";
     pageIndicator.textContent = UI_MESSAGES.pageIndicator
       .replace("{current}", "0")
-      .replace("{total}", "15");
+      .replace("{total}", String(MAX_PAGES - 1));
     pageControls.appendChild(pageIndicator);
 
     const nextBtn = createButton({
@@ -291,13 +301,13 @@ export class Controls {
       // Додаємо обробники для закриття модального вікна
       const closeModal = () => this.toggleProgramDecoder(container);
 
-      decoderUI.addEventListener("click", e => {
+      decoderUI.addEventListener("click", (e) => {
         if (e.target === decoderUI) {
           closeModal();
         }
       });
 
-      const handleEscape = e => {
+      const handleEscape = (e) => {
         if (e.key === "Escape") {
           closeModal();
           document.removeEventListener("keydown", handleEscape);
@@ -360,13 +370,13 @@ export class Controls {
       // Додаємо обробники для закриття модального вікна
       const closeModal = () => this.toggleProgramAnalyzer(container);
 
-      analyzerUI.addEventListener("click", e => {
+      analyzerUI.addEventListener("click", (e) => {
         if (e.target === analyzerUI) {
           closeModal();
         }
       });
 
-      const handleEscape = e => {
+      const handleEscape = (e) => {
         if (e.key === "Escape") {
           closeModal();
           document.removeEventListener("keydown", handleEscape);

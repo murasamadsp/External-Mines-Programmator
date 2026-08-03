@@ -5,10 +5,6 @@
 import { setupGlobalInputProtection } from "./core/utils/dom-utils.js";
 setupGlobalInputProtection();
 
-// Define global importBtn to prevent ReferenceError
-// This is a temporary fix for a caching issue
-window.importBtn = null;
-
 /**
  * Ініціалізує систему логування
  * @returns {Promise<{logger: any, logLevel: string}>} Об'єкт з екземпляром логгера та рівнем логування
@@ -51,6 +47,7 @@ async function initializeApp(logger) {
 
   const editorController = new EditorController();
   window.editorController = editorController; // Expose for testing
+  await editorController.ready;
   logger.info("✅ EditorController вдало започатковано");
   logger.debug(
     `Екземпляр EditorController утворено: ${editorController.constructor.name}`,

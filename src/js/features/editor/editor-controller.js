@@ -2,6 +2,8 @@
 // Використовує модульну архітектуру для кращого розділення відповідальності
 
 import { Program } from "../../core/models/program.js";
+import { ProgAction } from "../../core/constants/actions.js";
+import { MAX_PAGES } from "../../core/constants/grid.js";
 import { DragDropManager } from "../../core/services/drag-drop-manager.js";
 import { contextMenuManager } from "../../core/services/context-menu-manager.js";
 import { stateManager } from "../../core/services/state-manager.js";
@@ -43,15 +45,17 @@ export class EditorController {
 
     // UI-модулі створюються асинхронно, тому чекаємо їх завершення перед
     // запуском залежних контролерів та першою синхронізацією інтерфейсу.
-    this.initialize()
+    this.ready = this.initialize()
       .then(() => {
         loggers.editor.info("✅ EditorController вдало започатковано");
+        return this;
       })
       .catch((error) => {
         loggers.editor.error(
           "❌ Не вдалося започаткувати Programmator:",
           error,
         );
+        throw error;
       });
   }
 
@@ -87,6 +91,9 @@ export class EditorController {
     const callbacks = {
       onActionSelected: (actionKey) => this.onActionSelected(actionKey),
       onCellClick: (x, y) => this.onCellClick(x, y),
+      onCellContextMenu: (cell, position) =>
+        contextMenuManager.showProgramCellMenu(cell, position),
+      onCellDrop: (x, y, payload) => this.onCellDrop(x, y, payload),
       onImport: (text) => this.onImport(text),
       onExport: (format) => this.onExport(format),
       onValidate: () => this.onValidate(),
@@ -202,6 +209,23 @@ export class EditorController {
     }
   }
 
+  async onCellDrop(x, y, payload) {
+    if (!this.cellController) return;
+
+    const action =
+      typeof payload.action === "number"
+        ? payload.action
+        : ProgAction[payload.action];
+    if (!Number.isInteger(action)) {
+      loggers.editor.warn("⚠️ Отброшено неизвестное действие", payload.action);
+      return;
+    }
+
+    const currentPage =
+      this.navigationController?.getCurrentPage() ?? this.currentPage;
+    await this.cellController.placeActionAt(x, y, action, currentPage);
+  }
+
   /**
    * Імпорт програми
    * @param importText
@@ -270,7 +294,7 @@ export class EditorController {
         this.navigationController?.getCurrentPage() ?? this.currentPage;
       this.uiController.updatePageDisplay(
         currentPage,
-        this.navigationController?.getMaxPages() || 16,
+        this.navigationController?.getMaxPages() || MAX_PAGES,
       );
       this.currentPage = currentPage;
     }
@@ -340,6 +364,7 @@ export class EditorController {
     this.navigationController = null;
     this.settingsController = null;
     this.dragDropManager = null;
+    stateManager.setState({ program: null, currentPage: 0 });
 
     loggers.editor.debug("✅ EditorController очищено");
   }

@@ -95,7 +95,7 @@ export class UIController {
       ];
 
       loggers.editor.debug("🔍 Перевірка всіх можливих контейнерів:");
-      selectors.forEach(selector => {
+      selectors.forEach((selector) => {
         const element = document.querySelector(selector);
         loggers.editor.debug(`  ${selector}: ${element ? "✅" : "❌"}`);
       });
@@ -170,7 +170,7 @@ export class UIController {
     const paletteStartTime = performance.now();
     loggers.editor.info("🎨 Створення палітри діянь...");
 
-    this.actionPalette = new ActionPalette(this.leftSidebar, actionKey =>
+    this.actionPalette = new ActionPalette(this.leftSidebar, (actionKey) =>
       this.callbacks.onActionSelected(actionKey),
     );
     this.actionPalette.create();
@@ -188,9 +188,12 @@ export class UIController {
     const gridStartTime = performance.now();
     loggers.editor.info("🎯 Створення сітки програми...");
 
-    this.programGrid = new ProgramGrid(this.mainContent, this.program, (x, y) =>
-      this.callbacks.onCellClick(x, y),
-    );
+    this.programGrid = new ProgramGrid(this.mainContent, this.program, {
+      onCellClick: (x, y) => this.callbacks.onCellClick(x, y),
+      onCellContextMenu: (cell, position) =>
+        this.callbacks.onCellContextMenu?.(cell, position),
+      onCellDrop: (x, y, payload) => this.callbacks.onCellDrop?.(x, y, payload),
+    });
     this.programGrid.create();
 
     // Синхронізувати висоту бічних панелей з висотою сітки
@@ -220,11 +223,11 @@ export class UIController {
     this.controls = new Controls(
       controlsContainer,
       this.program,
-      text => this.callbacks.onImport(text), // onImport
-      format => this.callbacks.onExport(format), // onExport
+      (text) => this.callbacks.onImport(text), // onImport
+      (format) => this.callbacks.onExport(format), // onExport
       () => this.callbacks.onValidate(), // onValidate
       () => this.callbacks.onClear(), // onClear
-      direction => this.callbacks.onPageNavigation(direction), // onPageNavigation
+      (direction) => this.callbacks.onPageNavigation(direction), // onPageNavigation
     );
     this.controls.create();
 
