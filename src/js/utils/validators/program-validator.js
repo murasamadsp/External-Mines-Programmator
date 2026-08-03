@@ -2,7 +2,10 @@
 // Provides comprehensive validation for program instructions
 
 import { ProgAction } from "../../core/constants/actions.js";
-import { GRID_SIZE, MAX_LABEL_LENGTH } from "../../core/constants/grid.js";
+import {
+  MAX_INSTRUCTIONS,
+  MAX_LABEL_LENGTH,
+} from "../../core/constants/grid.js";
 
 /**
  * Validates a program instruction
@@ -13,9 +16,17 @@ export function validateInstruction(instruction) {
   const errors = [];
   const warnings = [];
 
+  if (!instruction || typeof instruction !== "object") {
+    return {
+      isValid: false,
+      errors: ["Instruction must be an object"],
+      warnings,
+    };
+  }
+
   // Validate action code
   if (
-    typeof instruction.action !== "number" ||
+    !Number.isInteger(instruction.action) ||
     instruction.action < 0 ||
     instruction.action > 255
   ) {
@@ -37,6 +48,8 @@ export function validateInstruction(instruction) {
   if (instruction.value !== null && instruction.value !== undefined) {
     if (typeof instruction.value !== "number") {
       errors.push("Value must be a number");
+    } else if (!Number.isFinite(instruction.value)) {
+      warnings.push("Value should be an integer");
     } else if (!Number.isInteger(instruction.value)) {
       warnings.push("Value should be an integer");
     }
@@ -65,8 +78,10 @@ export function validateProgram(instructions) {
   }
 
   // Check program size
-  if (instructions.length > GRID_SIZE) {
-    errors.push(`Program too large: maximum ${GRID_SIZE} instructions allowed`);
+  if (instructions.length > MAX_INSTRUCTIONS) {
+    errors.push(
+      `Program too large: maximum ${MAX_INSTRUCTIONS} instructions allowed`,
+    );
   }
 
   if (instructions.length === 0) {
@@ -75,7 +90,8 @@ export function validateProgram(instructions) {
 
   // Check for start instruction
   const hasStart = instructions.some(
-    inst => inst.action === ProgAction.SetStart,
+    inst =>
+      inst && typeof inst === "object" && inst.action === ProgAction.SetStart,
   );
   if (!hasStart) {
     warnings.push("No start position defined (use SetStart action)");
@@ -94,6 +110,13 @@ export function validateProgram(instructions) {
     warnings.push(
       ...instValidation.warnings.map(warn => `Instruction ${index}: ${warn}`),
     );
+
+    // Do not inspect fields on malformed entries after reporting the error.
+    // Validation must be total: arbitrary input should produce diagnostics,
+    // never throw and take down import/autosave flows.
+    if (!inst || typeof inst !== "object") {
+      return;
+    }
 
     // Collect labels
     if (inst.action === ProgAction.Label && inst.label) {

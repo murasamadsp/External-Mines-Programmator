@@ -1,5 +1,7 @@
 node_modules
 dist
+.kilo
+angular-app
 *.log
 .DS_Store
 *.local

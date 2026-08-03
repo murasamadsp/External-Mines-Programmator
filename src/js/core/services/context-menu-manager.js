@@ -231,6 +231,11 @@ export class ContextMenuManager {
   }
 
   init() {
+    // Keep the domain module importable in Node/test environments. The menu
+    // is created when a browser document becomes available.
+    if (typeof document === "undefined" || !document.body) {
+      return;
+    }
     this.createMenuElement();
     this.bindGlobalEvents();
   }
@@ -301,6 +306,9 @@ export class ContextMenuManager {
   }
 
   showMenu(x, y, items, target = null) {
+    if (!this.menuElement) {
+      return;
+    }
     if (this.activeMenu) {
       this.hideMenu();
     }

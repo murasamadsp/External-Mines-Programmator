@@ -11,4 +11,7 @@ export const MAX_PAGES = 16; // 00-15 pages
 
 // Maximum values
 export const MAX_INSTRUCTIONS = GRID_SIZE * MAX_PAGES; // 192 * 16 = 3072
-export const MAX_LABEL_LENGTH = 3;
+// Mines labels are serialized as text and are not limited to three characters
+// by the reference C# implementation. Keep a defensive upper bound for UI
+// and payload safety without rejecting normal labels such as "LOOP".
+export const MAX_LABEL_LENGTH = 64;

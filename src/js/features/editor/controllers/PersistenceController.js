@@ -7,6 +7,7 @@ import {
   SettingsStorage,
 } from "../../../utils/helpers/storage.js";
 import { ProgAction } from "../../../core/constants/actions.js";
+import { GRID_HEIGHT, GRID_WIDTH } from "../../../core/constants/grid.js";
 import { loggers } from "../../../utils/logging/logger.js";
 
 export class PersistenceController {
@@ -42,6 +43,7 @@ export class PersistenceController {
       // Просто замінюємо посилання на програму
       // Program.fromString вже правильно створює всі інструкції
       this.program.instructions = newProgram.instructions;
+      this.program.serializedLength = newProgram.serializedLength;
 
       // Оновлюємо посилання в UI компонентах
       if (this.uiController.programGrid) {
@@ -164,9 +166,7 @@ export class PersistenceController {
         `❌ Знайдено ${validation.errors.length} помилок валідації:`,
         validation.errors,
       );
-      const errorMessages = validation.errors
-        .map(e => `• ${e.message}`)
-        .join("\n");
+      const errorMessages = validation.errors.map(e => `• ${e}`).join("\n");
       this.uiController.showFeedback(
         `❌ Знайдено помилок: ${validation.errors.length}\n${errorMessages}`,
         "error",
@@ -178,9 +178,7 @@ export class PersistenceController {
         `⚠️ Знайдено ${validation.warnings.length} попереджень валідації:`,
         validation.warnings,
       );
-      const warningMessages = validation.warnings
-        .map(w => `• ${w.message}`)
-        .join("\n");
+      const warningMessages = validation.warnings.map(w => `• ${w}`).join("\n");
       this.uiController.showFeedback(
         `⚠️ Попередження: ${validation.warnings.length}\n${warningMessages}`,
         "info",
@@ -366,15 +364,15 @@ export class PersistenceController {
           this.program.clear();
           autosaveData.instructions.forEach((instruction, index) => {
             if (instruction && instruction.action !== undefined) {
-              const x = index % 16; // GRID_WIDTH
-              const y = Math.floor(index / 16) % 15; // GRID_HEIGHT
-              const page = Math.floor(index / (16 * 15)); // GRID_WIDTH * GRID_HEIGHT
+              const x = index % GRID_WIDTH;
+              const y = Math.floor(index / GRID_WIDTH) % GRID_HEIGHT;
+              const page = Math.floor(index / (GRID_WIDTH * GRID_HEIGHT));
               this.program.setInstructionAt(
                 x,
                 y,
                 instruction.action,
-                instruction.param1,
-                instruction.param2,
+                instruction.label ?? null,
+                instruction.value ?? null,
                 page,
               );
             }

@@ -40,7 +40,10 @@ export function parseLabelParts(labelStr) {
   // But in JavaScript, we use null to represent "no label"
   // So empty string becomes null for consistency
   const label = parts[0] === "" ? null : parts[0];
-  const value = parts.length === 2 ? parseInt(parts[1], 10) : null;
+  const value = parts.length === 2 ? Number(parts[1]) : null;
+  if (parts.length === 2 && !Number.isInteger(value)) {
+    throw new Error("Malformed program");
+  }
   return { label, value };
 }
 

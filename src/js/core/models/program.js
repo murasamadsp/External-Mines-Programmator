@@ -23,6 +23,7 @@ export class Program {
    */
   constructor() {
     this.instructions = [];
+    this.serializedLength = 0;
     this.pageWidth = GRID_WIDTH;
     this.pageHeight = GRID_HEIGHT;
   }
@@ -39,6 +40,7 @@ export class Program {
     for (let i = 0; i < totalInstructions; i++) {
       this.instructions[i] = new Instruction(ProgAction.None, null, null);
     }
+    this.serializedLength = totalInstructions;
   }
 
   /**
@@ -48,7 +50,24 @@ export class Program {
    * @param {number|null} value - Value for variable operations
    */
   addInstruction(action, label = null, value = null) {
+    // Accept an Instruction instance as well as the scalar form. This keeps
+    // callers from accidentally nesting an instruction inside `action`.
+    if (
+      action instanceof Instruction ||
+      (action && typeof action === "object")
+    ) {
+      this.instructions.push(
+        new Instruction(
+          action.action,
+          action.label ?? null,
+          action.value ?? null,
+        ),
+      );
+      this.serializedLength = this.instructions.length;
+      return;
+    }
     this.instructions.push(new Instruction(action, label, value));
+    this.serializedLength = this.instructions.length;
   }
 
   /**
@@ -60,13 +79,16 @@ export class Program {
     const decodedInstructions = await ProgramSerializer.decode(source);
     const program = new Program();
 
-    // Обрізаємо до PAGE_SIZE якщо потрібно
-    const instructions = decodedInstructions.slice(0, PAGE_SIZE);
+    // Keep all serialized pages, while still protecting the editor from an
+    // oversized payload.
+    const instructions = decodedInstructions.slice(0, MAX_INSTRUCTIONS);
 
     // Замінюємо інструкції програми декодованими
     program.instructions = instructions;
 
-    // Додаємо порожні інструкції до PAGE_SIZE якщо потрібно
+    // Keep one full page available to the editor, but remember the actual
+    // payload length so export remains byte-for-byte stable.
+    program.serializedLength = instructions.length;
     while (program.instructions.length < PAGE_SIZE) {
       program.instructions.push(new Instruction(ProgAction.None, null, null));
     }
@@ -79,19 +101,19 @@ export class Program {
    * @returns {Promise<string>} Base64 encoded program
    */
   async toBase64Format() {
-    // Експортуємо всі інструкції із сітки (включаючи порожні)
-    // Грі можуть знадобитися порожні позиції, представлені в програмі
-
-    // Якщо немає інструкцій, повертаємо мінімальну програму
+    // Keep the encoded length exact so sparse positions on later pages are
+    // not shifted when a program is exported again.
     if (this.instructions.length === 0) {
       return await ProgramSerializer.encode([
         new Instruction(ProgAction.None, "0", null),
       ]);
     }
 
-    // Trim to MAX_INSTRUCTIONS to prevent validation errors
-    // C# EncodeV2 doesn't validate length, but we need to prevent memory issues
-    const instructionsToEncode = this.instructions.slice(0, MAX_INSTRUCTIONS);
+    const serializedLength = Math.min(
+      Math.max(this.serializedLength || this.instructions.length, 1),
+      MAX_INSTRUCTIONS,
+    );
+    const instructionsToEncode = this.instructions.slice(0, serializedLength);
     return await ProgramSerializer.encode(instructionsToEncode);
   }
 
@@ -129,6 +151,7 @@ export class Program {
     }
 
     this.instructions[index] = new Instruction(action, label, value);
+    this.serializedLength = Math.max(this.serializedLength, index + 1);
   }
 
   /**
@@ -158,6 +181,7 @@ export class Program {
     } else {
       this.instructions[index] = new Instruction(ProgAction.None, null, null);
     }
+    this.serializedLength = Math.max(this.serializedLength, index + 1);
   }
 
   /**
@@ -187,6 +211,7 @@ export class Program {
    */
   clear() {
     this.instructions = [];
+    this.serializedLength = 0;
   }
 
   /**
