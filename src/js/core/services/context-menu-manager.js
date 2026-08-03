@@ -3,6 +3,7 @@
 
 import { loggers } from "../../utils/logging/logger.js";
 import { stateManager } from "./state-manager.js";
+import { ProgAction } from "../constants/actions.js";
 
 // Action descriptions from documentation
 const ACTION_INFO = {
@@ -269,12 +270,12 @@ export class ContextMenuManager {
     document.body.appendChild(this.menuElement);
 
     // Prevent context menu on the menu itself
-    this.menuElement.addEventListener("contextmenu", e => e.preventDefault());
+    this.menuElement.addEventListener("contextmenu", (e) => e.preventDefault());
   }
 
   bindGlobalEvents() {
     // Track mouse position globally
-    document.addEventListener("mousemove", e => {
+    document.addEventListener("mousemove", (e) => {
       window.lastMouseEvent = {
         clientX: e.clientX,
         clientY: e.clientY,
@@ -282,21 +283,21 @@ export class ContextMenuManager {
     });
 
     // Hide menu on left click anywhere
-    document.addEventListener("click", e => {
+    document.addEventListener("click", (e) => {
       if (!this.menuElement.contains(e.target)) {
         this.hideMenu();
       }
     });
 
     // Hide menu on escape
-    document.addEventListener("keydown", e => {
+    document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         this.hideMenu();
       }
     });
 
     // Prevent default context menu globally (we'll show our custom one)
-    document.addEventListener("contextmenu", e => {
+    document.addEventListener("contextmenu", (e) => {
       // Only prevent default if we're not already showing a menu
       // This allows nested context menus if needed
       if (!this.activeMenu) {
@@ -329,7 +330,7 @@ export class ContextMenuManager {
     this.menuElement.focus();
 
     loggers.services.debug(
-      `📋 Context menu показаний на позиції (${x}, ${y}) з ${items.length} елементами: ${items.map(item => item.name || "анонімний").join(", ")}`,
+      `📋 Context menu показаний на позиції (${x}, ${y}) з ${items.length} елементами: ${items.map((item) => item.name || "анонімний").join(", ")}`,
     );
   }
 
@@ -370,7 +371,7 @@ export class ContextMenuManager {
     );
     itemsContainer.innerHTML = "";
 
-    items.forEach(item => {
+    items.forEach((item) => {
       const itemElement = document.createElement("div");
       itemElement.className = "context-menu-item";
 
@@ -409,7 +410,7 @@ export class ContextMenuManager {
             // Remove hover from other items
             itemsContainer
               .querySelectorAll(".context-menu-item")
-              .forEach(el => {
+              .forEach((el) => {
                 el.classList.remove("hover");
               });
             itemElement.classList.add("hover");
@@ -469,11 +470,15 @@ export class ContextMenuManager {
 
   showProgramCellMenu(cellElement, position) {
     const program = stateManager.getState("program");
-    const instruction = program ? program.getInstruction(position) : null;
+    const { x, y } = this.positionToCoordinates(position);
+    const page = stateManager.getState("currentPage") || 0;
+    const instruction = program ? program.getInstructionAt(x, y, page) : null;
+    const hasInstruction =
+      instruction && instruction.action !== ProgAction.None;
 
     const items = [];
 
-    if (instruction) {
+    if (hasInstruction) {
       // Menu for occupied cells
       items.push({
         label: "Copy Action",
@@ -603,7 +608,17 @@ export class ContextMenuManager {
     if (clipboard && clipboard.type === "instruction") {
       const program = stateManager.getState("program");
       if (program) {
-        program.setInstruction(position, clipboard.data);
+        const { x, y } = this.positionToCoordinates(position);
+        const page = stateManager.getState("currentPage") || 0;
+        const instruction = clipboard.data;
+        program.setInstructionAt(
+          x,
+          y,
+          instruction.action,
+          instruction.label ?? null,
+          instruction.value ?? null,
+          page,
+        );
         stateManager.setState({ program });
         loggers.services.info(
           `📌 Інструкцію вставлено на позицію ${position}: ${clipboard.data.action}`,
@@ -615,16 +630,28 @@ export class ContextMenuManager {
   clearCell(position) {
     const program = stateManager.getState("program");
     if (program) {
-      program.setInstruction(position, null);
+      const { x, y } = this.positionToCoordinates(position);
+      const page = stateManager.getState("currentPage") || 0;
+      program.setInstructionAt(x, y, ProgAction.None, null, null, page);
       stateManager.setState({ program });
       loggers.services.info(`🗑️ Ячейку очищено на позиції ${position}`);
     }
   }
 
-  showCellInfo(position, instruction) {
-    // Could show a dialog or tooltip with this info
-    // TODO: Implement cell info display
-    // Info: position, coordinates, action, label, value
+  async showCellInfo(position, instruction) {
+    const { x, y } = this.positionToCoordinates(position);
+    const actionName = Object.keys(ProgAction).find(
+      (name) => ProgAction[name] === instruction?.action,
+    );
+    const details = [
+      `Позиція: ${position}`,
+      `Координати: X=${x}, Y=${y}`,
+      `Дія: ${(actionName || instruction?.action) ?? "None"}`,
+      `Мітка: ${instruction?.label || "—"}`,
+      `Значення: ${instruction?.value ?? "—"}`,
+    ].join("\n");
+
+    await this.showDialog("Інформація про клітинку", details);
   }
 
   positionToCoordinates(position) {
@@ -640,7 +667,7 @@ export class ContextMenuManager {
 
     if (isFavorite) {
       // Remove from favorites
-      const newFavorites = favorites.filter(fav => fav !== actionKey);
+      const newFavorites = favorites.filter((fav) => fav !== actionKey);
       this.saveFavorites(newFavorites);
       loggers.services.info(`⭐ Видалено з обраних: ${actionKey}`);
     } else {
@@ -676,11 +703,22 @@ export class ContextMenuManager {
   }
 
   copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-      loggers.services.info(
-        `📋 Текст скопійовано в буфер обміну (${text.length} символів)`,
-      );
-    });
+    const clipboard = globalThis.navigator?.clipboard;
+    if (clipboard?.writeText) {
+      clipboard
+        .writeText(text)
+        .then(() =>
+          loggers.services.info(
+            `📋 Текст скопійовано в буфер обміну (${text.length} символів)`,
+          ),
+        )
+        .catch((error) =>
+          loggers.services.warn("⚠️ Не вдалося скопіювати текст:", error),
+        );
+      return;
+    }
+
+    loggers.services.warn("⚠️ Clipboard API недоступний");
   }
 
   async showActionInfo(actionKey) {

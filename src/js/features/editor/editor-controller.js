@@ -4,6 +4,7 @@
 import { Program } from "../../core/models/program.js";
 import { DragDropManager } from "../../core/services/drag-drop-manager.js";
 import { contextMenuManager } from "../../core/services/context-menu-manager.js";
+import { stateManager } from "../../core/services/state-manager.js";
 import { loggers } from "../../utils/logging/logger.js";
 
 // Імпорт нових контролерів
@@ -23,7 +24,9 @@ export class EditorController {
     document.body.setAttribute("data-programmator-init", "started");
 
     this.program = new Program();
+    stateManager.setState({ program: this.program });
     this.currentPage = 0; // Номер поточної сторінки (0-15)
+    this.pendingAction = null;
 
     const constructorTime = performance.now() - startTime;
     loggers.editor.debug(
@@ -44,8 +47,11 @@ export class EditorController {
       .then(() => {
         loggers.editor.info("✅ EditorController вдало започатковано");
       })
-      .catch(error => {
-        loggers.editor.error("❌ Не вдалося започаткувати Programmator:", error);
+      .catch((error) => {
+        loggers.editor.error(
+          "❌ Не вдалося започаткувати Programmator:",
+          error,
+        );
       });
   }
 
@@ -79,13 +85,13 @@ export class EditorController {
 
     // Створюємо callbacks для зв'язку між контролерами
     const callbacks = {
-      onActionSelected: actionKey => this.onActionSelected(actionKey),
+      onActionSelected: (actionKey) => this.onActionSelected(actionKey),
       onCellClick: (x, y) => this.onCellClick(x, y),
-      onImport: text => this.onImport(text),
-      onExport: format => this.onExport(format),
+      onImport: (text) => this.onImport(text),
+      onExport: (format) => this.onExport(format),
       onValidate: () => this.onValidate(),
       onClear: () => this.onClear(),
-      onPageNavigation: direction => this.onPageNavigation(direction),
+      onPageNavigation: (direction) => this.onPageNavigation(direction),
     };
 
     // Ініціалізуємо контролери
@@ -103,6 +109,9 @@ export class EditorController {
         dialogManager,
         this.uiController,
       );
+      if (this.pendingAction !== null) {
+        this.cellController.setSelectedAction(this.pendingAction);
+      }
       this.persistenceController = new PersistenceController(
         this.program,
         this.uiController,
@@ -174,6 +183,7 @@ export class EditorController {
    * @param actionKey
    */
   onActionSelected(actionKey) {
+    this.pendingAction = actionKey;
     if (this.cellController) {
       this.cellController.setSelectedAction(actionKey);
     }
@@ -186,7 +196,9 @@ export class EditorController {
    */
   async onCellClick(x, y) {
     if (this.cellController) {
-      await this.cellController.onCellClick(x, y, this.currentPage);
+      const currentPage =
+        this.navigationController?.getCurrentPage() ?? this.currentPage;
+      await this.cellController.onCellClick(x, y, currentPage);
     }
   }
 
@@ -244,6 +256,8 @@ export class EditorController {
   onPageNavigation(direction) {
     if (this.navigationController) {
       this.navigationController.onPageNavigation(direction);
+      this.currentPage = this.navigationController.getCurrentPage();
+      stateManager.setState({ currentPage: this.currentPage });
     }
   }
 
@@ -252,11 +266,15 @@ export class EditorController {
    */
   updatePageDisplay() {
     if (this.uiController) {
+      const currentPage =
+        this.navigationController?.getCurrentPage() ?? this.currentPage;
       this.uiController.updatePageDisplay(
-        this.navigationController?.getCurrentPage() || 0,
+        currentPage,
         this.navigationController?.getMaxPages() || 16,
       );
+      this.currentPage = currentPage;
     }
+    stateManager.setState({ currentPage: this.currentPage });
   }
 
   /**

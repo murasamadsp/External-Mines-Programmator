@@ -7,6 +7,7 @@ class StateManager {
   constructor() {
     this.state = {
       program: null,
+      currentPage: 0,
       cursorPosition: 0,
       clipboard: null,
       dragMode: false,

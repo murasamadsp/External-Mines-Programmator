@@ -89,6 +89,9 @@ export class Controls {
         try {
           let text = "";
           try {
+            if (!navigator.clipboard?.readText) {
+              throw new Error("Clipboard API unavailable");
+            }
             text = await navigator.clipboard.readText();
           } catch (clipboardError) {
             loggers.ui.warn(
@@ -135,8 +138,12 @@ export class Controls {
             this.showLoading(this.exportButton, "Exporting...");
             const result = await this.callbacks.onExport("base64");
             this.hideLoading(this.exportButton);
-            await navigator.clipboard.writeText(result);
-            this.showFeedback("✓ Copied to clipboard", "success");
+            if (navigator.clipboard?.writeText) {
+              await navigator.clipboard.writeText(result);
+              this.showFeedback("✓ Copied to clipboard", "success");
+            } else {
+              this.showFeedback("✓ Exported; copy the result manually", "info");
+            }
           }
         } catch (error) {
           this.hideLoading(this.exportButton);

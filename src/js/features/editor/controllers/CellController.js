@@ -25,7 +25,13 @@ export class CellController {
    * @param action
    */
   setSelectedAction(action) {
-    this.selectedAction = action ? ProgAction[action] : null;
+    if (action === null || action === undefined || action === "") {
+      this.selectedAction = null;
+    } else if (typeof action === "number") {
+      this.selectedAction = action;
+    } else {
+      this.selectedAction = ProgAction[action] ?? null;
+    }
     loggers.editor.debug(`🎯 Вибрано дію: ${action} (${this.selectedAction})`);
   }
 
@@ -56,8 +62,12 @@ export class CellController {
       currentPage,
     );
 
-    // Якщо клітинка має інструкцію - видаляємо її (незалежно від вибраної дії)
-    if (existingInstruction.action !== ProgAction.None) {
+    // Without a selected action, clicking an occupied cell clears it. With a
+    // selected action, replace the cell instead of deleting it first.
+    if (
+      existingInstruction.action !== ProgAction.None &&
+      !this.selectedAction
+    ) {
       const actionName = this.getActionName(existingInstruction.action);
       loggers.editor.info(
         `🗑️ Видаляємо інструкцію "${actionName}" з [${x}, ${y}]`,
