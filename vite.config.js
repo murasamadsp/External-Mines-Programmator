@@ -6,7 +6,9 @@ export default defineConfig(({ command, mode }) => ({
   define: {
     [command === "serve" ? "global" : "_global"]: {},
   },
-  base: "/",
+  // GitHub Pages serves this project from /External-Mines-Programmator/.
+  // Keep the root path for local development and previews.
+  base: mode === "production" ? "/External-Mines-Programmator/" : "/",
   root: ".",
   publicDir: "public",
   resolve: {
