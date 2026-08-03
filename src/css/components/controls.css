@@ -5,14 +5,14 @@
 #program-controls {
   /* Box model */
   display: flex;
-  flex-direction: row;
-  justify-content: space-between; /* Рівномірний розподіл секцій */
-  align-items: center; /* Вирівнюємо по центру вертикально */
-  width: fit-content; /* Не ширше ніж потрібно */
-  max-width: 100%; /* Але не виходимо за межі */
-  padding: 0; /* Не розширюємо контейнер */
-  margin: 0 auto; /* Центруємо */
-  gap: var(--space-8); /* Збільшуємо відстань між секціями */
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  padding: 4px;
+  margin: 0;
+  gap: 10px 14px;
 
   /* Visual */
   background: transparent;
@@ -47,8 +47,8 @@
   justify-content: center;
   align-items: center;
   min-width: 48px;
-  min-height: 48px;
-  padding: var(--space-3) var(--space-5);
+  min-height: 42px;
+  padding: 7px 11px;
   gap: var(--space-2);
 
   /* Typography */
@@ -105,26 +105,10 @@
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0 var(--space-8) 0 0; /* Збільшуємо внутрішній padding */
+  padding: 0;
   background: transparent;
   border: none;
-  gap: var(--space-5); /* Збільшуємо відстань між кнопками в секції */
-}
-
-.controls-section:not(:last-child)::after {
-  position: absolute;
-  top: 50%;
-  right: var(--space-4); /* Зміщуємо роздільник */
-  width: 2px; /* Трохи товстіший роздільник */
-  height: 50%; /* Менша висота для елегантності */
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    var(--border-color),
-    transparent
-  );
-  transform: translateY(-50%);
-  content: "";
+  gap: 8px;
 }
 
 .controls-section:last-child {
@@ -138,7 +122,7 @@
 .control-buttons {
   display: flex;
   align-items: center;
-  gap: var(--space-4); /* Збільшено відстань між кнопками */
+  gap: 8px;
 }
 
 /* Legacy Control Groups (keeping for compatibility if needed) */
@@ -250,13 +234,13 @@
   align-items: center;
   padding: 0;
   margin: 0;
-  gap: var(--space-5);
+  gap: 8px;
 }
 
 .page-controls button {
-  min-width: 60px;
-  padding: var(--space-5) var(--space-6);
-  font-size: var(--font-size-lg);
+  min-width: 42px;
+  padding: 7px 10px;
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
   background: linear-gradient(
     135deg,
@@ -274,10 +258,10 @@
 }
 
 #page-indicator {
-  min-width: 120px; /* Трохи ширше для комфорту */
-  padding: var(--space-4) var(--space-7); /* Більше padding */
+  min-width: 110px;
+  padding: 8px 12px;
   font-family: "Google Sans Code", "Fira Code", monospace;
-  font-size: var(--font-size-lg); /* Трохи менший шрифт */
+  font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
   text-align: center;
   color: rgb(255 255 255);
