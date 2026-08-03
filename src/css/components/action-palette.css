@@ -7,7 +7,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: var(--space-5);
+  min-width: 0;
+  padding: 16px;
   margin: 0;
   flex: none;
 
@@ -113,8 +114,9 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 56px;
-  padding: var(--space-3);
+  min-height: 58px;
+  height: auto;
+  padding: 8px 5px;
   aspect-ratio: 1;
 
   /* Typography */
@@ -122,11 +124,11 @@
   font-weight: var(--font-weight-medium);
   line-height: 1.2;
   text-align: center;
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
 
   /* Visual */
-  background: var(--surface-bg);
-  border: 1px solid var(--border-color);
+  background: #1a2a43;
+  border: 1px solid #3d587b;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
 
@@ -154,6 +156,13 @@
   background: var(--hover-bg);
   border-color: var(--color-primary);
   box-shadow: var(--shadow-md);
+}
+
+#action-palette button[data-action]:focus-visible,
+#program-controls button:focus-visible,
+.snippet-card:focus-visible {
+  outline: 3px solid var(--color-warning);
+  outline-offset: 2px;
 }
 
 #action-palette button[data-action]:hover::before {

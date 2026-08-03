@@ -87,6 +87,7 @@ export class Controls {
       id: "import-btn",
       text: "",
       icon: "📥",
+      title: "Импортировать программу",
       onClick: async () => {
         try {
           let text = "";
@@ -134,6 +135,7 @@ export class Controls {
       id: "export-btn",
       text: "",
       icon: "📤",
+      title: "Экспортировать программу",
       onClick: async () => {
         try {
           if (this.callbacks.onExport) {
@@ -170,6 +172,7 @@ export class Controls {
       id: "validate-program",
       text: "",
       icon: "✅",
+      title: "Проверить программу",
       onClick: () => this.callbacks.onValidate?.(),
     });
     controlButtons.appendChild(validateBtn);
@@ -178,6 +181,7 @@ export class Controls {
       id: "clear-program",
       text: "",
       icon: "🗑️",
+      title: "Очистить программу",
       onClick: () => {
         if (this.callbacks.onClear) {
           this.callbacks.onClear();
@@ -200,6 +204,7 @@ export class Controls {
       id: "prev-page",
       text: "",
       icon: "⬅️",
+      title: "Предыдущая страница",
       onClick: () => {
         if (this.callbacks.onPageNavigation) {
           this.callbacks.onPageNavigation("prev");
@@ -219,6 +224,7 @@ export class Controls {
       id: "next-page",
       text: "",
       icon: "➡️",
+      title: "Следующая страница",
       onClick: () => {
         if (this.callbacks.onPageNavigation) {
           this.callbacks.onPageNavigation("next");

@@ -6,18 +6,18 @@
   /* Box model */
   display: grid;
   width: fit-content;
-  padding: var(--space-4);
+  padding: 12px;
   margin: 0 auto;
-  gap: var(--program-grid-gap);
-  grid-template-columns: repeat(16, 48px);
-  grid-template-rows: repeat(12, 48px);
+  gap: 4px;
+  grid-template-columns: repeat(16, 56px);
+  grid-template-rows: repeat(12, 56px);
   flex-shrink: 0;
 
   /* Visual */
   background: var(--surface-bg-elevated);
   backdrop-filter: var(--backdrop-blur-sm);
   border: 1px solid rgb(255 255 255 / 8%);
-  border-radius: var(--radius-2xl);
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
 
   /* Misc */
@@ -36,10 +36,13 @@
   align-items: center;
   width: 100%;
   height: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 4px;
 
   /* Typography */
   font-family: "Google Sans Code", "Fira Code", monospace;
-  font-size: var(--font-size-md);
+  font-size: 11px;
   font-weight: var(--font-weight-medium);
   color: var(--color-text-secondary);
 
@@ -156,13 +159,61 @@
   color: rgb(255 255 255);
 
   /* Visual */
-  background: linear-gradient(
-    135deg,
-    var(--color-primary),
-    var(--color-primary-dark)
-  );
-  border-color: var(--color-primary);
+  background: #1f3554;
+  border-color: #5685c4;
   box-shadow: var(--shadow-md);
+}
+
+.cell-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  gap: 2px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.action-icon {
+  flex: 0 0 auto;
+  min-height: 12px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.action-name {
+  display: -webkit-box;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.action-value {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 9px;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
+.program-cell.empty {
+  background: #172338;
+  border-color: #2e405b;
+}
+
+.program-cell.empty:hover {
+  background: #203452;
 }
 
 /* ==========================================================================
@@ -281,5 +332,12 @@
     box-shadow:
       inset 0 0 0 3px rgb(251 191 36 / 90%),
       0 0 35px rgb(251 191 36 / 70%);
+  }
+}
+
+@media (max-width: 1500px) {
+  #program-grid {
+    grid-template-columns: repeat(16, 48px);
+    grid-template-rows: repeat(12, 48px);
   }
 }

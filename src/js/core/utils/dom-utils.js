@@ -25,7 +25,7 @@ export function createElement(tag, attributes = {}, content = null) {
 
   if (content) {
     if (Array.isArray(content)) {
-      content.forEach(child => {
+      content.forEach((child) => {
         if (child)
           element.appendChild(
             typeof child === "string" ? document.createTextNode(child) : child,
@@ -51,7 +51,14 @@ export function createElement(tag, attributes = {}, content = null) {
  * @param {string} [options.icon] - Optional icon (emoji or HTML).
  * @returns {HTMLButtonElement} The created button.
  */
-export function createButton({ id, text, className = "", onClick, icon = "" }) {
+export function createButton({
+  id,
+  text,
+  className = "",
+  onClick,
+  icon = "",
+  title = "",
+}) {
   const button = createElement(
     "button",
     {
@@ -63,6 +70,11 @@ export function createButton({ id, text, className = "", onClick, icon = "" }) {
       text ? createElement("span", { className: "btn-text" }, text) : null,
     ].filter(Boolean),
   );
+
+  if (title) {
+    button.title = title;
+    button.setAttribute("aria-label", title);
+  }
 
   if (onClick) {
     button.addEventListener("click", onClick);
@@ -151,7 +163,7 @@ export function createInput({
 
     // Override input handler for contentEditable
     if (onInput) {
-      input.addEventListener("input", e => {
+      input.addEventListener("input", (e) => {
         if (e.isTrusted) onInput(e);
       });
     }
@@ -184,13 +196,13 @@ export function createInput({
     input.addEventListener("keydown", onKeyDown);
   }
 
-  input.addEventListener("focus", e => {
+  input.addEventListener("focus", (e) => {
     // Prevent browser extensions from interfering
     e.stopPropagation();
   });
 
   // Prevent browser extensions from auto-filling
-  input.addEventListener("beforeinput", e => {
+  input.addEventListener("beforeinput", (e) => {
     // Allow only user-initiated input, block extension interference
     if (!e.isTrusted) {
       e.preventDefault();
@@ -200,7 +212,7 @@ export function createInput({
   });
 
   // Additional protection against iCloud and other password managers
-  input.addEventListener("focus", e => {
+  input.addEventListener("focus", (e) => {
     // Force attributes after focus to override extension interference
     setTimeout(() => {
       input.setAttribute("autocomplete", "new-password");
@@ -219,7 +231,7 @@ export function createInput({
   });
 
   // Block form submission attempts from extensions
-  input.addEventListener("input", e => {
+  input.addEventListener("input", (e) => {
     if (!e.isTrusted) {
       e.preventDefault();
       e.stopImmediatePropagation();
@@ -276,7 +288,7 @@ export function createInput({
  */
 export function setupGlobalInputProtection() {
   // Function to check if an element is protected
-  const isProtected = element =>
+  const isProtected = (element) =>
     element &&
     (element.classList?.contains("form-input") ||
       element.classList?.contains("form-input-editable") ||
@@ -287,7 +299,7 @@ export function setupGlobalInputProtection() {
   let lastUserInteraction = 0;
 
   // Track user interactions
-  ["click", "mousedown", "keydown", "touchstart"].forEach(eventType => {
+  ["click", "mousedown", "keydown", "touchstart"].forEach((eventType) => {
     document.addEventListener(
       eventType,
       () => {
@@ -300,7 +312,7 @@ export function setupGlobalInputProtection() {
   // Global event listener to detect and block extension interference
   document.addEventListener(
     "focusin",
-    e => {
+    (e) => {
       const { target } = e;
       if (isProtected(target)) {
         // Allow focus if it happened shortly after user interaction
@@ -327,8 +339,8 @@ export function setupGlobalInputProtection() {
   );
 
   // Setup MutationObserver to detect and revert extension modifications
-  const observer = new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
       if (mutation.type === "attributes") {
         const element = mutation.target;
         if (isProtected(element)) {

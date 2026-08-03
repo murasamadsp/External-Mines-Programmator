@@ -1,18 +1,17 @@
 /* Enhanced Main container component with modern centering and glassmorphism effect */
 .container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
+  position: relative;
   display: flex;
   flex-direction: column;
-  width: fit-content;
-  max-width: 95vw;
+  width: 100%;
+  max-width: 1920px;
+  min-height: 100vh;
   padding: var(--space-6);
+  margin: 0 auto;
   background-color: var(--color-background-secondary);
   border: 1px solid rgb(255 255 255 / 10%);
   border-radius: var(--radius-3xl);
   box-shadow: var(--shadow-xl);
-  transform: translate(-50%, -50%);
   backdrop-filter: var(--backdrop-blur);
   box-sizing: border-box;
 }

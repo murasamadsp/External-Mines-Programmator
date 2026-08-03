@@ -52,7 +52,10 @@
   gap: var(--space-6);
 
   /* Grid */
-  grid-template-columns: 300px auto 300px;
+  grid-template-columns: minmax(240px, 280px) minmax(0, 1fr) minmax(
+      240px,
+      280px
+    );
   grid-template-rows: auto;
 
   /* Misc */
@@ -106,10 +109,18 @@
   display: flex;
   flex-direction: column;
   height: fit-content;
+  min-width: 0;
   gap: var(--space-4);
 
   /* Misc */
   overflow: visible;
+}
+
+@media (max-width: 1500px) {
+  .programmer-layout {
+    grid-template-columns: 240px minmax(0, 1fr) 240px;
+    gap: var(--space-4);
+  }
 }
 
 /* ==========================================================================
