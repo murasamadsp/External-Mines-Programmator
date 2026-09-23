@@ -64,10 +64,8 @@ export class ProgramSerializer {
       throw new Error("Malformed program");
     }
     const operators = decompressed.slice(4, 4 + length);
-    // Follow C# logic: ToUpper().Split(':')
-    const labelsRaw = uint8ToAscii(decompressed.slice(4 + length))
-      .toUpperCase()
-      .split(":");
+    // Keep label casing and split the per-instruction label fields.
+    const labelsRaw = uint8ToAscii(decompressed.slice(4 + length)).split(":");
     const ret = new Array(length);
     for (let i = 0; i < length; i++) {
       const action = operators[i];
@@ -341,9 +339,7 @@ export class ProgramSerializer {
     // Follow C# logic: x.label + (x.value.HasValue ? "@" + x.value : "")
     // In C#, if label is null, null + "@" + value = "@value" (null converts to empty string)
     // If label is null and value is null, null + "" = null (but string.Join converts null to "")
-    // The reference decoder uppercases labels. Normalize on encode as well so
-    // serialize(deserialize(serialize(program))) is deterministic.
-    const labelStr = String(label ?? "").toUpperCase();
+    const labelStr = String(label ?? "");
     return value !== null && value !== undefined
       ? `${labelStr}@${value}`
       : labelStr;

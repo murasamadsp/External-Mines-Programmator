@@ -103,6 +103,56 @@ async function runTests() {
 
     console.log("PASS");
 
+    // Compare the caller's original program with the restored model directly,
+    // including labels and values across page boundaries.
+    const roundTripSourceProgram = new Program();
+    roundTripSourceProgram.instructions = Array.from(
+      { length: PAGE_SIZE * 2 + 1 },
+      () => ({ action: ProgAction.None, label: null, value: null }),
+    );
+    roundTripSourceProgram.instructions[0] = {
+      action: ProgAction.Goto,
+      label: "a",
+      value: null,
+    };
+    roundTripSourceProgram.instructions[1] = {
+      action: ProgAction.VarEqualsNumber,
+      label: "MiXeD",
+      value: 0,
+    };
+    roundTripSourceProgram.instructions[PAGE_SIZE - 1] = {
+      action: ProgAction.VarLessThanNumber,
+      label: "counter",
+      value: -42,
+    };
+    roundTripSourceProgram.instructions[PAGE_SIZE] = {
+      action: ProgAction.Call,
+      label: "SubRoutine",
+      value: null,
+    };
+    roundTripSourceProgram.instructions[PAGE_SIZE * 2] = {
+      action: ProgAction.VarGreaterThanNumber,
+      label: "endValue",
+      value: 2147483647,
+    };
+    const roundTripSourceInstructions = roundTripSourceProgram.instructions.map(
+      ({ action, label, value }) => ({ action, label, value }),
+    );
+    const roundTripEncoded = await roundTripSourceProgram.toBase64Format();
+    const roundTripRestoredProgram = await Program.fromString(roundTripEncoded);
+    assert.deepStrictEqual(
+      roundTripRestoredProgram.instructions
+        .slice(0, roundTripSourceInstructions.length)
+        .map(({ action, label, value }) => ({ action, label, value })),
+      roundTripSourceInstructions,
+      "Program → Base64 → Program must preserve the original instruction data",
+    );
+    assert.strictEqual(
+      roundTripRestoredProgram.serializedLength,
+      roundTripSourceInstructions.length,
+      "Round-trip must preserve the serialized instruction count",
+    );
+
     // Test round-trip serialization with provided base64 string
     console.log(
       "\n🧪 Testing round-trip serialization with provided base64...",
@@ -119,54 +169,20 @@ async function runTests() {
       const exportedBase64 = await importedProgram.toBase64Format();
       console.log("✅ Export successful");
 
-      console.log("🔍 Comparing input and output...");
-      const isIdentical = testBase64 === exportedBase64;
+      const originalInstructions = await ProgramSerializer.decode(testBase64);
+      const roundTrippedInstructions =
+        await ProgramSerializer.decode(exportedBase64);
 
-      if (isIdentical) {
-        console.log(
-          "✅ ROUND-TRIP TEST PASSED: Input and output are identical!",
-        );
-        console.log(`   Input length:  ${testBase64.length} characters`);
-        console.log(`   Output length: ${exportedBase64.length} characters`);
-      } else {
-        console.log("❌ ROUND-TRIP TEST FAILED: Input and output differ!");
-        console.log(`   Input:  ${testBase64.substring(0, 50)}...`);
-        console.log(`   Output: ${exportedBase64.substring(0, 50)}...`);
+      assert.deepStrictEqual(
+        roundTrippedInstructions,
+        originalInstructions,
+        "Program import/export must preserve every instruction",
+      );
 
-        // Find first difference
-        let diffIndex = -1;
-        for (
-          let i = 0;
-          i < Math.min(testBase64.length, exportedBase64.length);
-          i++
-        ) {
-          if (testBase64[i] !== exportedBase64[i]) {
-            diffIndex = i;
-            break;
-          }
-        }
-
-        if (diffIndex !== -1) {
-          console.log(`   First difference at position ${diffIndex}:`);
-          console.log(
-            `     Input:  '${testBase64.substring(Math.max(0, diffIndex - 10), diffIndex + 10)}'`,
-          );
-          console.log(
-            `     Output: '${exportedBase64.substring(Math.max(0, diffIndex - 10), diffIndex + 10)}'`,
-          );
-        }
-
-        if (testBase64.length !== exportedBase64.length) {
-          console.log(
-            `   Length mismatch: Input=${testBase64.length}, Output=${exportedBase64.length}`,
-          );
-        }
-      }
-
-      console.log("🧪 Round-trip serialization test completed");
+      console.log("✅ ROUND-TRIP TEST PASSED: Instructions are identical!");
     } catch (error) {
       console.log("❌ ROUND-TRIP TEST ERROR:", error.message);
-      console.log("Stack:", error.stack);
+      throw error;
     }
 
     console.log("All Integration tests passed!");
